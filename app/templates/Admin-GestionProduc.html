@@ -143,22 +143,22 @@
         </div>
         <div class="flex-1 space-y-2">
             <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
-                href="#">
+                href="{{ url_for('admin.dashboard') }}">
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 Dashboard
             </a>
             <a class="flex items-center gap-3 font-label-md text-label-md text-on-primary bg-primary-container rounded-lg font-bold px-4 py-2 scale-95 active:scale-90 transition-transform"
-                href="#">
+                href="{{ url_for('admin.productos') }}">
                 <span class="material-symbols-outlined" data-icon="palette">palette</span>
                 Products
             </a>
             <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
-                href="#">
+                href="{{ url_for('admin.complementos') }}">
                 <span class="material-symbols-outlined" data-icon="format_paint">format_paint</span>
                 Complements
             </a>
             <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
-                href="#">
+                href="{{ url_for('admin.publicar') }}">
                 <span class="material-symbols-outlined" data-icon="storefront">storefront</span>
                 Mercado Libre
             </a>
@@ -168,11 +168,12 @@
                 class="w-full bg-surface-tint text-on-primary font-label-md text-label-md py-2 px-4 rounded-lg hover:opacity-90 transition-opacity mb-4">
                 Sync Inventory
             </button>
-            <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
-                href="#">
-                <span class="material-symbols-outlined" data-icon="logout">logout</span>
-                Logout
-            </a>
+            <form action="{{ url_for('main.logout') }}" method="POST">
+                <button type="submit" class="w-full flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform">
+                    <span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout
+                </button>
+            </form>
         </div>
     </nav>
     <!-- Main Content Area -->
