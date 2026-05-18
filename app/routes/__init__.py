@@ -81,8 +81,12 @@ def registro():
             mysql.connection.commit()
             usuario_id = cur.lastrowid
             cur.close()
-        except Exception:
-            return render_template('Registro.html', error='El correo ya está registrado.')
+        except Exception as e:
+            print(f"[ERROR REGISTRO] {type(e).__name__}: {e}")
+            # Error 1062 = Duplicate entry en MySQL
+            if hasattr(e, 'args') and e.args and e.args[0] == 1062:
+                return render_template('Registro.html', error='El correo ya está registrado.')
+            return render_template('Registro.html', error=f'Error al crear la cuenta: {e}')
 
         token = create_access_token(identity=str(usuario_id))
         response = make_response(redirect(url_for('main.index')))

@@ -112,7 +112,26 @@
     </script>
     <style>
         .prism-stripe {
-            background: linear-gradient(90deg, #E3000F 0%, #F37021 25%, #FFD100 50%, #009A44 75%, #0033A0 100%);
+            background: linear-gradient(90deg, 
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%, 
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk 4s linear infinite;
+        }
+        .prism-stripe-reverse {
+            background: linear-gradient(90deg, 
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%, 
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk-reverse 4s linear infinite;
+        }
+        @keyframes prism-walk {
+            0%   { background-position: 0% 0; }
+            100% { background-position: -200% 0; }
+        }
+        @keyframes prism-walk-reverse {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 0% 0; }
         }
     </style>
 </head>
@@ -183,7 +202,7 @@
             </div>
         </section>
         <!-- Divider -->
-        <div class="w-full h-[4px] prism-stripe my-unit-xl md:my-[80px]"></div>
+        <div class="w-full h-[4px] prism-stripe-reverse my-unit-xl md:my-[80px]"></div>
         <!-- How it Works -->
         <section
             class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl bg-surface-bright rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)]">
