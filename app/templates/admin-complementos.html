@@ -141,33 +141,34 @@
         </div>
         <nav class="flex-1 px-4 space-y-2">
             <a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:bg-primary-container/20 transition-all rounded-lg font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.dashboard') }}">
                 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
                 Dashboard
             </a>
             <a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:bg-primary-container/20 transition-all rounded-lg font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.productos') }}">
                 <span class="material-symbols-outlined" data-icon="palette">palette</span>
                 Products
             </a>
             <!-- Active State: Complements -->
             <a class="flex items-center gap-3 px-4 py-3 bg-primary-container text-on-primary-container rounded-lg font-label-md text-label-md scale-[0.98] duration-200"
-                href="#">
+                href="{{ url_for('admin.complementos') }}">
                 <span class="material-symbols-outlined" data-icon="extension">extension</span>
                 Complements
             </a>
             <a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:bg-primary-container/20 transition-all rounded-lg font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.publicar') }}">
                 <span class="material-symbols-outlined" data-icon="cloud_upload">cloud_upload</span>
                 Publish to Mercado Libre
             </a>
         </nav>
         <div class="px-4 mt-auto">
-            <a class="flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:bg-primary-container/20 transition-all rounded-lg font-label-md text-label-md"
-                href="#">
-                <span class="material-symbols-outlined" data-icon="help">help</span>
-                Help Center
-            </a>
+            <form action="{{ url_for('main.logout') }}" method="POST">
+                <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 text-on-primary/70 hover:bg-primary-container/20 transition-all rounded-lg font-label-md text-label-md">
+                    <span class="material-symbols-outlined" data-icon="logout">logout</span>
+                    Logout
+                </button>
+            </form>
         </div>
     </aside>
     <!-- Content Area -->
@@ -195,7 +196,9 @@
                 <div class="flex items-center gap-3">
                     <div class="text-right">
                         <p class="font-label-md text-label-md text-on-surface font-bold">Admin User</p>
-                        <button class="font-label-sm text-label-sm text-primary hover:underline">Logout</button>
+                        <form action="{{ url_for('main.logout') }}" method="POST" class="inline">
+                            <button type="submit" class="font-label-sm text-label-sm text-primary hover:underline">Logout</button>
+                        </form>
                     </div>
                     <div class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden">
                         <img alt="Admin Avatar" class="w-full h-full object-cover"

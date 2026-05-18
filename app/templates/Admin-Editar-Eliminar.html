@@ -134,22 +134,22 @@
         </div>
         <div class="flex-grow flex flex-col space-y-unit-sm">
             <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span>Dashboard</span>
             </a>
             <a class="flex items-center space-x-3 text-on-primary bg-primary-container rounded-lg font-bold px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 scale-95 active:scale-90 transition-transform font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.productos') }}">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">palette</span>
                 <span>Products</span>
             </a>
             <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.complementos') }}">
                 <span class="material-symbols-outlined">format_paint</span>
                 <span>Complements</span>
             </a>
             <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform font-label-md text-label-md"
-                href="#">
+                href="{{ url_for('admin.publicar') }}">
                 <span class="material-symbols-outlined">storefront</span>
                 <span>Mercado Libre</span>
             </a>
@@ -160,11 +160,12 @@
                 <span class="material-symbols-outlined">sync</span>
                 Sync Inventory
             </button>
-            <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg font-label-md text-label-md"
-                href="#">
-                <span class="material-symbols-outlined">logout</span>
-                <span>Logout</span>
-            </a>
+            <form action="{{ url_for('main.logout') }}" method="POST">
+                <button type="submit" class="w-full flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg font-label-md text-label-md">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Logout</span>
+                </button>
+            </form>
         </div>
     </nav>
     <!-- Main Content Area -->
@@ -205,7 +206,7 @@
             <div class="max-w-container-max mx-auto">
                 <div class="flex items-center mb-unit-lg gap-3">
                     <a class="text-outline hover:text-primary transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-container"
-                        href="#">
+                        href="{{ url_for('admin.productos') }}">
                         <span class="material-symbols-outlined">arrow_back</span>
                     </a>
                     <h1 class="font-headline-lg text-headline-lg text-on-surface">Detalle de Producto</h1>
@@ -214,7 +215,7 @@
                     class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] overflow-hidden">
                     <!-- Prism stripe for premium feel -->
                     <div class="h-1 w-full bg-gradient-to-r from-[#0033A0] via-[#455aa5] to-[#98adfe]"></div>
-                    <form class="p-gutter grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                    <form action="{{ url_for('admin.editar_producto', id=producto.id) }}" method="POST" class="p-gutter grid grid-cols-1 md:grid-cols-2 gap-gutter">
                         <!-- Left Column -->
                         <div class="space-y-unit-lg flex flex-col">
                             <div class="space-y-unit-sm">

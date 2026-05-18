@@ -17,6 +17,8 @@ def create_app():
     mysql.init_app(app)
 
     from .routes import main
+    from .routes.admin import admin_bp
     app.register_blueprint(main)
+    app.register_blueprint(admin_bp)
 
     return app
