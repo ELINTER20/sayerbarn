@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SayerBarn - Crea tu cuenta</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f8f9fa",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "tertiary-fixed": "#dee3ed",
+                        "secondary-fixed": "#dce1ff",
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "on-error-container": "#93000a",
+                        "on-background": "#191c1d",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-container": "#283e88",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "surface-container-low": "#f3f4f5",
+                        "on-surface-variant": "#444653",
+                        "on-primary-fixed": "#001550",
+                        "primary-fixed": "#dce1ff",
+                        "on-primary-container": "#8ea6ff",
+                        "tertiary-container": "#393f47",
+                        "on-secondary-fixed": "#001550",
+                        "surface-container": "#edeeef",
+                        "primary-container": "#0033a0",
+                        "error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-surface": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-container": "#98adfe",
+                        "outline-variant": "#c4c5d5",
+                        "primary": "#00216e",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#3456c1",
+                        "tertiary": "#232930",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-primary": "#b6c4ff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e1e3e4",
+                        "surface": "#f8f9fa",
+                        "on-tertiary-fixed": "#161c23",
+                        "surface-variant": "#e1e3e4",
+                        "on-primary": "#ffffff",
+                        "outline": "#747684",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-tertiary-container": "#a5aab3",
+                        "inverse-surface": "#2e3132",
+                        "secondary": "#455aa5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit-sm": "8px",
+                        "unit-md": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "40px",
+                        "margin-mobile": "16px",
+                        "container-max": "1280px",
+                        "unit-xl": "48px",
+                        "unit-lg": "24px",
+                        "unit-xs": "4px"
+                    },
+                    "fontFamily": {
+                        "label-sm": [
+                            "Manrope"
+                        ],
+                        "body-lg": [
+                            "Manrope"
+                        ],
+                        "headline-lg-mobile": [
+                            "Hanken Grotesk"
+                        ],
+                        "headline-xl": [
+                            "Hanken Grotesk"
+                        ],
+                        "headline-md": [
+                            "Hanken Grotesk"
+                        ],
+                        "label-md": [
+                            "Manrope"
+                        ],
+                        "headline-lg": [
+                            "Hanken Grotesk"
+                        ],
+                        "body-md": [
+                            "Manrope"
+                        ]
+                    },
+                    "fontSize": {
+                        "label-sm": [
+                            "12px",
+                            {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "700"
+                            }
+                        ],
+                        "body-lg": [
+                            "18px",
+                            {
+                                "lineHeight": "28px",
+                                "fontWeight": "400"
+                            }
+                        ],
+                        "headline-lg-mobile": [
+                            "28px",
+                            {
+                                "lineHeight": "36px",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "headline-xl": [
+                            "48px",
+                            {
+                                "lineHeight": "56px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                            }
+                        ],
+                        "headline-md": [
+                            "24px",
+                            {
+                                "lineHeight": "32px",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "label-md": [
+                            "14px",
+                            {
+                                "lineHeight": "20px",
+                                "letterSpacing": "0.02em",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "headline-lg": [
+                            "32px",
+                            {
+                                "lineHeight": "40px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "600"
+                            }
+                        ],
+                        "body-md": [
+                            "16px",
+                            {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                            }
+                        ]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body
+    class="bg-surface-bright min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop relative overflow-hidden font-body-md text-on-surface">
+    <!-- Subtle Blue Gradient Background Effect -->
+    <div
+        class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary-fixed-dim/20 to-transparent pointer-events-none">
+    </div>
+    <!-- Main Registration Card -->
+    <main
+        class="w-full max-w-[480px] bg-surface-container-lowest rounded-[1rem] shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-surface-container relative z-10 overflow-hidden">
+        <!-- Prism Stripe Accent -->
+        <div class="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container"></div>
+        <div class="p-unit-xl">
+            <!-- Brand Logo / Name -->
+            <div class="text-center mb-unit-lg">
+                <h1 class="font-headline-xl text-headline-xl text-primary mb-unit-xs">SayerBarn</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">Expertos en color y protección</p>
+            </div>
+            <!-- Title -->
+            <h2 class="font-headline-md text-headline-md text-on-surface mb-unit-lg text-center">Crea tu cuenta</h2>
+            <!-- Registration Form -->
+            <form action="#" class="space-y-unit-md" method="POST">
+                <!-- Full Name -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase"
+                        for="fullName">Nombre completo</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline-variant"
+                                data-icon="person">person</span>
+                        </div>
+                        <input
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                            id="fullName" name="fullName" placeholder="Tu nombre" required="" type="text" />
+                    </div>
+                </div>
+                <!-- Email -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase"
+                        for="email">Correo electrónico</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline-variant" data-icon="mail">mail</span>
+                        </div>
+                        <input
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                            id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email" />
+                    </div>
+                </div>
+                <!-- Password -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase"
+                        for="password">Contraseña</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline-variant" data-icon="lock">lock</span>
+                        </div>
+                        <input
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                            id="password" name="password" placeholder="Mínimo 8 caracteres" required=""
+                            type="password" />
+                    </div>
+                </div>
+                <!-- Confirm Password -->
+                <div>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase"
+                        for="confirmPassword">Confirmar contraseña</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="material-symbols-outlined text-outline-variant" data-icon="lock">lock</span>
+                        </div>
+                        <input
+                            class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                            id="confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña" required=""
+                            type="password" />
+                    </div>
+                </div>
+                <!-- Submit Button -->
+                <div class="pt-unit-sm">
+                    <button
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md font-bold text-on-primary bg-primary-container hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
+                        type="submit">
+                        Crear cuenta
+                    </button>
+                </div>
+            </form>
+            <!-- Login Link -->
+            <div class="mt-unit-lg text-center">
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    ¿Ya tienes cuenta?
+                    <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors"
+                        href="#">Inicia sesión</a>
+                </p>
+            </div>
+            <!-- Terms -->
+            <div class="mt-unit-md text-center">
+                <p class="font-label-sm text-label-sm text-outline font-normal">
+                    Al crear una cuenta, aceptas nuestros <a class="underline hover:text-primary" href="#">Términos de
+                        servicio</a> y <a class="underline hover:text-primary" href="#">Política de privacidad</a>.
+                </p>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

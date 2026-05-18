@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Analizando Respuesta - SayerBarn</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#191c1d",
+                        "on-background": "#191c1d",
+                        "on-surface-variant": "#444653",
+                        "tertiary-fixed": "#dee3ed",
+                        "tertiary": "#232930",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "inverse-primary": "#b6c4ff",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "on-tertiary-fixed": "#161c23",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "primary-container": "#0033a0",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#393f47",
+                        "outline-variant": "#c4c5d5",
+                        "on-secondary-container": "#283e88",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#00216e",
+                        "outline": "#747684",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "on-primary-fixed": "#001550",
+                        "on-error-container": "#93000a",
+                        "secondary": "#455aa5",
+                        "on-secondary-fixed": "#001550",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "surface-dim": "#d9dadb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#dce1ff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-container": "#a5aab3",
+                        "surface-tint": "#3456c1",
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-container": "#98adfe",
+                        "secondary-fixed": "#dce1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#8ea6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit-lg": "24px",
+                        "container-max": "1280px",
+                        "unit-md": "16px",
+                        "unit-xs": "4px",
+                        "unit-sm": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "unit-xl": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "headline-xl": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prism-stripe {
+            background: linear-gradient(90deg, #0033A0 0%, #3456c1 50%, #8ea6ff 100%);
+        }
+
+        /* Spinner styles */
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #E8EDF7;
+            border-top: 4px solid #0033A0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Fade in animation for the card to imply transition */
+        .fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary">
+    <!-- TopNavBar -->
+    <header
+        class="bg-surface-container-lowest dark:bg-inverse-surface w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
+        <div
+            class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <!-- Brand -->
+            <a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim" href="#">
+                SayerBarn
+            </a>
+            <!-- Navigation Links (Hidden on Mobile) -->
+            <nav class="hidden md:flex space-x-unit-lg items-center h-full">
+                <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors h-full flex items-center hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 px-unit-sm"
+                    href="#">Inicio</a>
+                <a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed h-full flex items-center hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 px-unit-sm"
+                    href="#">Asesoría</a>
+                <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors h-full flex items-center hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 px-unit-sm"
+                    href="#">Catálogo</a>
+            </nav>
+            <!-- Actions -->
+            <div class="flex items-center space-x-unit-sm md:space-x-unit-md">
+                <button
+                    class="hidden md:block font-label-md text-label-md text-primary hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-unit-md py-unit-sm rounded scale-95 active:scale-90 transition-transform transition-all duration-200 border-2 border-transparent hover:border-primary/20">
+                    Iniciar sesión
+                </button>
+                <button
+                    class="font-label-md text-label-md bg-primary text-on-primary px-unit-md py-unit-sm rounded scale-95 active:scale-90 transition-transform hover:bg-primary-container shadow-sm">
+                    Registrarse
+                </button>
+            </div>
+        </div>
+        <!-- Subtle Prism Stripe at bottom of nav -->
+        <div class="h-[2px] w-full prism-stripe opacity-80"></div>
+    </header>
+    <!-- Main Content Area - Transition State -->
+    <main class="flex-grow flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+        <div class="max-w-md w-full mx-auto">
+            <!-- Centered Card -->
+            <div
+                class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-surface-variant overflow-hidden fade-in-up">
+                <!-- Premium Top Border Accent -->
+                <div class="h-1 w-full prism-stripe"></div>
+                <div class="p-unit-xl flex flex-col items-center justify-center text-center space-y-unit-lg">
+                    <!-- Loading Indicator -->
+                    <div class="spinner my-unit-sm"></div>
+                    <!-- Text Content -->
+                    <div class="space-y-unit-xs">
+                        <h2 class="font-headline-md text-headline-md text-on-surface">Analizando tu respuesta...</h2>
+                        <p class="font-body-md text-body-md text-on-surface-variant">Estamos procesando la información
+                            para ofrecerte la mejor recomendación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-primary dark:bg-tertiary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
+        <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-on-primary dark:text-on-tertiary">
+            <!-- Brand & Copyright -->
+            <div class="col-span-1 flex flex-col space-y-unit-sm md:col-span-2">
+                <span
+                    class="font-headline-sm text-headline-sm font-bold text-on-primary opacity-80 hover:opacity-100 transition-opacity">SayerBarn</span>
+                <p class="font-body-md text-body-md text-primary-fixed-dim/80">© 2024 SayerBarn. Sayer Dabet Branding.
+                </p>
+            </div>
+            <!-- Links Column 1 -->
+            <div class="col-span-1 flex flex-col space-y-unit-sm">
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline decoration-secondary-container"
+                    href="#">Contacto</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline decoration-secondary-container"
+                    href="#">Sucursales</a>
+            </div>
+            <!-- Links Column 2 -->
+            <div class="col-span-1 flex flex-col space-y-unit-sm">
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline decoration-secondary-container"
+                    href="#">Aviso de Privacidad</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline decoration-secondary-container"
+                    href="#">Términos y Condiciones</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SayerBarn Admin - Gestión de Productos</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Manrope:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#393f47",
+                        "secondary-container": "#98adfe",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "inverse-on-surface": "#f0f1f2",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "primary-fixed": "#dce1ff",
+                        "on-primary-fixed": "#001550",
+                        "primary": "#00216e",
+                        "outline": "#747684",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#dce1ff",
+                        "on-tertiary-container": "#a5aab3",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-tertiary-fixed": "#161c23",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary": "#455aa5",
+                        "on-surface": "#191c1d",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "outline-variant": "#c4c5d5",
+                        "tertiary": "#232930",
+                        "surface-tint": "#3456c1",
+                        "surface-dim": "#d9dadb",
+                        "primary-container": "#0033a0",
+                        "on-primary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-surface-variant": "#444653",
+                        "surface-container": "#edeeef",
+                        "on-primary-container": "#8ea6ff",
+                        "tertiary-fixed": "#dee3ed",
+                        "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "inverse-primary": "#b6c4ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-secondary-container": "#283e88",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001550",
+                        "success-container": "#bbf7d0",
+                        "on-success-container": "#166534"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit-xs": "4px",
+                        "gutter": "24px",
+                        "unit-lg": "24px",
+                        "unit-sm": "8px",
+                        "margin-desktop": "40px",
+                        "unit-md": "16px",
+                        "container-max": "1280px",
+                        "unit-xl": "48px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-md": ["Manrope"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-xl": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prism-stripe {
+            background: linear-gradient(90deg, #0033A0 0%, #455aa5 33%, #98adfe 66%, #dce1ff 100%);
+            height: 4px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+    <!-- SideNavBar (Shared Component) -->
+    <nav
+        class="h-screen w-64 fixed left-0 top-0 bg-tertiary text-on-tertiary shadow-md z-50 flex flex-col h-full py-gutter px-unit-md hidden md:flex">
+        <div class="mb-unit-xl">
+            <h1 class="font-headline-md text-headline-md font-bold text-on-tertiary flex items-center gap-2">
+                <span class="material-symbols-outlined" data-icon="water_drop" data-weight="fill"
+                    style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                ProPaint Admin
+            </h1>
+            <p class="font-label-sm text-label-sm text-tertiary-fixed-dim mt-1">Expert Series</p>
+        </div>
+        <div class="flex-1 space-y-2">
+            <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+            <a class="flex items-center gap-3 font-label-md text-label-md text-on-primary bg-primary-container rounded-lg font-bold px-4 py-2 scale-95 active:scale-90 transition-transform"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="palette">palette</span>
+                Products
+            </a>
+            <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="format_paint">format_paint</span>
+                Complements
+            </a>
+            <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+                Mercado Libre
+            </a>
+        </div>
+        <div class="mt-auto pt-unit-md border-t border-outline-variant/20">
+            <button
+                class="w-full bg-surface-tint text-on-primary font-label-md text-label-md py-2 px-4 rounded-lg hover:opacity-90 transition-opacity mb-4">
+                Sync Inventory
+            </button>
+            <a class="flex items-center gap-3 font-label-md text-label-md text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform"
+                href="#">
+                <span class="material-symbols-outlined" data-icon="logout">logout</span>
+                Logout
+            </a>
+        </div>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+        <!-- TopAppBar (Shared Component) -->
+        <header class="bg-surface text-primary shadow-sm docked full-width top-0 sticky z-40">
+            <div class="flex justify-between items-center px-margin-desktop h-16 w-full">
+                <div class="flex items-center gap-4 flex-1">
+                    <h2 class="font-headline-sm text-headline-sm font-bold text-primary hidden md:block">Admin Dashboard
+                    </h2>
+                    <!-- Search Bar -->
+                    <div class="relative max-w-md w-full ml-auto md:ml-unit-xl">
+                        <span
+                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+                            data-icon="search">search</span>
+                        <input
+                            class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                            placeholder="Buscar productos..." type="text" />
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 ml-4">
+                    <button
+                        class="text-on-surface-variant hover:text-primary transition-colors opacity-80 active:opacity-100">
+                        <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+                    </button>
+                    <button
+                        class="text-on-surface-variant hover:text-primary transition-colors opacity-80 active:opacity-100">
+                        <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                    </button>
+                    <div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+                        <img alt="User Profile Avatar" class="w-full h-full object-cover"
+                            data-alt="A professional headshot of a corporate administrative user in a brightly lit modern office setting. The lighting is soft and neutral, enhancing a clean, high-end SaaS application aesthetic. The mood is confident and efficient, fitting a premium paint brand management system."
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVdcF7fGBXpW8f3PCXQk_FSb6bSvaVDypvfqY4wPdm0b7rKGUDzpmd25D0x2vMGtv8K6vaZWPkinRHpcQShCUXEKhqS7cMsaX0YQmiZ64722z-Ezi0sjtms8XWUrDmVJQafhn8DbG4TCcNoo1cIOF2Khk4hn26OS3tt4lDiQXLVPOA0r6V0r7pOWnGAahvfwq4dBuozt-RfGtW3w_yjWxC1_hsx7U1Zagg3fI3yUNm7qKxrbSQwuOXh94NrrfkdLNwlECSJGGnyPQ" />
+                    </div>
+                </div>
+            </div>
+            <div class="prism-stripe absolute bottom-0 left-0"></div>
+        </header>
+        <!-- Page Canvas -->
+        <main class="flex-1 p-margin-mobile md:p-margin-desktop max-w-[1440px] mx-auto w-full">
+            <!-- Page Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-unit-xl gap-4">
+                <div>
+                    <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Gestión de Productos</h1>
+                    <p class="font-body-md text-body-md text-on-surface-variant mt-1">Administra el catálogo de
+                        barnices, pinturas y complementos.</p>
+                </div>
+                <button
+                    class="bg-success-container text-on-success-container font-label-md text-label-md px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity font-bold shadow-sm whitespace-nowrap border border-success-container/50">
+                    <span class="material-symbols-outlined text-[20px]" data-icon="add">add</span>
+                    Agregar producto
+                </button>
+            </div>
+            <!-- Data Table Card -->
+            <div
+                class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-outline-variant/30 overflow-hidden relative">
+                <div class="prism-stripe absolute top-0 left-0 h-[4px]"></div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-bright border-b border-outline-variant">
+                                <th
+                                    class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Imagen</th>
+                                <th
+                                    class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Nombre</th>
+                                <th
+                                    class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Tipo</th>
+                                <th
+                                    class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Uso</th>
+                                <th
+                                    class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                    Estado</th>
+                                <th
+                                    class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-right">
+                                    Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/50">
+                            <!-- Row 1 -->
+                            <tr class="hover:bg-surface-bright/50 transition-colors group">
+                                <td class="py-3 px-6">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-surface-variant border border-outline-variant/50 overflow-hidden flex items-center justify-center">
+                                        <img alt="Product Thumbnail" class="w-full h-full object-cover"
+                                            data-alt="A close-up studio shot of a premium paint can or varnish container sitting on a clean white surface. Soft studio lighting highlights the sleek label design. The color palette features deep navy blues and pristine whites, conveying a sense of high-end architectural quality."
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC6xSfGg1OTsKl-0H3U3oXJvLouRs52ZCAyLUSoFHRNnCV9CgdB3bkrUeh8M0Hrb8JNwCoeqhB8DWuMzpDy-RkGGkvX6bcKY8Gh6wT-J4edfZDIeZdXFx1556Md5zcndbdx1XR_ooMFQC6e1KkG4ukTV6Z_H7q3r6TD8gXRpv_J8GJALsJGiyvRRH6pOHfc7MYgZYU-_kOIMN0wBdFQOhiDBdZGzpH42yUUo47TWGFITxI4rt7KU8yUTjRbJxeikUluV5I9ImHoyUQ" />
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <div class="font-label-md text-label-md text-on-surface">Barniz Marino Premium</div>
+                                    <div class="font-body-md text-[13px] text-on-surface-variant mt-0.5">SKU: BRZ-1001
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
+                                        Barniz
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">Exterior</td>
+                                <td class="py-3 px-6">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-success-container/30 text-on-success-container border border-success-container">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-on-success-container"></span>
+                                        Activo
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-primary-fixed transition-colors"
+                                            title="Editar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-outline rounded-md hover:bg-surface-variant transition-colors"
+                                            title="Desactivar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="block">block</span>
+                                        </button>
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
+                                            title="Eliminar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr class="hover:bg-surface-bright/50 transition-colors group">
+                                <td class="py-3 px-6">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-surface-variant border border-outline-variant/50 overflow-hidden flex items-center justify-center">
+                                        <img alt="Product Thumbnail" class="w-full h-full object-cover"
+                                            data-alt="A close-up studio shot of a premium paint can or varnish container sitting on a clean white surface. Soft studio lighting highlights the sleek label design. The color palette features deep navy blues and pristine whites, conveying a sense of high-end architectural quality."
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAszyLSt6DM-25j3lAaybajdupEltV-FextRTn4dIIS2FQQ49Hx_uV6D1QYQ7s3PvcShb7j_OegoqwTWAnIiTtE0S0uNuvYIkDIWZKVod1ramdGHxoBk2lWJcYkuZj_sS3kfIvMFvF_fpY-cTLE6pHtiYQZTWAu-u2yLD9y8W-TPuctOWlVVo1sv0dWmoZssiBnYNM74oesSiH54xCWLn0MIg3mmYFM-sQ1LV-zJvurGQMLUgclT18dDtJGjW83ZscfYuT9RO1NgzY" />
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <div class="font-label-md text-label-md text-on-surface">Pintura Acrílica Mate</div>
+                                    <div class="font-body-md text-[13px] text-on-surface-variant mt-0.5">SKU: PNT-2045
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
+                                        Pintura
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">Interior</td>
+                                <td class="py-3 px-6">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-surface-variant text-on-surface-variant border border-outline-variant">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                                        Inactivo
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-primary-fixed transition-colors"
+                                            title="Editar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-outline rounded-md hover:bg-surface-variant transition-colors"
+                                            title="Activar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="check_circle">check_circle</span>
+                                        </button>
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
+                                            title="Eliminar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-surface-bright/50 transition-colors group">
+                                <td class="py-3 px-6">
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-surface-variant border border-outline-variant/50 overflow-hidden flex items-center justify-center">
+                                        <img alt="Product Thumbnail" class="w-full h-full object-cover"
+                                            data-alt="A close-up studio shot of a premium paint can or varnish container sitting on a clean white surface. Soft studio lighting highlights the sleek label design. The color palette features deep navy blues and pristine whites, conveying a sense of high-end architectural quality."
+                                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqu6T_mQfSb1SuBlShJkHBbReEmH2FbXSIWeFxT9MKsbMhtGml1onOpsxjqnZWEHaufG4t8GingvfUmBqSut5ZoXpOjYx4wM76BoSsPsx9KoVba7dLwOTQ_w5pgqWspr4E06-mV0WRqvodxTLIDqyhV6edEp5KceRXRNlp9e4QXtDnRMmCIe6_LpSHwUrrM_JUZwFA9uF4uSvo8vTdDdFjePKVWcwTLuIDL0wYOcC-gz9FI1NYT0wBvzUiYshO0pYx_a2Gc7-gsJA" />
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <div class="font-label-md text-label-md text-on-surface">Sellador Poliuretano</div>
+                                    <div class="font-body-md text-[13px] text-on-surface-variant mt-0.5">SKU: SLL-3012
+                                    </div>
+                                </td>
+                                <td class="py-3 px-6">
+                                    <span
+                                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
+                                        Complemento
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">Ambos</td>
+                                <td class="py-3 px-6">
+                                    <span
+                                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-success-container/30 text-on-success-container border border-success-container">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-on-success-container"></span>
+                                        Activo
+                                    </span>
+                                </td>
+                                <td class="py-3 px-6 text-right">
+                                    <div
+                                        class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-primary rounded-md hover:bg-primary-fixed transition-colors"
+                                            title="Editar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="edit">edit</span>
+                                        </button>
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-outline rounded-md hover:bg-surface-variant transition-colors"
+                                            title="Desactivar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="block">block</span>
+                                        </button>
+                                        <button
+                                            class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors"
+                                            title="Eliminar">
+                                            <span class="material-symbols-outlined text-[20px]"
+                                                data-icon="delete">delete</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination Footer -->
+                <div
+                    class="bg-surface-bright border-t border-outline-variant px-6 py-4 flex items-center justify-between">
+                    <span class="font-body-md text-sm text-on-surface-variant">Mostrando 1 a 3 de 45 productos</span>
+                    <div class="flex gap-2">
+                        <button
+                            class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-on-surface-variant disabled:opacity-50"
+                            disabled="">Anterior</button>
+                        <button
+                            class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-primary hover:bg-primary-fixed transition-colors">Siguiente</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SayerBarn - Resultado de Asesoría</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#191c1d",
+                        "on-background": "#191c1d",
+                        "on-surface-variant": "#444653",
+                        "tertiary-fixed": "#dee3ed",
+                        "tertiary": "#232930",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "inverse-primary": "#b6c4ff",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "on-tertiary-fixed": "#161c23",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "primary-container": "#0033a0",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#393f47",
+                        "outline-variant": "#c4c5d5",
+                        "on-secondary-container": "#283e88",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#00216e",
+                        "outline": "#747684",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "on-primary-fixed": "#001550",
+                        "on-error-container": "#93000a",
+                        "secondary": "#455aa5",
+                        "on-secondary-fixed": "#001550",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "surface-dim": "#d9dadb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#dce1ff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-container": "#a5aab3",
+                        "surface-tint": "#3456c1",
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-container": "#98adfe",
+                        "secondary-fixed": "#dce1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#8ea6ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit-lg": "24px",
+                        "container-max": "1280px",
+                        "unit-md": "16px",
+                        "unit-xs": "4px",
+                        "unit-sm": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "unit-xl": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "headline-xl": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            /* surface */
+            color: #191c1d;
+            /* on-surface */
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col font-body-md bg-surface text-on-surface">
+    <!-- TopNavBar -->
+    <nav class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
+        <div
+            class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</div>
+            <ul class="hidden md:flex gap-unit-lg items-center font-label-md text-label-md">
+                <li
+                    class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer hover:bg-surface-container-high/50 transition-all duration-200 px-3 py-2 rounded-DEFAULT">
+                    Inicio</li>
+                <li class="text-primary border-b-2 border-primary pb-1 px-3 py-2">Asesoría</li>
+                <li
+                    class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer hover:bg-surface-container-high/50 transition-all duration-200 px-3 py-2 rounded-DEFAULT">
+                    Catálogo</li>
+            </ul>
+            <div class="hidden md:flex gap-unit-sm items-center">
+                <button
+                    class="font-label-md text-label-md text-primary bg-transparent hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-all duration-200 scale-95 active:scale-90 transition-transform">Iniciar
+                    sesión</button>
+                <button
+                    class="font-label-md text-label-md bg-primary-container text-on-primary px-4 py-2 rounded-lg scale-95 active:scale-90 transition-transform hover:opacity-90">Registrarse</button>
+            </div>
+            <button class="md:hidden text-on-surface-variant">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </div>
+        <!-- Prism Stripe Accent -->
+        <div
+            class="h-[2px] w-full bg-gradient-to-r from-secondary-container via-primary-container to-tertiary-container absolute bottom-0">
+        </div>
+    </nav>
+    <!-- Main Content Canvas -->
+    <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+        <!-- Recommendation Container -->
+        <div class="max-w-[900px] mx-auto flex flex-col gap-unit-lg">
+            <!-- AI Banner -->
+            <div
+                class="bg-primary-container text-on-primary rounded-xl p-unit-md md:p-unit-lg flex items-center gap-unit-md shadow-sm relative overflow-hidden">
+                <!-- Decorative element -->
+                <div class="absolute -right-10 -top-10 opacity-10">
+                    <span class="material-symbols-outlined text-[120px]"
+                        style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                </div>
+                <span class="material-symbols-outlined text-[32px] shrink-0"
+                    style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                <div>
+                    <h2
+                        class="font-headline-md text-headline-md md:font-headline-lg md:text-headline-lg text-on-primary mb-1">
+                        Recomendación Ideal</h2>
+                    <p class="font-body-md text-body-md text-on-primary/90">Basado en tu proyecto de exterior, hemos
+                        seleccionado el sistema de protección óptimo para madera expuesta al clima.</p>
+                </div>
+            </div>
+            <!-- Bento Grid Main Product -->
+            <div
+                class="grid grid-cols-1 md:grid-cols-12 gap-gutter bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border-t-[4px] border-primary-container overflow-hidden">
+                <!-- Left Col: Details -->
+                <div class="md:col-span-7 p-unit-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex gap-unit-xs mb-unit-sm flex-wrap">
+                            <span
+                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">Exterior</span>
+                            <span
+                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">Base
+                                Solvente</span>
+                            <span
+                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">Acabado
+                                Brillante</span>
+                        </div>
+                        <h1
+                            class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary mb-unit-md tracking-tight">
+                            Barniz Premium Woodcraft</h1>
+                        <div class="space-y-4 mb-unit-lg">
+                            <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                                <span class="material-symbols-outlined text-primary mt-1">format_paint</span>
+                                <div>
+                                    <p
+                                        class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                        Rendimiento</p>
+                                    <p class="font-body-md text-body-md text-on-surface">10 a 12 m² por litro a una
+                                        mano.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                                <span class="material-symbols-outlined text-primary mt-1">timer</span>
+                                <div>
+                                    <p
+                                        class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                        Tiempo de Secado</p>
+                                    <p class="font-body-md text-body-md text-on-surface">Al tacto: 2 horas. Entre manos:
+                                        12 horas.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                                <span class="material-symbols-outlined text-primary mt-1">brush</span>
+                                <div>
+                                    <p
+                                        class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
+                                        Aplicación</p>
+                                    <p class="font-body-md text-body-md text-on-surface">Brocha de pelo de camello o
+                                        pistola. Diluir al 10-15%.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0">
+                        <button
+                            class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                            Ir a comprar
+                        </button>
+                        <a class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline decoration-primary-container/30 underline-offset-4 px-4 py-3"
+                            href="#">
+                            <span class="material-symbols-outlined">description</span>
+                            Ficha Técnica PDF
+                        </a>
+                    </div>
+                </div>
+                <!-- Right Col: Image -->
+                <div
+                    class="md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center relative min-h-[300px]">
+                    <!-- Badge -->
+                    <div
+                        class="absolute top-unit-md right-unit-md bg-surface-container-lowest text-primary font-label-sm text-label-sm px-3 py-1.5 rounded-full shadow-sm border border-primary/10 z-10 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[16px]">water_drop</span>
+                        ~ 2.5 L aprox.
+                    </div>
+                    <!-- Product Image -->
+                    <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
+                        <img alt="" class="w-full h-full object-contain drop-shadow-xl"
+                            src="https://lh3.googleusercontent.com/aida/ADBb0uh7DTNZNYMEcBsLnaZ25vFmcMHQ0fnxvOdWe2OSbaTXBxr1SqNEJwCkpMrn2cHTZ3qyMzdeOgW_ifWijM1hrKK4Qrzs1nMpqE2HMcgEAumj-xBDbRRwII-j1u7qy3WvxhHgvEO-fCztDVqegqWX08wMoV2I7Mcv9ofu35d-Zha2vYIJZvqxgArSfSRxeIHPd0jlZTfHXSxGRv-iCdRs_8UAPzcY8_qkw_IbJg3DrmvLzouqU46U_1FFKB4" />
+                    </div>
+                </div>
+            </div>
+            <!-- Suggested Add-on -->
+            <div class="mt-unit-sm">
+                <h3
+                    class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-sm pl-1">
+                    Complemento Sugerido</h3>
+                <div
+                    class="bg-surface-container-lowest p-unit-md rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] flex flex-col sm:flex-row items-center gap-unit-md">
+                    <div
+                        class="w-24 h-24 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center">
+                        <div
+                            class="w-full h-full bg-gradient-to-br from-surface-variant to-surface-dim rounded flex items-center justify-center">
+                            <span class="material-symbols-outlined text-outline text-[40px]">science</span>
+                        </div>
+                    </div>
+                    <div class="flex-grow text-center sm:text-left">
+                        <h4
+                            class="font-headline-md text-headline-md md:font-headline-md md:text-headline-md text-primary">
+                            Diluyente Estándar D-0001</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Requerido para ajustar la
+                            viscosidad y limpiar herramientas.</p>
+                    </div>
+                    <button
+                        class="shrink-0 bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-surface-container-low transition-colors w-full sm:w-auto">
+                        Agregar
+                    </button>
+                </div>
+            </div>
+            <!-- Action Prompt -->
+            <div
+                class="mt-unit-lg text-center bg-[#F8F9FA] p-unit-lg rounded-xl border border-dashed border-outline-variant/50">
+                <p class="font-headline-md text-headline-md text-on-surface mb-unit-sm">¿Quieres guardar esta asesoría?
+                </p>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-unit-md max-w-md mx-auto">Crea una cuenta
+                    o inicia sesión para tener a mano tus productos recomendados en cualquier momento.</p>
+                <div class="flex flex-wrap justify-center gap-unit-md">
+                    <button
+                        class="font-label-md text-label-md bg-transparent text-primary hover:bg-surface-container-high/50 px-6 py-2.5 rounded-lg border border-primary/20 transition-all duration-200">Iniciar
+                        sesión</button>
+                    <button
+                        class="font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Registrarse</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer class="bg-primary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
+        <div
+            class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div class="col-span-1 md:col-span-1 mb-8 md:mb-0">
+                <div class="font-headline-sm text-headline-sm font-bold text-on-primary mb-2">SayerBarn</div>
+                <p class="font-body-md text-body-md text-on-primary/80">© 2024 SayerBarn. Sayer Dabet Branding.</p>
+            </div>
+            <div class="col-span-1 md:col-span-3 flex flex-col md:flex-row justify-end gap-y-4 gap-x-8">
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container transition-colors opacity-80 hover:opacity-100"
+                    href="#">Contacto</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container transition-colors opacity-80 hover:opacity-100"
+                    href="#">Aviso de Privacidad</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container transition-colors opacity-80 hover:opacity-100"
+                    href="#">Términos y Condiciones</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container transition-colors opacity-80 hover:opacity-100"
+                    href="#">Sucursales</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

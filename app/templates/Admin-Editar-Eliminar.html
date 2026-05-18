@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Detalle de Producto - SayerBarn Admin</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Manrope:wght@400;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#393f47",
+                        "secondary-container": "#98adfe",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "inverse-on-surface": "#f0f1f2",
+                        "inverse-surface": "#2e3132",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary": "#ffffff",
+                        "surface-bright": "#f8f9fa",
+                        "primary-fixed": "#dce1ff",
+                        "on-primary-fixed": "#001550",
+                        "primary": "#00216e",
+                        "outline": "#747684",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#dce1ff",
+                        "on-tertiary-container": "#a5aab3",
+                        "on-error": "#ffffff",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-tertiary-fixed": "#161c23",
+                        "surface-container-highest": "#e1e3e4",
+                        "secondary": "#455aa5",
+                        "on-surface": "#191c1d",
+                        "on-background": "#191c1d",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "outline-variant": "#c4c5d5",
+                        "tertiary": "#232930",
+                        "surface-tint": "#3456c1",
+                        "surface-dim": "#d9dadb",
+                        "primary-container": "#0033a0",
+                        "on-primary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "on-surface-variant": "#444653",
+                        "surface-container": "#edeeef",
+                        "on-primary-container": "#8ea6ff",
+                        "tertiary-fixed": "#dee3ed",
+                        "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "inverse-primary": "#b6c4ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-secondary-container": "#283e88",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001550"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit-xs": "4px",
+                        "gutter": "24px",
+                        "unit-lg": "24px",
+                        "unit-sm": "8px",
+                        "margin-desktop": "40px",
+                        "unit-md": "16px",
+                        "container-max": "1280px",
+                        "unit-xl": "48px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-md": ["Manrope"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-xl": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+    </style>
+</head>
+
+<body class="font-body-md text-body-md antialiased h-screen overflow-hidden flex">
+    <!-- SideNavBar -->
+    <nav
+        class="h-screen w-64 fixed left-0 top-0 bg-tertiary dark:bg-tertiary shadow-lg flex flex-col py-gutter px-unit-md z-50">
+        <div class="flex items-center mb-unit-xl">
+            <div class="h-10 w-10 bg-primary-container rounded-full flex items-center justify-center mr-3">
+                <span class="material-symbols-outlined text-on-primary"
+                    style="font-variation-settings: 'FILL' 1;">format_paint</span>
+            </div>
+            <div>
+                <h1 class="font-headline-md text-headline-md font-bold text-on-tertiary">ProPaint Admin</h1>
+                <p class="font-label-sm text-label-sm text-tertiary-fixed-dim">Expert Series</p>
+            </div>
+        </div>
+        <div class="flex-grow flex flex-col space-y-unit-sm">
+            <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform font-label-md text-label-md"
+                href="#">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a class="flex items-center space-x-3 text-on-primary bg-primary-container rounded-lg font-bold px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 scale-95 active:scale-90 transition-transform font-label-md text-label-md"
+                href="#">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">palette</span>
+                <span>Products</span>
+            </a>
+            <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform font-label-md text-label-md"
+                href="#">
+                <span class="material-symbols-outlined">format_paint</span>
+                <span>Complements</span>
+            </a>
+            <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg scale-95 active:scale-90 transition-transform font-label-md text-label-md"
+                href="#">
+                <span class="material-symbols-outlined">storefront</span>
+                <span>Mercado Libre</span>
+            </a>
+        </div>
+        <div class="mt-auto">
+            <button
+                class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container transition-colors mb-unit-lg flex justify-center items-center gap-2">
+                <span class="material-symbols-outlined">sync</span>
+                Sync Inventory
+            </button>
+            <a class="flex items-center space-x-3 text-tertiary-fixed-dim hover:text-on-tertiary px-4 py-2 hover:bg-tertiary-container transition-colors duration-200 rounded-lg font-label-md text-label-md"
+                href="#">
+                <span class="material-symbols-outlined">logout</span>
+                <span>Logout</span>
+            </a>
+        </div>
+    </nav>
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-background">
+        <!-- TopAppBar -->
+        <header
+            class="docked full-width top-0 sticky z-40 bg-surface dark:bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-margin-desktop h-16 shrink-0">
+            <h2 class="font-headline-sm text-headline-sm font-bold text-primary">Admin Dashboard</h2>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                    <input
+                        class="pl-10 pr-4 py-2 bg-surface-container-low border border-outline-variant rounded-full font-label-md text-label-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all w-64"
+                        placeholder="Search..." type="text" />
+                </div>
+                <button
+                    class="text-on-surface-variant hover:text-primary transition-colors opacity-80 active:opacity-100">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                <button
+                    class="text-on-surface-variant hover:text-primary transition-colors opacity-80 active:opacity-100">
+                    <span class="material-symbols-outlined">settings</span>
+                </button>
+                <div
+                    class="h-8 w-8 rounded-full bg-secondary-container overflow-hidden ml-2 cursor-pointer border border-outline-variant">
+                    <img alt="User Profile Avatar" class="w-full h-full object-cover"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXlSGNfWwEMj6kdGm80NyLa7KYlKmmcYMiQmU2j09t4MCgoDAfCEYlfj9-xMWHGoxmljPBOyjfXRcfodC3nNCG5zaKHOrO1i0psjNapi_LgZ5KiEyOz7T5izY_QVSo6oZA8-K31uxf-iI6rR0xcDUsmauHiLqRfefZ_x_UF9Rr9bNMaag9pYSok_5hrBDHgX9iNYK3MmoOZ_m254wGAqKuu0jXMIt0z4c8pwzGichaAAP349tzYjuxM35nLCpjKXyQdiCYlcVV26s" />
+                </div>
+            </div>
+            <!-- Prism Stripe -->
+            <div
+                class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-[#0033A0] via-[#455aa5] to-[#98adfe]">
+            </div>
+        </header>
+        <!-- Main Canvas -->
+        <main class="flex-1 overflow-y-auto p-margin-desktop bg-surface-bright">
+            <div class="max-w-container-max mx-auto">
+                <div class="flex items-center mb-unit-lg gap-3">
+                    <a class="text-outline hover:text-primary transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-container"
+                        href="#">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </a>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface">Detalle de Producto</h1>
+                </div>
+                <div
+                    class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] overflow-hidden">
+                    <!-- Prism stripe for premium feel -->
+                    <div class="h-1 w-full bg-gradient-to-r from-[#0033A0] via-[#455aa5] to-[#98adfe]"></div>
+                    <form class="p-gutter grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                        <!-- Left Column -->
+                        <div class="space-y-unit-lg flex flex-col">
+                            <div class="space-y-unit-sm">
+                                <label class="block font-label-sm text-label-sm text-on-surface-variant"
+                                    for="nombre">Nombre del Producto</label>
+                                <input
+                                    class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                                    id="nombre" name="nombre" placeholder="Ej. Barniz Marino Premium" type="text" />
+                            </div>
+                            <div class="space-y-unit-sm flex-grow flex flex-col">
+                                <label class="block font-label-sm text-label-sm text-on-surface-variant"
+                                    for="descripcion">Descripción</label>
+                                <textarea
+                                    class="w-full flex-grow px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface resize-none"
+                                    id="descripcion" name="descripcion"
+                                    placeholder="Descripción detallada del producto..." rows="5"></textarea>
+                            </div>
+                            <div class="space-y-unit-sm">
+                                <label
+                                    class="block font-label-sm text-label-sm text-on-surface-variant">Superficie</label>
+                                <div class="flex flex-wrap gap-2">
+                                    <label
+                                        class="inline-flex items-center bg-[#E8EDF7] px-3 py-1.5 rounded-full cursor-pointer hover:bg-primary-fixed-dim transition-colors">
+                                        <input
+                                            class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                            type="checkbox" />
+                                        <span class="font-label-md text-label-md text-primary">Madera</span>
+                                    </label>
+                                    <label
+                                        class="inline-flex items-center bg-[#E8EDF7] px-3 py-1.5 rounded-full cursor-pointer hover:bg-primary-fixed-dim transition-colors">
+                                        <input
+                                            class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                            type="checkbox" />
+                                        <span class="font-label-md text-label-md text-primary">Metal</span>
+                                    </label>
+                                    <label
+                                        class="inline-flex items-center bg-surface border border-outline-variant px-3 py-1.5 rounded-full cursor-pointer hover:bg-surface-container transition-colors">
+                                        <input
+                                            class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                            type="checkbox" />
+                                        <span
+                                            class="font-label-md text-label-md text-on-surface-variant">Concreto</span>
+                                    </label>
+                                    <label
+                                        class="inline-flex items-center bg-surface border border-outline-variant px-3 py-1.5 rounded-full cursor-pointer hover:bg-surface-container transition-colors">
+                                        <input
+                                            class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                            type="checkbox" />
+                                        <span class="font-label-md text-label-md text-on-surface-variant">Yeso</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-unit-md">
+                                <div class="space-y-unit-sm">
+                                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Uso</label>
+                                    <div
+                                        class="flex bg-surface-container-low rounded-lg p-1 border border-outline-variant">
+                                        <button
+                                            class="flex-1 py-2 font-label-md text-label-md rounded-md bg-white text-primary shadow-sm"
+                                            type="button">Interior</button>
+                                        <button
+                                            class="flex-1 py-2 font-label-md text-label-md rounded-md text-on-surface-variant hover:text-on-surface"
+                                            type="button">Exterior</button>
+                                    </div>
+                                </div>
+                                <div class="space-y-unit-sm">
+                                    <label class="block font-label-sm text-label-sm text-on-surface-variant"
+                                        for="acabado">Tipo de acabado</label>
+                                    <div class="relative">
+                                        <select
+                                            class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface appearance-none cursor-pointer"
+                                            id="acabado" name="acabado">
+                                            <option disabled="" selected="" value="">Seleccione acabado</option>
+                                            <option value="brillante">Brillante</option>
+                                            <option value="satinado">Satinado</option>
+                                            <option value="mate">Mate</option>
+                                        </select>
+                                        <span
+                                            class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right Column -->
+                        <div class="space-y-unit-lg">
+                            <div class="space-y-unit-sm">
+                                <label class="block font-label-sm text-label-sm text-on-surface-variant">Imagen
+                                    Principal</label>
+                                <div
+                                    class="border-2 border-dashed border-outline-variant rounded-xl p-unit-lg flex flex-col items-center justify-center bg-surface-bright hover:bg-surface-container-low hover:border-primary transition-all cursor-pointer h-64 group relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-cover bg-center opacity-0 group-hover:opacity-10 transition-opacity"
+                                        data-alt="A clean, minimalist workspace featuring high-end architectural paint samples and premium varnishes spread out on a white surface. The lighting is bright and even, highlighting the textures of the materials in a professional, studio-like environment. Deep blue accents provide contrast. The overall aesthetic is modern, organized, and focused on quality craftsmanship."
+                                        style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD9G8sFUethJcPQVmHf3CpX_-PFNq5A2r51ijtZjYtE5SaEL0y3FT6fKmghX7aQOZlJS2OAkSuxYA4avz4hLyMyiNePnaLoGrclOZP0f_4ErxmuOCQawIEhsUJ8iZEVzmhrtDhvfDvNBxXtwmqJrr9KUU9x0XLzsI82VkxJv-Kgm4ln1fAK3wz-6x7U9ShJTxcd_ycxppSDBHxEMBDZ99pBijxMYsIkH-cw8O-qUPjO94l3taLNRNsyAphrWvE6pKaKsll8E9L0cOo');">
+                                    </div>
+                                    <span
+                                        class="material-symbols-outlined text-outline text-4xl mb-2 group-hover:text-primary transition-colors">cloud_upload</span>
+                                    <p class="font-label-md text-label-md text-on-surface text-center mb-1">Arrastra la
+                                        imagen aquí</p>
+                                    <p class="font-label-sm text-label-sm text-outline text-center">o haz clic para
+                                        explorar (JPG, PNG. Max 5MB)</p>
+                                </div>
+                            </div>
+                            <div class="space-y-unit-sm">
+                                <label class="block font-label-sm text-label-sm text-on-surface-variant"
+                                    for="rendimiento">Rendimiento (m²/L)</label>
+                                <input
+                                    class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                                    id="rendimiento" name="rendimiento" placeholder="Ej. 12" type="number" />
+                            </div>
+                            <div class="space-y-unit-sm">
+                                <label class="block font-label-sm text-label-sm text-on-surface-variant"
+                                    for="enlace">Enlace de compra (Mercado Libre)</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">link</span>
+                                    <input
+                                        class="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                                        id="enlace" name="enlace" placeholder="https://articulo.mercadolibre.com.mx/..."
+                                        type="url" />
+                                </div>
+                            </div>
+                            <div class="space-y-unit-sm">
+                                <label class="block font-label-sm text-label-sm text-on-surface-variant">Ficha Técnica
+                                    (PDF)</label>
+                                <div
+                                    class="flex items-center justify-between px-4 py-3 bg-surface border border-outline-variant rounded-lg">
+                                    <div class="flex items-center space-x-3 text-outline">
+                                        <span class="material-symbols-outlined">picture_as_pdf</span>
+                                        <span class="font-body-md text-body-md">Ningún archivo seleccionado</span>
+                                    </div>
+                                    <button
+                                        class="font-label-md text-label-md text-primary hover:text-primary-container bg-[#E8EDF7] px-3 py-1.5 rounded-md transition-colors"
+                                        type="button">
+                                        Subir Archivo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Bottom Actions span both columns -->
+                        <div
+                            class="col-span-1 md:col-span-2 pt-unit-md mt-unit-md border-t border-outline-variant flex justify-end space-x-4">
+                            <button
+                                class="px-6 py-3 bg-white border-2 border-primary text-primary font-label-md text-label-md font-bold rounded-lg hover:bg-surface-container-low transition-colors flex items-center"
+                                type="button">
+                                Cancelar
+                            </button>
+                            <button
+                                class="px-6 py-3 bg-primary-container text-on-primary font-label-md text-label-md font-bold rounded-lg hover:bg-primary transition-colors flex items-center shadow-[0px_4px_10px_rgba(0,51,160,0.2)]"
+                                type="submit">
+                                <span class="material-symbols-outlined mr-2 text-[20px]">save</span>
+                                Guardar cambios
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
