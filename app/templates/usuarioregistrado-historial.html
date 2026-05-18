@@ -125,11 +125,11 @@
             <div class="text-headline-md font-headline-md font-bold text-primary">SayerBarn</div>
             <nav class="hidden md:flex items-center gap-8">
                 <a class="text-on-surface-variant font-body-lg text-body-lg hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80"
-                    href="#">Inicio</a>
+                    href="{{ url_for('main.index') }}">Inicio</a>
                 <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-lg text-body-lg cursor-pointer"
                     href="#">Asesoría</a>
                 <a class="text-on-surface-variant font-body-lg text-body-lg hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80"
-                    href="#">Catálogo</a>
+                    href="{{ url_for('main.catalogo') }}">Catálogo</a>
             </nav>
             <div class="flex items-center gap-margin-sm">
                 <div class="relative hidden sm:block">
@@ -141,12 +141,12 @@
                 </div>
                 <button
                     class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
-                <div class="flex items-center gap-2 pl-4 border-l border-outline-variant">
+                <form action="{{ url_for('main.logout') }}" method="POST" class="flex items-center gap-2 pl-4 border-l border-outline-variant">
                     <img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant"
                         data-alt="A professional headshot of a middle-aged man with a friendly expression, set against a clean, neutral office background. He is wearing a dark blue blazer. The lighting is soft and even, highlighting a corporate professional aesthetic with high clarity and natural skin tones."
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOk26rKBbR5Al_oE9_MKnHwvpQ3_C7qEZRETTKlcA016MWwfv3IXhvcO7CsjQfBKTAR_qRrBYvqXs8JrJGEiDNSt-yIMsws2YOerPfxX-PfEyWMGWVECZ0wcJNAs3CKqvBGUPcA2EytehYpZkhkbc1HGw_u9_2YuWuNREjFyDScuf8-pSEPAmgVISs4dTpT2dPLvUoQ2jx4uynbpXzvI2nJkQD_O_lchdDgiznTTwS7q6i0lA2k97AMQafBP995Hd-GwBFjX3pFx0C" />
-                    <span class="text-label-md font-label-md text-on-surface hidden lg:block">Cerrar sesión</span>
-                </div>
+                    <button type="submit" class="text-label-md font-label-md text-on-surface hidden lg:block hover:text-primary transition-colors cursor-pointer">Cerrar sesión</button>
+                </form>
             </div>
         </div>
     </header>

@@ -124,24 +124,26 @@
                 <h1 class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</h1>
                 <nav class="hidden md:flex items-center gap-margin-md">
                     <a class="text-on-surface-variant hover:text-primary transition-colors font-body-lg text-body-lg cursor-pointer"
-                        href="#">Inicio</a>
+                        href="{{ url_for('main.index') }}">Inicio</a>
                     <a class="text-on-surface-variant hover:text-primary transition-colors font-body-lg text-body-lg cursor-pointer"
                         href="#">Asesoría</a>
                     <a class="text-on-surface-variant hover:text-primary transition-colors font-body-lg text-body-lg cursor-pointer border-b-2 border-primary"
-                        href="#">Catálogo</a>
+                        href="{{ url_for('main.catalogo') }}">Catálogo</a>
                 </nav>
             </div>
             <div class="flex items-center gap-margin-md">
                 <div class="flex items-center gap-base mr-2">
-                    <span class="font-label-md text-label-md text-on-surface-variant">Admin User</span>
+                    <span class="font-label-md text-label-md text-on-surface-variant">{{ usuario.nombre if usuario else 'Usuario' }}</span>
                     <img alt="User profile avatar" class="w-8 h-8 rounded-full border border-outline-variant"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCF8X85FXLhWP2PVjP2ovxr-19frV6RdeXirnVV4wbfuHTNX9UY74usxGtyhvC7q-7wxLWDUvRqWCCc4a6EetkDAFQrFjGAgzXhUxl52Fp4cFlcoDVRhM2hUYaiN-av_GwwHxtnuEWI04AcDgBKFgP51bZFZl-dwZgtUaBGif0vH8YvyfPQdmXs2OIxnRsYu0h0mGDNb88fTUx4TkNghhYkx3wxiiaNh-hOuVRj9axE2nynQe0qoErcqktwv3lOdJSjw309rl-S91R" />
                 </div>
-                <button
-                    class="flex items-center gap-1 border border-primary text-primary hover:bg-primary hover:text-on-primary transition-all px-3 py-1.5 rounded-lg cursor-pointer">
-                    <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
-                    <span class="font-label-md text-label-md">Cerrar sesión</span>
-                </button>
+                <form action="{{ url_for('main.logout') }}" method="POST">
+                    <button type="submit"
+                        class="flex items-center gap-1 border border-primary text-primary hover:bg-primary hover:text-on-primary transition-all px-3 py-1.5 rounded-lg cursor-pointer">
+                        <span class="material-symbols-outlined" style="font-size: 18px;">logout</span>
+                        <span class="font-label-md text-label-md">Cerrar sesión</span>
+                    </button>
+                </form>
             </div>
         </div>
     </header>

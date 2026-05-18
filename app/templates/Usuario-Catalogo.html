@@ -192,12 +192,12 @@
         <div class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto">
             <!-- Brand -->
             <a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim"
-                href="#">SayerBarn</a>
+                href="{{ url_for('main.index') }}">SayerBarn</a>
             <!-- Navigation Links (Desktop) -->
             <ul class="hidden md:flex gap-gutter items-center h-full">
                 <li class="h-full flex items-center">
                     <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 px-4 py-2 rounded-md"
-                        href="#">Inicio</a>
+                        href="{{ url_for('main.index') }}">Inicio</a>
                 </li>
                 <li class="h-full flex items-center">
                     <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 px-4 py-2 rounded-md"
@@ -205,16 +205,15 @@
                 </li>
                 <li class="h-full flex items-center">
                     <a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 h-full flex items-center"
-                        href="#">Catálogo</a>
+                        href="{{ url_for('main.catalogo') }}">Catálogo</a>
                 </li>
             </ul>
             <!-- Actions -->
             <div class="hidden md:flex gap-4 items-center">
-                <button
-                    class="font-label-md text-label-md text-primary bg-transparent border border-primary px-6 py-2 rounded-full hover:bg-primary/5 transition-colors scale-95 active:scale-90 transition-transform">Iniciar
-                    sesión</button>
-                <button
-                    class="font-label-md text-label-md text-on-primary bg-primary-container px-6 py-2 rounded-full hover:bg-primary-container/90 transition-colors scale-95 active:scale-90 transition-transform">Registrarse</button>
+                <a href="{{ url_for('main.login') }}"
+                    class="font-label-md text-label-md text-primary bg-transparent border border-primary px-6 py-2 rounded-full hover:bg-primary/5 transition-colors scale-95 active:scale-90 transition-transform">Iniciar sesión</a>
+                <a href="{{ url_for('main.registro') }}"
+                    class="font-label-md text-label-md text-on-primary bg-primary-container px-6 py-2 rounded-full hover:bg-primary-container/90 transition-colors scale-95 active:scale-90 transition-transform">Registrarse</a>
             </div>
             <!-- Mobile Menu Toggle -->
             <button class="md:hidden text-primary">

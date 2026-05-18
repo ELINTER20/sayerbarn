@@ -200,11 +200,11 @@
             <!-- Title -->
             <h2 class="font-headline-md text-headline-md text-on-surface mb-unit-lg text-center">Crea tu cuenta</h2>
             <!-- Registration Form -->
-            <form action="#" class="space-y-unit-md" method="POST">
+            <form action="{{ url_for('main.registro') }}" class="space-y-unit-md" method="POST">
                 <!-- Full Name -->
                 <div>
                     <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase"
-                        for="fullName">Nombre completo</label>
+                        for="nombre">Nombre completo</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <span class="material-symbols-outlined text-outline-variant"
@@ -212,7 +212,7 @@
                         </div>
                         <input
                             class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
-                            id="fullName" name="fullName" placeholder="Tu nombre" required="" type="text" />
+                            id="nombre" name="nombre" placeholder="Tu nombre" required="" type="text" />
                     </div>
                 </div>
                 <!-- Email -->
@@ -256,6 +256,12 @@
                             type="password" />
                     </div>
                 </div>
+                <!-- Error Message -->
+                {% if error %}
+                <div class="bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg">
+                    {{ error }}
+                </div>
+                {% endif %}
                 <!-- Submit Button -->
                 <div class="pt-unit-sm">
                     <button
@@ -270,7 +276,7 @@
                 <p class="font-body-md text-body-md text-on-surface-variant">
                     ¿Ya tienes cuenta?
                     <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors"
-                        href="#">Inicia sesión</a>
+                        href="{{ url_for('main.login') }}">Inicia sesión</a>
                 </p>
             </div>
             <!-- Terms -->
