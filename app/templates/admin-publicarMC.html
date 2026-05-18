@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;family=Hanken+Grotesk:wght@600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .font-headline {
+            font-family: 'Hanken Grotesk', sans-serif;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "secondary": "#455aa5",
+                        "primary-fixed": "#dce1ff",
+                        "surface-dim": "#d9dadb",
+                        "surface-bright": "#f8f9fa",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "surface-container": "#edeeef",
+                        "on-primary-container": "#8ea6ff",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "on-background": "#191c1d",
+                        "secondary-container": "#98adfe",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-secondary-fixed": "#001550",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#001550",
+                        "inverse-primary": "#b6c4ff",
+                        "primary-container": "#0033a0",
+                        "on-surface-variant": "#444653",
+                        "background": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-container": "#a5aab3",
+                        "on-primary": "#ffffff",
+                        "tertiary-container": "#393f47",
+                        "primary": "#00216e",
+                        "surface-tint": "#3456c1",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "outline-variant": "#c4c5d5",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#e7e8e9",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#191c1d",
+                        "on-tertiary-fixed": "#161c23",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#dce1ff",
+                        "on-secondary-container": "#283e88",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary": "#232930",
+                        "inverse-surface": "#2e3132",
+                        "error-container": "#ffdad6",
+                        "surface": "#f8f9fa",
+                        "tertiary-fixed": "#dee3ed",
+                        "outline": "#747684"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-lg": "32px",
+                        "margin-sm": "16px",
+                        "base": "4px",
+                        "margin-md": "24px",
+                        "gutter": "16px",
+                        "column-gap": "20px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "label-sm": ["Manrope"],
+                        "headline-sm": ["Hanken Grotesk"],
+                        "label-md": ["Manrope"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+
+<body class="bg-background text-on-surface flex flex-col min-h-screen">
+    <!-- TopNavBar -->
+    <header class="w-full top-0 sticky bg-surface shadow-sm z-50 border-b border-outline-variant">
+        <div class="flex justify-between items-center w-full px-margin-lg py-4 max-w-[1440px] mx-auto">
+            <div class="text-headline-md font-headline-md font-bold text-primary">SayerBarn</div>
+            <nav class="hidden md:flex items-center gap-8">
+                <a class="text-on-surface-variant font-body-lg text-body-lg hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80"
+                    href="#">Home</a>
+                <a class="text-primary font-bold border-b-2 border-primary pb-1 font-body-lg text-body-lg cursor-pointer"
+                    href="#">Advisory</a>
+                <a class="text-on-surface-variant font-body-lg text-body-lg hover:text-primary transition-colors duration-200 cursor-pointer active:opacity-80"
+                    href="#">Catalog</a>
+            </nav>
+            <div class="flex items-center gap-margin-sm">
+                <div class="relative hidden sm:block">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+                    <input
+                        class="pl-10 pr-4 py-2 bg-surface-container rounded-full border-none text-body-md focus:ring-2 focus:ring-primary w-64"
+                        placeholder="Search products..." type="text" />
+                </div>
+                <button
+                    class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors">notifications</button>
+                <div class="flex items-center gap-2 pl-4 border-l border-outline-variant">
+                    <img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant"
+                        data-alt="A professional headshot of a middle-aged man with a friendly expression, set against a clean, neutral office background. He is wearing a dark blue blazer. The lighting is soft and even, highlighting a corporate professional aesthetic with high clarity and natural skin tones."
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOk26rKBbR5Al_oE9_MKnHwvpQ3_C7qEZRETTKlcA016MWwfv3IXhvcO7CsjQfBKTAR_qRrBYvqXs8JrJGEiDNSt-yIMsws2YOerPfxX-PfEyWMGWVECZ0wcJNAs3CKqvBGUPcA2EytehYpZkhkbc1HGw_u9_2YuWuNREjFyDScuf8-pSEPAmgVISs4dTpT2dPLvUoQ2jx4uynbpXzvI2nJkQD_O_lchdDgiznTTwS7q6i0lA2k97AMQafBP995Hd-GwBFjX3pFx0C" />
+                    <span class="text-label-md font-label-md text-on-surface hidden lg:block">Logout</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- Main Content Canvas -->
+    <main class="flex-grow max-w-[1440px] w-full mx-auto px-margin-lg py-margin-md">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 mb-6">
+            <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary" href="#">My account</a>
+            <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
+            <span class="font-label-md text-label-md text-primary font-bold">Advisory history</span>
+        </nav>
+        <!-- Page Header -->
+        <div class="flex items-center gap-3 mb-margin-lg">
+            <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary text-[28px]">history</span>
+            </div>
+            <h1 class="font-headline-lg text-headline-lg text-primary">Advisory history</h1>
+        </div>
+        <!-- History List Container -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+            <!-- Advisory Entry 1 -->
+            <div
+                class="flex flex-col md:flex-row items-center gap-6 p-margin-md hover:bg-surface-container-low transition-colors duration-200 border-b border-outline-variant group">
+                <div class="w-full md:w-32 flex-shrink-0">
+                    <p class="font-label-md text-label-md text-on-surface-variant">May 10, 2026</p>
+                </div>
+                <div
+                    class="flex-shrink-0 w-20 h-20 bg-surface rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                    <img alt="Barniz Marino UV HI-0900" class="w-full h-full object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlwMK9qkjFebq4DMLkmU0NyeBjcHbE_fWPX2SquT8jX3xw7YHrVHO0Z5M2-CUs5W2kpyb64t4iWmtOVQ0JWI02O0-XOHtO7yyVBNZH6Hthqr9t3Nf6xcO_x4vWoBgT4vOu_ZMzeg9mepyUDn2dFY3C-4JG5OiqK5fVffYtGDxS12MU17yFwyA7uR7A70vf8ECZulR8mpgGaGZjsF3jVuSNWurGTLE3W3lE0P-JYxrwXj_h2T1CcEfQezjTYZzZAhGnNkZw6UKXwXx-" />
+                </div>
+                <div class="flex-grow">
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-1">Exterior wood surface, glossy
+                        finish, humid conditions</p>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Barniz Marino UV HI-0900
+                    </h3>
+                </div>
+                <div class="w-full md:w-auto">
+                    <button
+                        class="w-full md:w-auto px-6 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all cursor-pointer">View
+                        detail</button>
+                </div>
+            </div>
+            <!-- Advisory Entry 2 -->
+            <div
+                class="flex flex-col md:flex-row items-center gap-6 p-margin-md hover:bg-surface-container-low transition-colors duration-200 border-b border-outline-variant group">
+                <div class="w-full md:w-32 flex-shrink-0">
+                    <p class="font-label-md text-label-md text-on-surface-variant">April 22, 2026</p>
+                </div>
+                <div
+                    class="flex-shrink-0 w-20 h-20 bg-surface rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                    <img alt="Barniz Marino UV HI-0900" class="w-full h-full object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlwMK9qkjFebq4DMLkmU0NyeBjcHbE_fWPX2SquT8jX3xw7YHrVHO0Z5M2-CUs5W2kpyb64t4iWmtOVQ0JWI02O0-XOHtO7yyVBNZH6Hthqr9t3Nf6xcO_x4vWoBgT4vOu_ZMzeg9mepyUDn2dFY3C-4JG5OiqK5fVffYtGDxS12MU17yFwyA7uR7A70vf8ECZulR8mpgGaGZjsF3jVuSNWurGTLE3W3lE0P-JYxrwXj_h2T1CcEfQezjTYZzZAhGnNkZw6UKXwXx-" />
+                </div>
+                <div class="flex-grow">
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-1">High-traffic interior floor, matte
+                        finish, scratch resistance</p>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Polyurethane Traffic Plus
+                    </h3>
+                </div>
+                <div class="w-full md:w-auto">
+                    <button
+                        class="w-full md:w-auto px-6 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all cursor-pointer">View
+                        detail</button>
+                </div>
+            </div>
+            <!-- Advisory Entry 3 -->
+            <div
+                class="flex flex-col md:flex-row items-center gap-6 p-margin-md hover:bg-surface-container-low transition-colors duration-200 border-b border-outline-variant group">
+                <div class="w-full md:w-32 flex-shrink-0">
+                    <p class="font-label-md text-label-md text-on-surface-variant">March 15, 2026</p>
+                </div>
+                <div
+                    class="flex-shrink-0 w-20 h-20 bg-surface rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                    <img alt="Barniz Marino UV HI-0900" class="w-full h-full object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlwMK9qkjFebq4DMLkmU0NyeBjcHbE_fWPX2SquT8jX3xw7YHrVHO0Z5M2-CUs5W2kpyb64t4iWmtOVQ0JWI02O0-XOHtO7yyVBNZH6Hthqr9t3Nf6xcO_x4vWoBgT4vOu_ZMzeg9mepyUDn2dFY3C-4JG5OiqK5fVffYtGDxS12MU17yFwyA7uR7A70vf8ECZulR8mpgGaGZjsF3jVuSNWurGTLE3W3lE0P-JYxrwXj_h2T1CcEfQezjTYZzZAhGnNkZw6UKXwXx-" />
+                </div>
+                <div class="flex-grow">
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-1">Deck renovation, redwood color,
+                        water repellent needed</p>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Sayer Deck Ultra Stain</h3>
+                </div>
+                <div class="w-full md:w-auto">
+                    <button
+                        class="w-full md:w-auto px-6 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all cursor-pointer">View
+                        detail</button>
+                </div>
+            </div>
+            <!-- Advisory Entry 4 -->
+            <div
+                class="flex flex-col md:flex-row items-center gap-6 p-margin-md hover:bg-surface-container-low transition-colors duration-200 border-b border-outline-variant group">
+                <div class="w-full md:w-32 flex-shrink-0">
+                    <p class="font-label-md text-label-md text-on-surface-variant">Feb 02, 2026</p>
+                </div>
+                <div
+                    class="flex-shrink-0 w-20 h-20 bg-surface rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                    <img alt="Barniz Marino UV HI-0900" class="w-full h-full object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlwMK9qkjFebq4DMLkmU0NyeBjcHbE_fWPX2SquT8jX3xw7YHrVHO0Z5M2-CUs5W2kpyb64t4iWmtOVQ0JWI02O0-XOHtO7yyVBNZH6Hthqr9t3Nf6xcO_x4vWoBgT4vOu_ZMzeg9mepyUDn2dFY3C-4JG5OiqK5fVffYtGDxS12MU17yFwyA7uR7A70vf8ECZulR8mpgGaGZjsF3jVuSNWurGTLE3W3lE0P-JYxrwXj_h2T1CcEfQezjTYZzZAhGnNkZw6UKXwXx-" />
+                </div>
+                <div class="flex-grow">
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-1">Vintage furniture restoration,
+                        antique oak, silk sheen</p>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Nitrocellulose Premium
+                        Lacquer</h3>
+                </div>
+                <div class="w-full md:w-auto">
+                    <button
+                        class="w-full md:w-auto px-6 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all cursor-pointer">View
+                        detail</button>
+                </div>
+            </div>
+            <!-- Advisory Entry 5 -->
+            <div
+                class="flex flex-col md:flex-row items-center gap-6 p-margin-md hover:bg-surface-container-low transition-colors duration-200 group">
+                <div class="w-full md:w-32 flex-shrink-0">
+                    <p class="font-label-md text-label-md text-on-surface-variant">Jan 12, 2026</p>
+                </div>
+                <div
+                    class="flex-shrink-0 w-20 h-20 bg-surface rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                    <img alt="Barniz Marino UV HI-0900" class="w-full h-full object-contain"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlwMK9qkjFebq4DMLkmU0NyeBjcHbE_fWPX2SquT8jX3xw7YHrVHO0Z5M2-CUs5W2kpyb64t4iWmtOVQ0JWI02O0-XOHtO7yyVBNZH6Hthqr9t3Nf6xcO_x4vWoBgT4vOu_ZMzeg9mepyUDn2dFY3C-4JG5OiqK5fVffYtGDxS12MU17yFwyA7uR7A70vf8ECZulR8mpgGaGZjsF3jVuSNWurGTLE3W3lE0P-JYxrwXj_h2T1CcEfQezjTYZzZAhGnNkZw6UKXwXx-" />
+                </div>
+                <div class="flex-grow">
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-1">Concrete ceiling sealant,
+                        industrial gray, dust-proof</p>
+                    <h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Industrial Epoxi-Floor Seal
+                    </h3>
+                </div>
+                <div class="w-full md:w-auto">
+                    <button
+                        class="w-full md:w-auto px-6 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all cursor-pointer">View
+                        detail</button>
+                </div>
+            </div>
+        </div>
+        <!-- Pagination -->
+        <div class="flex justify-center items-center mt-margin-lg gap-4">
+            <button
+                class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-[18px]">chevron_left</span>
+                Previous
+            </button>
+            <div class="flex items-center gap-2">
+                <button
+                    class="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-white font-label-md text-label-md">1</button>
+                <button
+                    class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container font-label-md text-label-md text-on-surface-variant transition-colors">2</button>
+                <button
+                    class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container font-label-md text-label-md text-on-surface-variant transition-colors">3</button>
+            </div>
+            <button
+                class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">
+                Next
+                <span class="material-symbols-outlined text-[18px]">chevron_right</span>
+            </button>
+        </div>
+    </main>
+    <!-- Footer -->
+    <footer class="w-full mt-auto bg-surface-container-highest border-t border-outline-variant">
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-gutter px-margin-lg py-margin-md max-w-[1440px] mx-auto items-center">
+            <div>
+                <div class="font-headline-sm text-headline-sm font-bold text-primary mb-2">SayerBarn</div>
+                <p class="font-body-md text-body-md text-on-surface-variant">© 2024 SayerBarn Paint Advisory. All rights
+                    reserved.</p>
+            </div>
+            <div class="flex flex-wrap md:justify-end gap-x-8 gap-y-2">
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="#">Contact Us</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="#">Privacy Policy</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="#">Terms of Service</a>
+                <a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors"
+                    href="#">Legal Notices</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
