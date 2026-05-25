@@ -1,9 +1,72 @@
 from decimal import Decimal
 
-from flask import Blueprint, jsonify, request, abort
+from flask import Blueprint, jsonify, request, abort, current_app
 from app import mysql
 
 api_bp = Blueprint('api', __name__)
+
+
+@api_bp.route('/api/chat', methods=['POST'])
+def chat():
+    from openai import OpenAI
+
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({'error': 'Solicitud inválida'}), 400
+
+    user_message = (data.get('message') or '').strip()
+    if not user_message:
+        return jsonify({'error': 'Mensaje vacío'}), 400
+
+    raw_history = data.get('history') or []
+    safe_history = [
+        {'role': msg['role'], 'content': msg['content']}
+        for msg in raw_history
+        if isinstance(msg, dict)
+        and msg.get('role') in ('user', 'assistant')
+        and isinstance(msg.get('content'), str)
+    ]
+
+    system_prompt = (
+        "Eres un asesor experto en barnices y productos para madera de Sayer Dabet, "
+        "una marca líder en México especializada en barnices, pinturas y recubrimientos "
+        "para madera, metal y concreto (líneas Sayerlack, Sayer Dabet y complementarias).\n\n"
+        "Tu misión es ayudar al cliente a elegir el producto correcto para su proyecto. "
+        "Sigue estas reglas:\n"
+        "- Responde siempre en español, de forma amigable, clara y concisa.\n"
+        "- Si el cliente no ha mencionado la superficie (madera, metal, concreto), "
+        "el ambiente (interior/exterior) o el área aproximada, pregunta por esos datos "
+        "antes de recomendar.\n"
+        "- Cuando tengas suficiente información, recomienda un producto específico de "
+        "Sayer Dabet y explica brevemente por qué es el adecuado.\n"
+        "- Mantén respuestas cortas: máximo 3-4 párrafos.\n"
+        "- Si el cliente hace preguntas fuera del tema de barnices y recubrimientos, "
+        "redirige amablemente la conversación."
+    )
+
+    messages = (
+        [{'role': 'system', 'content': system_prompt}]
+        + safe_history
+        + [{'role': 'user', 'content': user_message}]
+    )
+
+    api_key = current_app.config.get('OPENAI_API_KEY')
+    if not api_key:
+        return jsonify({'error': 'La API key de OpenAI no está configurada.'}), 500
+
+    try:
+        client = OpenAI(api_key=api_key)
+        completion = client.chat.completions.create(
+            model='gpt-4o-mini',
+            messages=messages,
+            max_tokens=500,
+            temperature=0.7,
+        )
+        reply = completion.choices[0].message.content
+        return jsonify({'response': reply})
+    except Exception as e:
+        print(f"[ERROR CHAT] {type(e).__name__}: {e}")
+        return jsonify({'error': 'Error al contactar al asistente. Intenta de nuevo.'}), 500
 
 
 def _serialize_product(product):

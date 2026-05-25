@@ -13,8 +13,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <link
-        rel="stylesheet" />
+    <link rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -113,9 +112,7 @@
     <style>
         body {
             background-color: #f8f9fa;
-            /* surface */
             color: #191c1d;
-            /* on-surface */
         }
     </style>
 </head>
@@ -125,15 +122,21 @@
     <nav class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
         <div
             class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-            <div class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</div>
+            <div class="font-headline-md text-headline-md font-bold text-primary">
+                <a href="{{ url_for('main.index') }}">SayerBarn</a>
+            </div>
             <ul class="hidden md:flex gap-unit-lg items-center font-label-md text-label-md">
                 <li
                     class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer hover:bg-surface-container-high/50 transition-all duration-200 px-3 py-2 rounded-DEFAULT">
-                    Inicio</li>
-                <li class="text-primary border-b-2 border-primary pb-1 px-3 py-2">Asesoría</li>
+                    <a href="{{ url_for('main.index') }}">Inicio</a>
+                </li>
+                <li class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer hover:bg-surface-container-high/50 px-3 py-2 rounded-DEFAULT">
+                    <a href="{{ url_for('main.asesoria') }}">Asesoría</a>
+                </li>
                 <li
                     class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer hover:bg-surface-container-high/50 transition-all duration-200 px-3 py-2 rounded-DEFAULT">
-                    Catálogo</li>
+                    <a href="{{ url_for('main.catalogo') }}">Catálogo</a>
+                </li>
             </ul>
             <div class="hidden md:flex gap-unit-sm items-center">
                 <button
@@ -158,7 +161,6 @@
             <!-- AI Banner -->
             <div
                 class="bg-primary-container text-on-primary rounded-xl p-unit-md md:p-unit-lg flex items-center gap-unit-md shadow-sm relative overflow-hidden">
-                <!-- Decorative element -->
                 <div class="absolute -right-10 -top-10 opacity-10">
                     <span class="material-symbols-outlined text-[120px]"
                         style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
@@ -169,8 +171,9 @@
                     <h2
                         class="font-headline-md text-headline-md md:font-headline-lg md:text-headline-lg text-on-primary mb-1">
                         Recomendación Ideal</h2>
-                    <p class="font-body-md text-body-md text-on-primary/90">Basado en tu proyecto de exterior, hemos
-                        seleccionado el sistema de protección óptimo para madera expuesta al clima.</p>
+                    <p class="font-body-md text-body-md text-on-primary/90">
+                        {{ resultado.descripcion_ia or 'Seleccionamos el producto óptimo para tu proyecto.' }}
+                    </p>
                 </div>
             </div>
             <!-- Bento Grid Main Product -->
@@ -180,82 +183,101 @@
                 <div class="md:col-span-7 p-unit-lg flex flex-col justify-between">
                     <div>
                         <div class="flex gap-unit-xs mb-unit-sm flex-wrap">
+                            {% if resultado.uso %}
                             <span
-                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">Exterior</span>
+                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ resultado.uso | capitalize }}</span>
+                            {% endif %}
+                            {% if resultado.acabado %}
                             <span
-                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">Base
-                                Solvente</span>
+                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ resultado.acabado }}</span>
+                            {% endif %}
                             <span
-                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">Acabado
-                                Brillante</span>
+                                class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ resultado.superficie | capitalize }}</span>
                         </div>
                         <h1
                             class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary mb-unit-md tracking-tight">
-                            Barniz Premium Woodcraft</h1>
+                            {{ resultado.nombre }}</h1>
                         <div class="space-y-4 mb-unit-lg">
+                            {% if resultado.rendimiento_min %}
                             <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
                                 <span class="material-symbols-outlined text-primary mt-1">format_paint</span>
                                 <div>
                                     <p
                                         class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
                                         Rendimiento</p>
-                                    <p class="font-body-md text-body-md text-on-surface">10 a 12 m² por litro a una
-                                        mano.</p>
+                                    <p class="font-body-md text-body-md text-on-surface">{{ resultado.rendimiento_min }} m² por litro (aprox.)</p>
                                 </div>
                             </div>
+                            {% endif %}
                             <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
-                                <span class="material-symbols-outlined text-primary mt-1">timer</span>
+                                <span class="material-symbols-outlined text-primary mt-1">square_foot</span>
                                 <div>
                                     <p
                                         class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
-                                        Tiempo de Secado</p>
-                                    <p class="font-body-md text-body-md text-on-surface">Al tacto: 2 horas. Entre manos:
-                                        12 horas.</p>
+                                        Área a cubrir</p>
+                                    <p class="font-body-md text-body-md text-on-surface">{{ resultado.area_m2 }} m²</p>
                                 </div>
                             </div>
                             <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
-                                <span class="material-symbols-outlined text-primary mt-1">brush</span>
+                                <span class="material-symbols-outlined text-primary mt-1">water_drop</span>
                                 <div>
                                     <p
                                         class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">
-                                        Aplicación</p>
-                                    <p class="font-body-md text-body-md text-on-surface">Brocha de pelo de camello o
-                                        pistola. Diluir al 10-15%.</p>
+                                        Cantidad estimada</p>
+                                    <p class="font-body-md text-body-md text-on-surface">
+                                        {% if resultado.litros_estimados %}
+                                            ~ {{ resultado.litros_estimados }} litros
+                                        {% else %}
+                                            Consultar con asesor
+                                        {% endif %}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0">
-                        <button
+                        {% if resultado.link_compra_ml %}
+                        <a href="{{ resultado.link_compra_ml }}" target="_blank" rel="noopener"
                             class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined"
                                 style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
                             Ir a comprar
-                        </button>
+                        </a>
+                        {% endif %}
                         <a class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline decoration-primary-container/30 underline-offset-4 px-4 py-3"
-                            href="#">
-                            <span class="material-symbols-outlined">description</span>
-                            Ficha Técnica PDF
+                            href="{{ url_for('main.asesoria') }}">
+                            <span class="material-symbols-outlined">refresh</span>
+                            Nueva asesoría
                         </a>
                     </div>
                 </div>
                 <!-- Right Col: Image -->
                 <div
                     class="md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center relative min-h-[300px]">
-                    <!-- Badge -->
+                    <!-- Litros badge -->
+                    {% if resultado.litros_estimados %}
                     <div
                         class="absolute top-unit-md right-unit-md bg-surface-container-lowest text-primary font-label-sm text-label-sm px-3 py-1.5 rounded-full shadow-sm border border-primary/10 z-10 flex items-center gap-1">
                         <span class="material-symbols-outlined text-[16px]">water_drop</span>
-                        ~ 2.5 L aprox.
+                        ~ {{ resultado.litros_estimados }} L aprox.
                     </div>
+                    {% endif %}
                     <!-- Product Image -->
                     <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
-                        <img alt="" class="w-full h-full object-contain drop-shadow-xl"
-                            src="https://lh3.googleusercontent.com/aida/ADBb0uh7DTNZNYMEcBsLnaZ25vFmcMHQ0fnxvOdWe2OSbaTXBxr1SqNEJwCkpMrn2cHTZ3qyMzdeOgW_ifWijM1hrKK4Qrzs1nMpqE2HMcgEAumj-xBDbRRwII-j1u7qy3WvxhHgvEO-fCztDVqegqWX08wMoV2I7Mcv9ofu35d-Zha2vYIJZvqxgArSfSRxeIHPd0jlZTfHXSxGRv-iCdRs_8UAPzcY8_qkw_IbJg3DrmvLzouqU46U_1FFKB4" />
+                        {% if resultado.imagen_url %}
+                        <img alt="{{ resultado.nombre }}" class="w-full h-full object-contain drop-shadow-xl"
+                            src="{{ resultado.imagen_url }}" />
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-surface-container rounded-lg">
+                            <span class="material-symbols-outlined text-[80px] text-outline">format_paint</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
+
             <!-- Suggested Add-on -->
+            {% if complemento %}
             <div class="mt-unit-sm">
                 <h3
                     class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-sm pl-1">
@@ -264,29 +286,38 @@
                     class="bg-surface-container-lowest p-unit-md rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] flex flex-col sm:flex-row items-center gap-unit-md">
                     <div
                         class="w-24 h-24 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center">
-                        <div
-                            class="w-full h-full bg-gradient-to-br from-surface-variant to-surface-dim rounded flex items-center justify-center">
+                        {% if complemento.imagen_url %}
+                        <img src="{{ complemento.imagen_url }}" alt="{{ complemento.nombre }}" class="w-full h-full object-contain" />
+                        {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-surface-variant to-surface-dim rounded flex items-center justify-center">
                             <span class="material-symbols-outlined text-outline text-[40px]">science</span>
                         </div>
+                        {% endif %}
                     </div>
                     <div class="flex-grow text-center sm:text-left">
                         <h4
-                            class="font-headline-md text-headline-md md:font-headline-md md:text-headline-md text-primary">
-                            Diluyente Estándar D-0001</h4>
-                        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Requerido para ajustar la
-                            viscosidad y limpiar herramientas.</p>
+                            class="font-headline-md text-headline-md text-primary">
+                            {{ complemento.nombre }}</h4>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Complemento recomendado para este producto.</p>
                     </div>
-                    <button
-                        class="shrink-0 bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-6 py-2 rounded-lg hover:bg-surface-container-low transition-colors w-full sm:w-auto">
-                        Agregar
-                    </button>
                 </div>
             </div>
+            {% endif %}
+
             <!-- Action Prompt -->
             <div
                 class="mt-unit-lg text-center bg-[#F8F9FA] p-unit-lg rounded-xl border border-dashed border-outline-variant/50">
-                <p class="font-headline-md text-headline-md text-on-surface mb-unit-sm">¿Quieres guardar esta asesoría?
+                {% if usuario %}
+                <p class="font-headline-md text-headline-md text-on-surface mb-unit-sm">¡Asesoría guardada!</p>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-unit-md max-w-md mx-auto">
+                    Puedes ver esta y otras recomendaciones en tu historial de asesorías.
                 </p>
+                <a href="{{ url_for('main.historial') }}"
+                    class="inline-flex font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
+                    Ver mi historial
+                </a>
+                {% else %}
+                <p class="font-headline-md text-headline-md text-on-surface mb-unit-sm">¿Quieres guardar esta asesoría?</p>
                 <p class="font-body-md text-body-md text-on-surface-variant mb-unit-md max-w-md mx-auto">Crea una cuenta
                     o inicia sesión para tener a mano tus productos recomendados en cualquier momento.</p>
                 <div class="flex flex-wrap justify-center gap-unit-md">
@@ -296,6 +327,7 @@
                     <button
                         class="font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Registrarse</button>
                 </div>
+                {% endif %}
             </div>
         </div>
     </main>

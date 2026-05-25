@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SayerBarn - Asesor IA</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#191c1d",
+                        "on-background": "#191c1d",
+                        "on-surface-variant": "#444653",
+                        "tertiary-fixed": "#dee3ed",
+                        "tertiary": "#232930",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8f9fa",
+                        "inverse-primary": "#b6c4ff",
+                        "on-primary-fixed-variant": "#133ca8",
+                        "on-tertiary-fixed": "#161c23",
+                        "inverse-surface": "#2e3132",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9fa",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b6c4ff",
+                        "primary-container": "#0033a0",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "tertiary-container": "#393f47",
+                        "outline-variant": "#c4c5d5",
+                        "on-secondary-container": "#283e88",
+                        "secondary-fixed-dim": "#b6c4ff",
+                        "on-secondary": "#ffffff",
+                        "primary": "#00216e",
+                        "outline": "#747684",
+                        "on-secondary-fixed-variant": "#2b418c",
+                        "on-primary-fixed": "#001550",
+                        "on-error-container": "#93000a",
+                        "secondary": "#455aa5",
+                        "on-secondary-fixed": "#001550",
+                        "on-tertiary-fixed-variant": "#41474f",
+                        "surface-dim": "#d9dadb",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#dce1ff",
+                        "surface-container-low": "#f3f4f5",
+                        "on-tertiary-container": "#a5aab3",
+                        "surface-tint": "#3456c1",
+                        "tertiary-fixed-dim": "#c1c7d0",
+                        "surface-bright": "#f8f9fa",
+                        "surface-container": "#edeeef",
+                        "surface-container-high": "#e7e8e9",
+                        "secondary-container": "#98adfe",
+                        "secondary-fixed": "#dce1ff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#8ea6ff"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "unit-lg": "24px",
+                        "container-max": "1280px",
+                        "unit-md": "16px",
+                        "unit-xs": "4px",
+                        "unit-sm": "8px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "40px",
+                        "unit-xl": "48px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "body-lg": ["Manrope"],
+                        "label-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "headline-xl": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"]
+                    },
+                    fontSize: {
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.02em", fontWeight: "600" }],
+                        "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "700" }],
+                        "headline-xl": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-lg-mobile": ["28px", { lineHeight: "36px", fontWeight: "600" }],
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prism-stripe {
+            background: linear-gradient(90deg,
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%,
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk 4s linear infinite;
+        }
+        @keyframes prism-walk {
+            0%   { background-position: 0% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .soft-ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 31, 107, 0.05);
+        }
+        #chat-messages {
+            scroll-behavior: smooth;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #747684;
+            animation: typing-bounce 1.2s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+        /* Preserve line breaks in AI responses */
+        .ai-bubble-content { white-space: pre-wrap; }
+    </style>
+</head>
+
+<body class="bg-background flex flex-col min-h-screen text-on-background font-body-md">
+
+    <!-- TopNavBar -->
+    <nav class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
+        <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <a class="font-headline-md text-headline-md font-bold text-primary hover:opacity-80 transition-opacity"
+                href="{{ url_for('main.index') }}">
+                SayerBarn
+            </a>
+            <div class="hidden md:flex items-center gap-unit-lg">
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-3 py-2 rounded-md"
+                    href="{{ url_for('main.index') }}">Inicio</a>
+                <a class="font-label-md text-label-md text-primary border-b-2 border-primary pb-1 px-3 py-2 rounded-md"
+                    href="{{ url_for('main.chat_asesoria') }}">Asesor IA</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-3 py-2 rounded-md"
+                    href="{{ url_for('main.asesoria') }}">Asesoría</a>
+                <a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors px-3 py-2 rounded-md"
+                    href="{{ url_for('main.catalogo') }}">Catálogo</a>
+            </div>
+            <div class="flex items-center gap-unit-sm">
+                {% if usuario %}
+                <span class="hidden md:block font-label-md text-label-md text-on-surface-variant">
+                    Hola, {{ usuario.nombre.split()[0] }}
+                </span>
+                <form method="POST" action="{{ url_for('main.logout') }}" class="hidden md:block">
+                    <button type="submit"
+                        class="font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors">
+                        Salir
+                    </button>
+                </form>
+                {% else %}
+                <a class="hidden md:flex font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors"
+                    href="{{ url_for('main.login') }}">Iniciar sesión</a>
+                <a class="font-label-md text-label-md bg-primary text-on-primary px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors shadow-sm"
+                    href="{{ url_for('main.registro') }}">Registrarse</a>
+                {% endif %}
+                <button class="md:hidden p-2 text-on-surface-variant">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        </div>
+        <div class="w-full h-[2px] prism-stripe absolute bottom-0 left-0"></div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center px-margin-mobile md:px-margin-desktop py-unit-lg max-w-container-max mx-auto w-full">
+
+        <!-- Header -->
+        <div class="w-full max-w-2xl mb-unit-md">
+            <div class="flex items-center gap-unit-sm">
+                <a href="{{ url_for('main.index') }}" aria-label="Volver"
+                    class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+                </a>
+                <div>
+                    <h1 class="font-headline-md text-headline-md text-on-surface">Asesor IA</h1>
+                    <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Productos Sayer Dabet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Card -->
+        <div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden flex flex-col"
+             style="height: calc(100vh - 240px); min-height: 480px;">
+
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="flex-grow overflow-y-auto p-unit-lg flex flex-col gap-unit-md">
+
+                <!-- Welcome message from AI -->
+                <div class="flex gap-unit-sm items-end" id="welcome-msg">
+                    <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-primary text-[18px]"
+                            style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    </div>
+                    <div class="max-w-[80%]">
+                        <div class="bg-surface-container rounded-xl rounded-bl-sm px-unit-md py-unit-sm">
+                            <p class="font-body-md text-body-md text-on-surface">
+                                ¡Hola! Soy tu asesor de productos Sayer Dabet. Cuéntame sobre tu proyecto: ¿qué superficie vas a tratar y para qué ambiente?
+                            </p>
+                        </div>
+                        <p class="font-label-sm text-label-sm text-outline mt-1 ml-1">Asesor IA</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Typing indicator (hidden by default) -->
+            <div id="typing-indicator" class="hidden px-unit-lg pb-unit-sm">
+                <div class="flex gap-unit-sm items-end">
+                    <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-on-primary text-[18px]"
+                            style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                    </div>
+                    <div class="bg-surface-container rounded-xl rounded-bl-sm px-4 py-3 flex gap-1.5 items-center">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-surface-variant bg-surface-container-low px-unit-lg py-unit-md">
+                <div class="flex gap-unit-sm items-end">
+                    <textarea
+                        id="chat-input"
+                        rows="1"
+                        placeholder="Escribe tu pregunta aquí..."
+                        class="flex-grow bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none resize-none overflow-hidden"
+                        style="max-height: 120px;"
+                    ></textarea>
+                    <button
+                        id="send-btn"
+                        aria-label="Enviar"
+                        class="w-12 h-12 bg-primary text-on-primary rounded-xl flex items-center justify-center hover:bg-primary-container transition-colors shadow-sm flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+                    </button>
+                </div>
+                <p class="font-label-sm text-label-sm text-outline mt-unit-xs">
+                    Presiona Enter para enviar · Shift+Enter para nueva línea
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div class="col-span-1 md:col-span-2 flex flex-col gap-unit-md">
+                <span class="font-bold text-xl text-on-primary">SayerBarn</span>
+                <p class="font-body-md text-body-md text-on-primary opacity-80">© 2024 SayerBarn. Sayer Dabet Branding.</p>
+            </div>
+            <div class="col-span-1 md:col-span-2 flex flex-col sm:flex-row gap-unit-md sm:gap-unit-xl justify-end">
+                <div class="flex flex-col gap-unit-sm">
+                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed opacity-80 hover:opacity-100 transition-all" href="#">Contacto</a>
+                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed opacity-80 hover:opacity-100 transition-all" href="#">Aviso de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // In-session conversation history
+        let history = [];
+        let isLoading = false;
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function appendMessage(role, content) {
+            const isUser = role === 'user';
+            const wrapper = document.createElement('div');
+            wrapper.className = isUser
+                ? 'flex gap-unit-sm items-end justify-end'
+                : 'flex gap-unit-sm items-end';
+
+            if (!isUser) {
+                const avatar = document.createElement('div');
+                avatar.className = 'w-9 h-9 rounded-full bg-primary flex items-center justify-center flex-shrink-0';
+                avatar.innerHTML = '<span class="material-symbols-outlined text-on-primary text-[18px]" style="font-variation-settings: \'FILL\' 1;">auto_awesome</span>';
+                wrapper.appendChild(avatar);
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = 'max-w-[80%]';
+
+            const text = document.createElement('div');
+            text.className = isUser
+                ? 'bg-primary text-on-primary rounded-xl rounded-br-sm px-unit-md py-unit-sm'
+                : 'bg-surface-container rounded-xl rounded-bl-sm px-unit-md py-unit-sm';
+
+            const p = document.createElement('p');
+            p.className = 'font-body-md text-body-md ai-bubble-content';
+            p.textContent = content;
+            text.appendChild(p);
+            bubble.appendChild(text);
+
+            const label = document.createElement('p');
+            label.className = isUser
+                ? 'font-label-sm text-label-sm text-outline mt-1 mr-1 text-right'
+                : 'font-label-sm text-label-sm text-outline mt-1 ml-1';
+            label.textContent = isUser ? 'Tú' : 'Asesor IA';
+            bubble.appendChild(label);
+
+            wrapper.appendChild(bubble);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            sendBtn.disabled = loading;
+            chatInput.disabled = loading;
+            typingIndicator.classList.toggle('hidden', !loading);
+            if (loading) scrollToBottom();
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || isLoading) return;
+
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+            appendMessage('user', message);
+            setLoading(true);
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, history })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || data.error) {
+                    appendMessage('assistant', data.error || 'Ocurrió un error. Intenta de nuevo.');
+                } else {
+                    history.push({ role: 'user', content: message });
+                    history.push({ role: 'assistant', content: data.response });
+                    appendMessage('assistant', data.response);
+                }
+            } catch {
+                appendMessage('assistant', 'No se pudo conectar con el servidor. Revisa tu conexión e intenta de nuevo.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        chatInput.addEventListener('input', () => {
+            chatInput.style.height = 'auto';
+            chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+        });
+
+        scrollToBottom();
+    </script>
+
+</body>
+</html>
