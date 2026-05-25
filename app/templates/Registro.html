@@ -178,6 +178,29 @@
             },
         }
     </script>
+    <style>
+        .prism-stripe {
+            background: linear-gradient(90deg, 
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%, 
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk 4s linear infinite;
+        }
+        @keyframes prism-walk {
+            0%   { background-position: 0% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .btn-lift {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 24px rgba(0, 31, 107, 0.25) !important;
+        }
+        .btn-lift:active {
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 
 <body
@@ -190,7 +213,7 @@
     <main
         class="w-full max-w-[480px] bg-surface-container-lowest rounded-[1rem] shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-surface-container relative z-10 overflow-hidden">
         <!-- Prism Stripe Accent -->
-        <div class="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container"></div>
+        <div class="h-1 w-full prism-stripe"></div>
         <div class="p-unit-xl">
             <!-- Brand Logo / Name -->
             <div class="text-center mb-unit-lg">
@@ -265,7 +288,7 @@
                 <!-- Submit Button -->
                 <div class="pt-unit-sm">
                     <button
-                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md font-bold text-on-primary bg-primary-container hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200"
+                        class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md font-bold text-on-primary bg-primary-container hover:bg-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-200 btn-lift"
                         type="submit">
                         Crear cuenta
                     </button>

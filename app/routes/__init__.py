@@ -107,14 +107,19 @@ def logout():
 
 @main.route('/catalogo')
 def catalogo():
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, acabado, uso "
-        "FROM productos WHERE activo = 1 ORDER BY nombre"
-    )
-    productos = cur.fetchall()
-    cur.close()
-    return render_template('Usuario-Catalogo.html', productos=productos, usuario=usuario_actual())
+    productos = []
+    error = None
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, acabado, uso "
+            "FROM productos WHERE activo = 1 ORDER BY nombre"
+        )
+        productos = cur.fetchall()
+        cur.close()
+    except Exception:
+        error = 'El catálogo todavía no está disponible. Intenta de nuevo más tarde.'
+    return render_template('Usuario-Catalogo.html', productos=productos, usuario=usuario_actual(), error=error)
 
 
 # ── Rutas protegidas (requieren login) ───────────────────

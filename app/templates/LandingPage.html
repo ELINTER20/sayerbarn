@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="light" lang="es">
+<html lang="es">
 
 <head>
     <meta charset="utf-8" />
@@ -133,6 +133,16 @@
             0%   { background-position: -200% 0; }
             100% { background-position: 0% 0; }
         }
+        .btn-lift {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 24px rgba(0, 31, 107, 0.25) !important;
+        }
+        .btn-lift:active {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -186,13 +196,11 @@
                     <p class="font-body-lg text-body-lg text-on-surface-variant">
                         Te guiamos paso a paso hasta el producto correcto.
                     </p>
-                    <div class="pt-unit-sm">
                         <a href="{{ url_for('main.catalogo') }}"
-                            class="bg-primary-container text-on-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(0,31,107,0.15)] flex items-center space-x-2">
+                            class="bg-primary-container text-on-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(0,31,107,0.15)] flex items-center space-x-2 btn-lift">
                             <span>Comenzar asesoría</span>
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </a>
-                    </div>
                 </div>
                 <div
                     class="mt-unit-xl md:mt-0 relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,31,107,0.05)] aspect-[4/3] bg-surface-variant">
@@ -279,7 +287,7 @@
                                 técnica
                             </a>
                             <button
-                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors">
+                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift">
                                 Ver en catálogo
                             </button>
                         </div>
@@ -307,7 +315,7 @@
                                 técnica
                             </a>
                             <button
-                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors">
+                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift">
                                 Ver en catálogo
                             </button>
                         </div>
@@ -335,7 +343,7 @@
                                 técnica
                             </a>
                             <button
-                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors">
+                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift">
                                 Ver en catálogo
                             </button>
                         </div>

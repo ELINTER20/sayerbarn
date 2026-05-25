@@ -122,6 +122,16 @@
             0%   { background-position: 0% 0; }
             100% { background-position: -200% 0; }
         }
+        .btn-lift {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 8px 24px rgba(0, 31, 107, 0.25) !important;
+        }
+        .btn-lift:active {
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 
@@ -189,7 +199,7 @@
                     {% endif %}
                     <!-- Submit Button -->
                     <button
-                        class="w-full bg-primary-container text-on-primary font-label-md text-label-md font-bold py-4 rounded-DEFAULT hover:bg-primary transition-colors shadow-sm hover:shadow-md mt-2 flex justify-center items-center gap-2"
+                        class="w-full bg-primary-container text-on-primary font-label-md text-label-md font-bold py-4 rounded-DEFAULT hover:bg-primary transition-colors shadow-sm hover:shadow-md mt-2 flex justify-center items-center gap-2 btn-lift"
                         type="submit">
                         Iniciar sesión
                         <span class="material-symbols-outlined text-[20px]"
