@@ -113,8 +113,8 @@
     </script>
     <style>
         .prism-stripe {
-            background: linear-gradient(90deg, 
-                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%, 
+            background: linear-gradient(90deg,
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%,
                 #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
             background-size: 200% 100%;
             animation: prism-walk 4s linear infinite;
@@ -138,18 +138,18 @@
             class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Brand -->
             <a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity"
-                href="#">
+                href="{{ url_for('main.index') }}">
                 SayerBarn
             </a>
             <!-- Navigation Links (Desktop) -->
             <div class="hidden md:flex items-center gap-unit-lg">
                 <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-3 py-2 rounded-md"
-                    href="#">Inicio</a>
+                    href="{{ url_for('main.index') }}">Inicio</a>
                 <!-- Active Item: Asesoría -->
                 <a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-3 py-2 rounded-md"
-                    href="#">Asesoría</a>
+                    href="{{ url_for('main.asesoria') }}">Asesoría</a>
                 <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-3 py-2 rounded-md"
-                    href="#">Catálogo</a>
+                    href="{{ url_for('main.catalogo') }}">Catálogo</a>
             </div>
             <!-- Actions -->
             <div class="flex items-center gap-unit-sm">
@@ -161,110 +161,160 @@
                     href="#">
                     Registrarse
                 </a>
-                <!-- Mobile Menu Toggle (Decorative for structural completeness) -->
                 <button class="md:hidden p-2 text-on-surface-variant">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
             </div>
         </div>
-        <!-- Optional subtle bottom accent line -->
         <div class="w-full h-[2px] prism-stripe absolute bottom-0 left-0"></div>
     </nav>
     <!-- Main Content Canvas -->
     <main class="flex-grow flex items-center justify-center p-margin-mobile md:p-margin-desktop">
-        <!-- Onboarding Question Card -->
-        <div
-            class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden relative">
-            <!-- Progress Bar -->
-            <div class="w-full h-1 bg-surface-variant absolute top-0 left-0">
-                <div class="h-full bg-primary-container w-1/4 transition-all duration-500 rounded-r-full"></div>
-            </div>
-            <div class="p-unit-lg md:p-unit-xl">
-                <!-- Header area with Back button -->
-                <div class="flex items-center mb-unit-lg">
-                    <button aria-label="Volver"
-                        class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
-                        <span class="material-symbols-outlined"
-                            style="font-variation-settings: 'FILL' 0;">arrow_back</span>
-                    </button>
-                    <span class="ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Paso 1 de
-                        4</span>
-                </div>
-                <!-- Question -->
-                <h1
-                    class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-xl">
-                    ¿Qué superficie vas a tratar?
-                </h1>
-                <!-- Options Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-unit-md mb-unit-xl">
-                    <!-- Option: Madera -->
-                    <label class="cursor-pointer group">
-                        <input class="peer sr-only" name="surface" type="radio" value="madera" />
-                        <div
-                            class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">nature</span>
-                            <span class="font-body-lg text-body-lg text-on-surface font-semibold">Madera</span>
-                        </div>
-                    </label>
-                    <!-- Option: Metal -->
-                    <label class="cursor-pointer group">
-                        <input class="peer sr-only" name="surface" type="radio" value="metal" />
-                        <div
-                            class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">precision_manufacturing</span>
-                            <span class="font-body-lg text-body-lg text-on-surface font-semibold">Metal</span>
-                        </div>
-                    </label>
-                    <!-- Option: Concreto -->
-                    <label class="cursor-pointer group">
-                        <input class="peer sr-only" name="surface" type="radio" value="concreto" />
-                        <div
-                            class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">foundation</span>
-                            <span class="font-body-lg text-body-lg text-on-surface font-semibold">Concreto</span>
-                        </div>
-                    </label>
-                    <!-- Option: Otro -->
-                    <label class="cursor-pointer group">
-                        <input class="peer sr-only" name="surface" type="radio" value="otro" />
-                        <div
-                            class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                            <span
-                                class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">category</span>
-                            <span class="font-body-lg text-body-lg text-on-surface font-semibold">Otro</span>
-                        </div>
-                    </label>
-                </div>
-                <!-- Custom Input Area -->
-                <div class="relative mt-unit-md">
-                    <div aria-hidden="true" class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-surface-variant"></div>
-                    </div>
-                    <div class="relative flex justify-center">
-                        <span
-                            class="bg-surface-container-lowest px-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">O
-                            especifica</span>
-                    </div>
-                </div>
-                <div class="mt-unit-md">
-                    <input
-                        class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg p-4 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
-                        placeholder="O escribe tu respuesta aquí..." type="text" />
-                </div>
-            </div>
-            <!-- Bottom Actions / Next Button (Implied for UX completeness, though not strictly in prompt, adds to SaaS feel) -->
+        <form method="POST" action="{{ url_for('main.asesoria') }}" class="w-full flex justify-center">
+            <!-- Onboarding Question Card -->
             <div
-                class="bg-surface-container-low px-unit-lg py-unit-md flex justify-end items-center border-t border-surface-variant">
-                <button
-                    class="font-label-md text-label-md bg-primary text-on-primary px-6 py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
-                    Continuar
-                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-                </button>
+                class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden relative">
+                <!-- Progress Bar -->
+                <div class="w-full h-1 bg-surface-variant absolute top-0 left-0">
+                    <div class="h-full bg-primary-container w-full transition-all duration-500 rounded-r-full"></div>
+                </div>
+                <div class="p-unit-lg md:p-unit-xl">
+                    <!-- Error display -->
+                    {% if error %}
+                    <div class="bg-error-container text-on-error-container rounded-lg px-unit-md py-unit-sm mb-unit-md font-body-md text-body-md">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+                    <!-- Header area with Back button -->
+                    <div class="flex items-center mb-unit-lg">
+                        <a href="{{ url_for('main.index') }}" aria-label="Volver"
+                            class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
+                            <span class="material-symbols-outlined"
+                                style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+                        </a>
+                        <span class="ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría de producto</span>
+                    </div>
+
+                    <!-- PREGUNTA 1: Superficie -->
+                    <h1
+                        class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-xl">
+                        ¿Qué superficie vas a tratar?
+                    </h1>
+                    <!-- Options Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-unit-md mb-unit-xl">
+                        <!-- Option: Madera -->
+                        <label class="cursor-pointer group">
+                            <input class="peer sr-only" name="superficie" type="radio" value="madera" />
+                            <div
+                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
+                                <span
+                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">nature</span>
+                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Madera</span>
+                            </div>
+                        </label>
+                        <!-- Option: Metal -->
+                        <label class="cursor-pointer group">
+                            <input class="peer sr-only" name="superficie" type="radio" value="metal" />
+                            <div
+                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
+                                <span
+                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">precision_manufacturing</span>
+                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Metal</span>
+                            </div>
+                        </label>
+                        <!-- Option: Concreto -->
+                        <label class="cursor-pointer group">
+                            <input class="peer sr-only" name="superficie" type="radio" value="concreto" />
+                            <div
+                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
+                                <span
+                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">foundation</span>
+                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Concreto</span>
+                            </div>
+                        </label>
+                        <!-- Option: Otro -->
+                        <label class="cursor-pointer group">
+                            <input class="peer sr-only" name="superficie" type="radio" value="otro" />
+                            <div
+                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
+                                <span
+                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">category</span>
+                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Otro</span>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- Custom Input Area -->
+                    <div class="relative mt-unit-md">
+                        <div aria-hidden="true" class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-surface-variant"></div>
+                        </div>
+                        <div class="relative flex justify-center">
+                            <span
+                                class="bg-surface-container-lowest px-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">O
+                                especifica</span>
+                        </div>
+                    </div>
+                    <div class="mt-unit-md">
+                        <input
+                            class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg p-4 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
+                            name="superficie_custom"
+                            placeholder="Escribe la superficie aquí..." type="text" />
+                    </div>
+
+                    <!-- PREGUNTA 2: Uso -->
+                    <h2
+                        class="font-headline-md text-headline-md text-on-surface mt-unit-xl mb-unit-md">
+                        ¿Para qué ambiente?
+                    </h2>
+                    <div class="grid grid-cols-2 gap-unit-md">
+                        <label class="cursor-pointer group">
+                            <input class="peer sr-only" name="uso" type="radio" value="interior" required />
+                            <div
+                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
+                                <span
+                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">home</span>
+                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Interior</span>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer group">
+                            <input class="peer sr-only" name="uso" type="radio" value="exterior" required />
+                            <div
+                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
+                                <span
+                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">park</span>
+                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Exterior</span>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- PREGUNTA 3: Área -->
+                    <h2
+                        class="font-headline-md text-headline-md text-on-surface mt-unit-xl mb-unit-md">
+                        ¿Cuántos m² vas a tratar?
+                    </h2>
+                    <div>
+                        <input
+                            class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg p-4 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
+                            name="area_m2"
+                            type="number"
+                            min="0.1"
+                            step="0.1"
+                            placeholder="Ej: 25.5"
+                            required />
+                        <p class="mt-unit-xs font-label-sm text-label-sm text-outline">Metros cuadrados totales a cubrir</p>
+                    </div>
+                </div>
+                <!-- Bottom Actions -->
+                <div
+                    class="bg-surface-container-low px-unit-lg py-unit-md flex justify-end items-center border-t border-surface-variant">
+                    <button type="submit"
+                        class="font-label-md text-label-md bg-primary text-on-primary px-6 py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
+                        Obtener recomendación
+                        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </main>
     <!-- Footer -->
     <footer class="bg-primary dark:bg-tertiary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
