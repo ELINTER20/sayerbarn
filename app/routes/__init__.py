@@ -174,6 +174,11 @@ def agregar_favorito(producto_id):
     return redirect(request.referrer or url_for('main.catalogo'))
 
 
+@main.route('/chat')
+def chat_asesoria():
+    return render_template('Usuario-ChatAsesoria.html', usuario=usuario_actual())
+
+
 @main.route('/asesoria', methods=['GET', 'POST'])
 def asesoria():
     if request.method == 'GET':
