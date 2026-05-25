@@ -55,7 +55,7 @@ def login():
             set_access_cookies(response, token)
             return response
 
-        return render_template('Iniciosesion.html', error='Correo o contraseña incorrectos.')
+        return render_template('Iniciosesion.html', error='Correo o contraseña incorrectos.', email=email)
 
     return render_template('Iniciosesion.html')
 
@@ -66,9 +66,13 @@ def registro():
         nombre = request.form.get('nombre', '').strip()
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
+        confirm_password = request.form.get('confirmPassword', '')
 
-        if not nombre or not email or not password:
-            return render_template('Registro.html', error='Todos los campos son requeridos.')
+        if not nombre or not email or not password or not confirm_password:
+            return render_template('Registro.html', error='Todos los campos son requeridos.', nombre=nombre, email=email)
+
+        if password != confirm_password:
+            return render_template('Registro.html', error='Las contraseñas no coinciden.', nombre=nombre, email=email)
 
         password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -85,8 +89,8 @@ def registro():
             print(f"[ERROR REGISTRO] {type(e).__name__}: {e}")
             # Error 1062 = Duplicate entry en MySQL
             if hasattr(e, 'args') and e.args and e.args[0] == 1062:
-                return render_template('Registro.html', error='El correo ya está registrado.')
-            return render_template('Registro.html', error=f'Error al crear la cuenta: {e}')
+                return render_template('Registro.html', error='El correo ya está registrado.', nombre=nombre, email=email)
+            return render_template('Registro.html', error=f'Error al crear la cuenta: {e}', nombre=nombre, email=email)
 
         token = create_access_token(identity=str(usuario_id))
         response = make_response(redirect(url_for('main.index')))
