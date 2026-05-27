@@ -235,7 +235,7 @@
                         </div>
                         <input
                             class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
-                            id="nombre" name="nombre" placeholder="Tu nombre" required="" type="text" />
+                            id="nombre" name="nombre" placeholder="Tu nombre" required="" type="text" value="{{ nombre|default('') }}" />
                     </div>
                 </div>
                 <!-- Email -->
@@ -248,7 +248,7 @@
                         </div>
                         <input
                             class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
-                            id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email" />
+                            id="email" name="email" placeholder="ejemplo@correo.com" required="" type="email" value="{{ email|default('') }}" />
                     </div>
                 </div>
                 <!-- Password -->
