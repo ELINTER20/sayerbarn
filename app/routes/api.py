@@ -27,21 +27,115 @@ def chat():
         and isinstance(msg.get('content'), str)
     ]
 
+    # ── Leer productos activos de la BD ──────────────────────────────
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT p.nombre, p.clave, p.descripcion_ia,
+                   p.uso, p.acabado,
+                   p.sup_madera, p.sup_metal, p.sup_concreto,
+                   p.rendimiento_min, p.rendimiento_max,
+                   p.precio_referencia,
+                   GROUP_CONCAT(
+                       CONCAT(c2.nombre, ' (', co.tipo, ', ', COALESCE(co.proporcion,''), ')')
+                       SEPARATOR ' | '
+                   ) AS complementos
+            FROM productos p
+            LEFT JOIN complementos co ON co.producto_id = p.id
+            LEFT JOIN productos c2   ON c2.id = co.complemento_id
+            WHERE p.activo = 1
+              AND p.categoria_id != (
+                  SELECT id FROM categorias WHERE nombre = 'Diluyentes y complementos' LIMIT 1
+              )
+            GROUP BY p.id
+            ORDER BY p.id
+        """)
+        productos_bd = cur.fetchall()
+        cur.close()
+    except Exception as e:
+        print(f"[ERROR CHAT - BD] {e}")
+        productos_bd = []
+
+    # ── Construir bloque de catálogo para el prompt ───────────────────
+    if productos_bd:
+        lineas_catalogo = []
+        for i, p in enumerate(productos_bd, 1):
+            superficies = []
+            if p.get('sup_madera'): superficies.append('madera')
+            if p.get('sup_metal'):  superficies.append('metal')
+            if p.get('sup_concreto'): superficies.append('concreto')
+
+            rend_min = p.get('rendimiento_min')
+            rend_max = p.get('rendimiento_max')
+            rendimiento = (
+                f"{float(rend_min):.0f} a {float(rend_max):.0f} m² por litro"
+                if rend_min and rend_max else "consultar ficha técnica"
+            )
+
+            precio = p.get('precio_referencia')
+            precio_str = f"${float(precio):.0f} MXN" if precio else "consultar precio"
+
+            complementos_str = p.get('complementos') or 'ninguno'
+
+            bloque = (
+                f"{i}. {p['nombre']} (clave: {p['clave']})\n"
+                f"   - Superficie: {', '.join(superficies) if superficies else 'ver descripción'}\n"
+                f"   - Uso: {p.get('uso') or 'ambos'}\n"
+                f"   - Acabado: {p.get('acabado') or 'sin acabado definido'}\n"
+                f"   - Rendimiento: {rendimiento}\n"
+                f"   - Complementos requeridos: {complementos_str}\n"
+                f"   - Precio referencia: {precio_str}\n"
+                f"   - Descripción: {p.get('descripcion_ia') or 'sin descripción'}"
+            )
+            lineas_catalogo.append(bloque)
+
+        catalogo_texto = "\n\n".join(lineas_catalogo)
+    else:
+        catalogo_texto = "No hay productos disponibles en este momento."
+
+    # ── Superficies disponibles en el catálogo ────────────────────────
+    todas_superficies = set()
+    for p in productos_bd:
+        if p.get('sup_madera'):   todas_superficies.add('madera')
+        if p.get('sup_metal'):    todas_superficies.add('metal')
+        if p.get('sup_concreto'): todas_superficies.add('concreto')
+
+    superficies_disponibles = ', '.join(todas_superficies) if todas_superficies else 'madera'
+
+    catalogo_texto += (
+        f"\n\nSUPERFICIES QUE CUBRE EL CATÁLOGO ACTUAL: {superficies_disponibles}. "
+        "Si el cliente menciona una superficie que no está en esta lista, "
+        "informa de inmediato que no tienes productos para esa superficie "
+        "y sugiere acercarse a una sucursal sin hacer más preguntas."
+    )
+
+    # ── System prompt dinámico ────────────────────────────────────────
     system_prompt = (
         "Eres un asesor experto en barnices y productos para madera de Sayer Dabet, "
         "una marca líder en México especializada en barnices, pinturas y recubrimientos "
-        "para madera, metal y concreto (líneas Sayerlack, Sayer Dabet y complementarias).\n\n"
-        "Tu misión es ayudar al cliente a elegir el producto correcto para su proyecto. "
+        "para madera, metal y concreto.\n\n"
+
+        "Tu misión es ayudar al cliente a elegir el producto correcto. "
         "Sigue estas reglas:\n"
         "- Responde siempre en español, de forma amigable, clara y concisa.\n"
-        "- Si el cliente no ha mencionado la superficie (madera, metal, concreto), "
-        "el ambiente (interior/exterior) o el área aproximada, pregunta por esos datos "
-        "antes de recomendar.\n"
-        "- Cuando tengas suficiente información, recomienda un producto específico de "
-        "Sayer Dabet y explica brevemente por qué es el adecuado.\n"
-        "- Mantén respuestas cortas: máximo 3-4 párrafos.\n"
-        "- Si el cliente hace preguntas fuera del tema de barnices y recubrimientos, "
-        "redirige amablemente la conversación."
+        "- Haz UNA sola pregunta a la vez. Nunca hagas varias preguntas en el mismo mensaje.\n"
+        "- Si el cliente no ha mencionado la superficie (madera, metal, concreto), pregunta eso primero.\n"
+        "- Luego pregunta si es para interior o exterior.\n"
+        "- Luego pregunta el área aproximada en metros cuadrados.\n"
+        "- Con esos tres datos, recomienda un producto del catálogo.\n"
+        "- Cuando recomiendes un producto, calcula los litros necesados: "
+        "divide el área entre el rendimiento promedio y redondea hacia arriba. "
+        "Sugiere siempre comprar un 10-15% extra por repasos.\n"
+        "- Si el producto requiere un complemento (diluyente o catalizador), menciónalo.\n"
+        "- Mantén respuestas cortas: máximo 3 párrafos.\n"
+        "- IMPORTANTE: Si el cliente menciona una superficie que no está en el catálogo, "
+        "informa de inmediato que no tienes productos para esa superficie y sugiere "
+        "acercarse a una sucursal. No sigas haciendo preguntas innecesarias.\n"
+        "- Solo recomienda productos del catálogo actual. "
+        "Si ningún producto encaja, dile al cliente que se acerque a una sucursal.\n"
+        "- Si el cliente pregunta algo fuera del tema de barnices, redirige amablemente.\n\n"
+
+        f"CATÁLOGO ACTUAL DE PRODUCTOS:\n\n{catalogo_texto}"
     )
 
     messages = (
@@ -67,7 +161,6 @@ def chat():
     except Exception as e:
         print(f"[ERROR CHAT] {type(e).__name__}: {e}")
         return jsonify({'error': 'Error al contactar al asistente. Intenta de nuevo.'}), 500
-
 
 def _serialize_product(product):
     return {
