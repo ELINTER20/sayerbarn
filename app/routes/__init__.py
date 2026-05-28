@@ -31,7 +31,18 @@ def usuario_actual():
 
 @main.route('/')
 def index():
-    return render_template('LandingPage.html', usuario=usuario_actual())
+    productos_destacados = []
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "SELECT id, nombre, descripcion_ia, imagen_url, precio_referencia, acabado, uso "
+            "FROM productos WHERE activo = 1 ORDER BY id LIMIT 3"
+        )
+        productos_destacados = cur.fetchall()
+        cur.close()
+    except Exception:
+        pass
+    return render_template('LandingPage.html', usuario=usuario_actual(), productos=productos_destacados)
 
 
 @main.route('/login', methods=['GET', 'POST'])
@@ -55,9 +66,9 @@ def login():
             set_access_cookies(response, token)
             return response
 
-        return render_template('Iniciosesion.html', error='Correo o contraseña incorrectos.', email=email)
+        return render_template('Iniciosesion.html', error='Correo o contraseña incorrectos.', email=email, usuario=usuario_actual())
 
-    return render_template('Iniciosesion.html')
+    return render_template('Iniciosesion.html', usuario=usuario_actual())
 
 
 @main.route('/registro', methods=['GET', 'POST'])
@@ -69,10 +80,10 @@ def registro():
         confirm_password = request.form.get('confirmPassword', '')
 
         if not nombre or not email or not password or not confirm_password:
-            return render_template('Registro.html', error='Todos los campos son requeridos.', nombre=nombre, email=email)
+            return render_template('Registro.html', error='Todos los campos son requeridos.', nombre=nombre, email=email, usuario=usuario_actual())
 
         if password != confirm_password:
-            return render_template('Registro.html', error='Las contraseñas no coinciden.', nombre=nombre, email=email)
+            return render_template('Registro.html', error='Las contraseñas no coinciden.', nombre=nombre, email=email, usuario=usuario_actual())
 
         password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
@@ -89,15 +100,15 @@ def registro():
             print(f"[ERROR REGISTRO] {type(e).__name__}: {e}")
             # Error 1062 = Duplicate entry en MySQL
             if hasattr(e, 'args') and e.args and e.args[0] == 1062:
-                return render_template('Registro.html', error='El correo ya está registrado.', nombre=nombre, email=email)
-            return render_template('Registro.html', error=f'Error al crear la cuenta: {e}', nombre=nombre, email=email)
+                return render_template('Registro.html', error='El correo ya está registrado.', nombre=nombre, email=email, usuario=usuario_actual())
+            return render_template('Registro.html', error=f'Error al crear la cuenta: {e}', nombre=nombre, email=email, usuario=usuario_actual())
 
         token = create_access_token(identity=str(usuario_id))
         response = make_response(redirect(url_for('main.index')))
         set_access_cookies(response, token)
         return response
 
-    return render_template('Registro.html')
+    return render_template('Registro.html', usuario=usuario_actual())
 
 
 @main.route('/logout', methods=['POST'])
@@ -116,14 +127,19 @@ def catalogo():
     try:
         cur = mysql.connection.cursor()
         cur.execute(
-            "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, acabado, uso "
-            "FROM productos WHERE activo = 1 ORDER BY nombre"
+            "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
+            "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, "
+            "p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+            "c.nombre AS categoria "
+            "FROM productos p "
+            "LEFT JOIN categorias c ON p.categoria_id = c.id "
+            "WHERE p.activo = 1 ORDER BY p.nombre"
         )
         productos = cur.fetchall()
         cur.close()
     except Exception:
         error = 'El catálogo todavía no está disponible. Intenta de nuevo más tarde.'
-    return render_template('Usuario-Catalogo.html', productos=productos, usuario=usuario_actual(), error=error)
+    return render_template('catalogo.html', productos=productos, usuario=usuario_actual(), error=error)
 
 
 # ── Rutas protegidas (requieren login) ───────────────────
@@ -287,6 +303,39 @@ def resultado_asesoria(asesoria_id):
     return render_template('Usuario-ProductoRecomendado.html',
                            resultado=resultado,
                            complemento=complemento,
+                           usuario=usuario_actual())
+
+
+@main.route('/producto/<int:producto_id>')
+def detalle_producto(producto_id):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
+        "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, p.link_compra_ml, "
+        "p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+        "c.nombre AS categoria "
+        "FROM productos p "
+        "LEFT JOIN categorias c ON p.categoria_id = c.id "
+        "WHERE p.id = %s AND p.activo = 1",
+        (producto_id,)
+    )
+    producto = cur.fetchone()
+    if not producto:
+        cur.close()
+        from flask import abort
+        abort(404)
+    cur.execute(
+        "SELECT p.nombre, p.imagen_url, c.tipo, c.proporcion "
+        "FROM complementos c "
+        "JOIN productos p ON c.complemento_id = p.id "
+        "WHERE c.producto_id = %s",
+        (producto_id,)
+    )
+    complementos = cur.fetchall()
+    cur.close()
+    return render_template('Usuario-ProductoDetalle.html',
+                           producto=producto,
+                           complementos=complementos,
                            usuario=usuario_actual())
 
 
