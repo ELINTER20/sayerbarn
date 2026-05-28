@@ -112,31 +112,51 @@ def chat():
 
     # ── System prompt dinámico ────────────────────────────────────────
     system_prompt = (
-        "Eres un asesor experto en barnices y productos para madera de Sayer Dabet, "
-        "una marca líder en México especializada en barnices, pinturas y recubrimientos "
-        "para madera, metal y concreto.\n\n"
+        "Eres un asesor experto de Sayer Dabet, empresa mexicana de barnices y recubrimientos. "
+        "Tu trabajo es guiar al cliente para encontrar el producto correcto, "
+        "igual que lo haría un vendedor experto en tienda.\n\n"
 
-        "Tu misión es ayudar al cliente a elegir el producto correcto. "
-        "Sigue estas reglas:\n"
-        "- Responde siempre en español, de forma amigable, clara y concisa.\n"
-        "- Haz UNA sola pregunta a la vez. Nunca hagas varias preguntas en el mismo mensaje.\n"
-        "- Si el cliente no ha mencionado la superficie (madera, metal, concreto), pregunta eso primero.\n"
-        "- Luego pregunta si es para interior o exterior.\n"
-        "- Luego pregunta el área aproximada en metros cuadrados.\n"
-        "- Con esos tres datos, recomienda un producto del catálogo.\n"
-        "- Cuando recomiendes un producto, calcula los litros necesados: "
-        "divide el área entre el rendimiento promedio y redondea hacia arriba. "
-        "Sugiere siempre comprar un 10-15% extra por repasos.\n"
-        "- Si el producto requiere un complemento (diluyente o catalizador), menciónalo.\n"
-        "- Mantén respuestas cortas: máximo 3 párrafos.\n"
-        "- IMPORTANTE: Si el cliente menciona una superficie que no está en el catálogo, "
-        "informa de inmediato que no tienes productos para esa superficie y sugiere "
-        "acercarse a una sucursal. No sigas haciendo preguntas innecesarias.\n"
-        "- Solo recomienda productos del catálogo actual. "
-        "Si ningún producto encaja, dile al cliente que se acerque a una sucursal.\n"
-        "- Si el cliente pregunta algo fuera del tema de barnices, redirige amablemente.\n\n"
+        "CÓMO DEBES COMPORTARTE:\n"
+        "- Conduce la conversación tú mismo desde el inicio. No esperes que el cliente sepa qué decir.\n"
+        "- Haz UNA sola pregunta a la vez y espera la respuesta antes de continuar.\n"
+        "- Decide qué preguntar según lo que el cliente ya respondió. No sigas un orden fijo.\n"
+        "- Con 3 o 4 respuestas normalmente ya tienes suficiente para recomendar. No hagas más preguntas de las necesarias.\n"
+        "- Si la primera respuesta ya te da suficiente contexto, recomienda directamente.\n"
+        "- Siempre necesitas saber al menos: superficie, uso (interior/exterior) y área aproximada.\n"
+        "- Si el cliente menciona una superficie que no está en el catálogo, responde con sin_resultado de inmediato.\n"
+        "- Solo recomienda productos del catálogo. Si ninguno encaja, usa sin_resultado.\n\n"
 
-        f"CATÁLOGO ACTUAL DE PRODUCTOS:\n\n{catalogo_texto}"
+        "REGLAS PARA LAS OPCIONES DE RESPUESTA:\n"
+        "- Cada opción debe tener máximo 4 palabras. Cortas y claras.\n"
+        "- Usa entre 2 y 4 opciones por pregunta. Nunca más de 4.\n"
+        "- Las opciones deben cubrir los casos reales más comunes del catálogo.\n"
+        "- Para área siempre usa: ['Menos de 5 m²', '5 a 15 m²', '15 a 30 m²', 'Más de 30 m²']\n"
+        "- Para uso siempre usa: ['Interior', 'Exterior', 'Ambos']\n"
+        "- Para acabado usa: ['Brillante', 'Semi mate', 'Mate', 'Sin preferencia']\n"
+        "- Para superficie usa: ['Madera', 'Metal', 'Concreto', 'Otro']\n"
+        "- Para preguntas de sí/no usa siempre: ['Sí', 'No', 'No estoy seguro']\n\n"
+
+        "CÁLCULO DE LITROS:\n"
+        "- Divide el área entre el rendimiento promedio del producto y redondea hacia arriba.\n"
+        "- Si el área fue una opción de rango, usa el valor medio del rango (ej: '5 a 15 m²' = 10 m²).\n"
+        "- Suma siempre un 15% extra por repasos.\n"
+        "- Si el producto requiere diluyente o catalizador, indícalo en el campo complemento.\n\n"
+
+        "FORMATO DE RESPUESTA — CRÍTICO:\n"
+        "Responde SIEMPRE con un JSON válido. Sin texto antes ni después. Sin markdown.\n\n"
+
+        "Pregunta al usuario:\n"
+        '{"tipo": "pregunta", "texto": "¿pregunta aquí?", "opciones": ["Op 1", "Op 2", "Op 3"]}\n\n'
+
+        "Cuando tengas suficiente información para recomendar:\n"
+        '{"tipo": "recomendacion", "producto": "nombre", "clave": "clave", '
+        '"litros": 2.5, "complemento": "nombre o null", '
+        '"mensaje": "por qué este producto en máximo 2 oraciones"}\n\n'
+
+        "Cuando no hay producto disponible o la superficie no está en catálogo:\n"
+        '{"tipo": "sin_resultado", "mensaje": "explicación breve y qué debe hacer el cliente"}\n\n'
+
+        f"CATÁLOGO ACTUAL:\n\n{catalogo_texto}"
     )
 
     messages = (
@@ -150,15 +170,30 @@ def chat():
         return jsonify({'error': 'La API key de OpenAI no está configurada.'}), 500
 
     try:
+        import json as json_lib
         client = OpenAI(api_key=api_key)
         completion = client.chat.completions.create(
             model='gpt-4o-mini',
             messages=messages,
             max_tokens=500,
             temperature=0.7,
+            response_format={"type": "json_object"},
         )
-        reply = completion.choices[0].message.content
-        return jsonify({'response': reply})
+        raw = completion.choices[0].message.content
+
+        # Intentar parsear el JSON que regresa la IA
+        try:
+            parsed = json_lib.loads(raw)
+        except Exception:
+            # Si falla el parse, regresar como pregunta genérica para no romper el flujo
+            print(f"[WARN CHAT] La IA no regresó JSON válido: {raw[:200]}")
+            parsed = {
+                "tipo": "pregunta",
+                "texto": raw,
+                "opciones": []
+            }
+
+        return jsonify(parsed)
     except Exception as e:
         print(f"[ERROR CHAT] {type(e).__name__}: {e}")
         return jsonify({'error': 'Error al contactar al asistente. Intenta de nuevo.'}), 500
@@ -418,3 +453,67 @@ def eliminar_producto(producto_id):
         abort(404, description='Producto no encontrado')
 
     return jsonify({'message': 'Producto eliminado.'}), 200
+
+@api_bp.route('/api/guardar-asesoria', methods=['POST'])
+def guardar_asesoria():
+    from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+    from app.routes import usuario_actual
+
+    data = request.get_json(silent=True) or {}
+    clave       = (data.get('clave') or '').strip()
+    superficie  = (data.get('superficie') or '').strip()
+    uso         = (data.get('uso') or '').strip()
+    area_m2     = data.get('area_m2')
+    litros      = data.get('litros')
+
+    if not clave:
+        return jsonify({'error': 'Clave de producto requerida'}), 400
+
+    # Buscar el producto real en la BD por clave o por nombre
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT id, nombre, descripcion_ia, imagen_url, rendimiento_min, "
+        "link_compra_ml, acabado, uso "
+        "FROM productos WHERE clave = %s AND activo = 1 LIMIT 1",
+        (clave,)
+    )
+    producto = cur.fetchone()
+
+    # Si no encontró por clave, intentar por nombre (por si la IA devolvió el nombre)
+    if not producto:
+        nombre_ia = (data.get('producto') or '').strip()
+        if nombre_ia:
+            cur.execute(
+                "SELECT id, nombre, descripcion_ia, imagen_url, rendimiento_min, "
+                "link_compra_ml, acabado, uso "
+                "FROM productos WHERE nombre LIKE %s AND activo = 1 LIMIT 1",
+                (f"%{nombre_ia}%",)
+            )
+            producto = cur.fetchone()
+
+    if not producto:
+        cur.close()
+        return jsonify({'error': 'Producto no encontrado en catálogo'}), 404
+
+    # Calcular litros si no vienen del frontend
+    if not litros and area_m2 and producto.get('rendimiento_min'):
+        try:
+            litros = round(float(area_m2) / float(producto['rendimiento_min']) * 1.15, 2)
+        except Exception:
+            litros = None
+
+    # Obtener usuario actual (puede ser None si no está logueado)
+    usuario = usuario_actual()
+    user_id = usuario['id'] if usuario else None
+
+    # Guardar asesoría en la BD
+    cur.execute(
+        "INSERT INTO asesorias (usuario_id, superficie, uso, area_m2, litros_estimados, producto_recomendado_id) "
+        "VALUES (%s, %s, %s, %s, %s, %s)",
+        (user_id, superficie or None, uso or None, area_m2 or None, litros, producto['id'])
+    )
+    mysql.connection.commit()
+    asesoria_id = cur.lastrowid
+    cur.close()
+
+    return jsonify({'asesoria_id': asesoria_id}), 201
