@@ -321,17 +321,10 @@
                             <p class="font-label-md text-label-md text-primary mb-3">Rendimiento: {{ producto.rendimiento_min }} m²/L</p>
                             {% endif %}
                             <div class="flex flex-col gap-2 mt-auto">
-                                {% if producto.precio_referencia %}
-                                <a href="{{ url_for('main.catalogo') }}"
+                                <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}"
                                     class="w-full font-label-md text-label-md text-on-primary bg-primary-container px-4 py-2 rounded-full hover:bg-primary-container/90 transition-colors shadow-sm text-center">
                                     Ver producto
                                 </a>
-                                {% else %}
-                                <a href="{{ url_for('main.asesoria') }}"
-                                    class="w-full font-label-md text-label-md text-primary-container bg-surface-container-lowest border border-primary-container px-4 py-2 rounded-full hover:bg-primary-container/5 transition-colors text-center">
-                                    Solicitar asesoría
-                                </a>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
