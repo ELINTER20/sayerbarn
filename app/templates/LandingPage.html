@@ -167,6 +167,27 @@
             </nav>
             <!-- Actions -->
             <div class="hidden md:flex items-center space-x-unit-md">
+                {% if usuario %}
+                <!-- User Profile Menu -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="p-4 border-b border-outline-variant">
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario[1] }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario[2] }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Cerrar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
                 <a href="{{ url_for('main.login') }}"
                     class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 scale-95 active:scale-90 transition-transform">
                     Iniciar sesión
@@ -175,6 +196,7 @@
                     class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity scale-95 active:scale-90 transition-transform">
                     Registrarse
                 </a>
+                {% endif %}
             </div>
             <!-- Mobile Menu Toggle (Decorative) -->
             <button class="md:hidden text-primary">
@@ -187,24 +209,30 @@
     <main class="flex-grow">
         <!-- Hero Section -->
         <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl md:py-[80px]">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center">
-                <div class="space-y-unit-lg pr-0 md:pr-unit-xl">
+            <div class="flex flex-row gap-unit-lg md:gap-gutter items-center">
+                <div class="space-y-unit-lg w-1/2">
                     <h1
                         class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary">
-                        Encuentra el barniz ideal en segundos
+                        Encuentra el barniz perfecto para tu proyecto
                     </h1>
                     <p class="font-body-lg text-body-lg text-on-surface-variant">
                         Te guiamos paso a paso hasta el producto correcto.
                     </p>
-                    <div class="pt-unit-sm">
+                    <div class="pt-unit-sm flex flex-wrap gap-unit-md">
                         <a href="{{ url_for('main.asesoria') }}"
                             class="bg-primary-container text-on-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(0,31,107,0.15)] flex items-center space-x-2">
                             <span>Comenzar asesoría</span>
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </a>
+                        <a href="{{ url_for('main.catalogo') }}"
+                            class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200 flex items-center space-x-2">
+                            <span>Ver catálogo</span>
+                            <span class="material-symbols-outlined text-[18px]">grid_view</span>
+                        </a>
+                    </div>
                 </div>
                 <div
-                    class="mt-unit-xl md:mt-0 relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,31,107,0.05)] aspect-[4/3] bg-surface-variant">
+                    class="w-1/2 relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,31,107,0.05)] aspect-[4/3] bg-surface-variant">
                     <img alt="" class="absolute inset-0 w-full h-full object-cover"
                         src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYG1OTwTWxpwSb_A8OfBugXdmxjJx_b7i98dYcPorzMVsBIFFThmpLDHpPosOfLcCuQ-GRUcwbrB9EH7aQlmrH7DA9mc9neEBw3fX8PP6-S9UF0UmSCGiTjMe3SYKww892b4JXU6hCjy2IdIxORFNI934dqbTg4yPz8ZtwZZ_SViq2UYDpdXOhPINZ4XMHK2itWhnN2MU-Qt1aJdKDZt-_yb3uC-LEvFf-zvu17P_iU_-OWflRcFapHyrhAw9LKZXf9oup8JIGwGg" />
                 </div>
@@ -264,92 +292,43 @@
         <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl md:py-[80px]">
             <div class="flex justify-between items-end mb-unit-xl">
                 <h2 class="font-headline-lg text-headline-lg text-primary">Productos Destacados</h2>
+                <a href="{{ url_for('main.catalogo') }}" class="font-label-md text-label-md text-primary hover:underline flex items-center space-x-1">
+                    <span>Ver todos</span>
+                    <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                </a>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                <!-- Card 1 -->
-                <div
-                    class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
+                {% for producto in productos %}
+                <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
                     <div class="absolute top-0 left-0 w-full h-[4px] prism-stripe"></div>
                     <div class="aspect-square bg-surface-variant relative p-unit-lg flex items-center justify-center">
-                        <img alt="" class="max-w-full max-h-full object-contain drop-shadow-md"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtB9p_wHHA9WSr8N9qAEYHdWPmRA02lU0DwUrxUcK7eBS0behbQelB5G0RzZgmJ3i_nB593JPlCn3St2vPE7fKpvy_KleJU3u9x286WV_5d8V4KYT0Iu0WN3G4wRpGVyRBPlMo-JT6Pzwjb5t44izcI1sEMRSXMFIfTG8Rua11nfaS39fWXiTsKGAT8CMvhKALFQ50to9iCkn3NPM5IBrXmzgK_Plor0LEljUh6W8gOXKf5nQZnsgCmCe3_AA2EcPQNUr3oR1TprA" />
+                        {% if producto.imagen_url %}
+                        <img alt="{{ producto.nombre }}" class="max-w-full max-h-full object-contain drop-shadow-md" src="{{ producto.imagen_url }}" />
+                        {% else %}
+                        <span class="material-symbols-outlined text-[80px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                        {% endif %}
                     </div>
                     <div class="p-unit-lg flex flex-col flex-grow space-y-unit-md">
-                        <div
-                            class="inline-flex bg-[#E8EDF7] text-primary px-2 py-1 rounded font-label-sm text-label-sm self-start">
-                            Premium</div>
-                        <h3 class="font-headline-md text-headline-md text-primary">Barniz Premium Woodcraft</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">Acabado satinado de alta
-                            resistencia.</p>
-                        <div class="pt-unit-md border-t border-outline-variant/30 flex flex-col space-y-unit-sm">
-                            <a class="text-primary font-label-md text-label-md flex items-center hover:underline"
-                                href="#">
-                                <span class="material-symbols-outlined text-[16px] mr-1">description</span> Ver ficha
-                                técnica
+                        <div class="inline-flex bg-[#E8EDF7] text-primary px-2 py-1 rounded font-label-sm text-label-sm self-start">
+                            {{ producto.uso | capitalize if producto.uso else 'Producto' }}
+                        </div>
+                        <h3 class="font-headline-md text-headline-md text-primary">{{ producto.nombre }}</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">
+                            {{ producto.descripcion_ia[:90] ~ '…' if producto.descripcion_ia and producto.descripcion_ia | length > 90 else producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
+                        </p>
+                        <div class="pt-unit-md border-t border-outline-variant/30">
+                            <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}"
+                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift flex items-center justify-center space-x-2">
+                                <span>Ver producto</span>
                             </a>
-                            <button
-                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift">
-                                Ver en catálogo
-                            </button>
                         </div>
                     </div>
                 </div>
-                <!-- Card 2 -->
-                <div
-                    class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
-                    <div class="absolute top-0 left-0 w-full h-[4px] prism-stripe"></div>
-                    <div class="aspect-square bg-surface-variant relative p-unit-lg flex items-center justify-center">
-                        <img alt="" class="max-w-full max-h-full object-contain drop-shadow-md"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq26z7FDunrVL72gQUcJ8soh3sGen_hR8Dq_mzdVPs1DoBFW0IzyMlsjAuz4SNjLmUvU3rR0wVGgKki5mo1W_WfJJQlg3rVdn45y_aJbtZmTMlP_oh_QNJpteCbI8DqVKybuom6D7W3lUS7NWmshLeJ4YaI3GybGnBSdohKGTjqDeWns_eLfT4zQyBCxytYHJZQYzcM-tSFfOiZ8ngVUIbY9UsEZYhDW6otnCCYMkxX8iaM1OUzqdv2cio9p91oApDVTdazwMV7IQ" />
-                    </div>
-                    <div class="p-unit-lg flex flex-col flex-grow space-y-unit-md">
-                        <div
-                            class="inline-flex bg-[#E8EDF7] text-primary px-2 py-1 rounded font-label-sm text-label-sm self-start">
-                            Interior</div>
-                        <h3 class="font-headline-md text-headline-md text-primary">Pintura Interior SayerBarn</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">Máxima cobertura y
-                            durabilidad.</p>
-                        <div class="pt-unit-md border-t border-outline-variant/30 flex flex-col space-y-unit-sm">
-                            <a class="text-primary font-label-md text-label-md flex items-center hover:underline"
-                                href="#">
-                                <span class="material-symbols-outlined text-[16px] mr-1">description</span> Ver ficha
-                                técnica
-                            </a>
-                            <button
-                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift">
-                                Ver en catálogo
-                            </button>
-                        </div>
-                    </div>
+                {% else %}
+                <div class="col-span-3 text-center py-unit-xl text-on-surface-variant font-body-md text-body-md">
+                    No hay productos disponibles en este momento.
                 </div>
-                <!-- Card 3 -->
-                <div
-                    class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
-                    <div class="absolute top-0 left-0 w-full h-[4px] prism-stripe"></div>
-                    <div class="aspect-square bg-surface-variant relative p-unit-lg flex items-center justify-center">
-                        <img alt="" class="max-w-full max-h-full object-contain drop-shadow-md"
-                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMxTkGMV3DfCp_-uJyo8rf0dEIGI8BNdxKscPa7mNFxgR4l9JTRniqCjOkczpp53buhFVqng_fPz9H5FDPoWvH87TuV71xdcDxfH6XHZn9CHG5y19foV6V3gsQy_JXbmx_6y--_tRtWbE8qNAQ7C2fL77nupjlqL62BHUY5YnaJ1jPbxo6sinm3XXJVYFShuo-IDDjC4AxiWar3vRyJSBqw4pedNshSbHxuwDvJsZyafVq3hMt6N_T2j0ZVYGaRBFThgnn6XMkOg0" />
-                    </div>
-                    <div class="p-unit-lg flex flex-col flex-grow space-y-unit-md">
-                        <div
-                            class="inline-flex bg-[#E8EDF7] text-primary px-2 py-1 rounded font-label-sm text-label-sm self-start">
-                            Exterior</div>
-                        <h3 class="font-headline-md text-headline-md text-primary">Sellador de Deck GuardWell</h3>
-                        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">Protección total contra
-                            rayos UV.</p>
-                        <div class="pt-unit-md border-t border-outline-variant/30 flex flex-col space-y-unit-sm">
-                            <a class="text-primary font-label-md text-label-md flex items-center hover:underline"
-                                href="#">
-                                <span class="material-symbols-outlined text-[16px] mr-1">description</span> Ver ficha
-                                técnica
-                            </a>
-                            <button
-                                class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift">
-                                Ver en catálogo
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </section>
     </main>
@@ -364,8 +343,7 @@
                 </div>
                 <p class="font-body-md text-body-md text-primary-fixed-dim/80">La Mejor Pintura</p>
                 <div class="pt-unit-md">
-                    <p class="font-body-md text-body-md text-on-primary opacity-80">© 2024 SayerBarn. Sayer Dabet
-                        Branding.</p>
+                    <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
                 </div>
             </div>
             <!-- Links Column -->
