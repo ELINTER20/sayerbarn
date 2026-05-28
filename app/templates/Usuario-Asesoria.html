@@ -150,18 +150,30 @@
                     href="{{ url_for('main.catalogo') }}">Catálogo</a>
             </nav>
             <!-- Actions -->
+<<<<<<< HEAD
+            <div class="hidden md:flex items-center gap-unit-sm">
+                {% if usuario %}
+=======
             <div class="hidden md:flex items-center space-x-unit-md">
                 {% if usuario %}
                 <!-- User Profile Menu -->
+>>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
                 <div class="relative group">
                     <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
                         <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </button>
+<<<<<<< HEAD
+                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="p-4 border-b border-outline-variant">
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
+=======
                     <!-- Dropdown Menu -->
                     <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div class="p-4 border-b border-outline-variant">
                             <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario[1] }}</p>
                             <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario[2] }}</p>
+>>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
                         </div>
                         <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
                             <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
@@ -173,18 +185,31 @@
                 </div>
                 {% else %}
                 <a href="{{ url_for('main.login') }}"
+<<<<<<< HEAD
+                    class="font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors">
+                    Iniciar sesión
+                </a>
+                <a href="{{ url_for('main.registro') }}"
+                    class="font-label-md text-label-md bg-primary text-on-primary px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors scale-95 active:scale-90 shadow-sm">
+=======
                     class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 scale-95 active:scale-90 transition-transform">
                     Iniciar sesión
                 </a>
                 <a href="{{ url_for('main.registro') }}"
                     class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity scale-95 active:scale-90 transition-transform">
+>>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
                     Registrarse
                 </a>
                 {% endif %}
             </div>
+<<<<<<< HEAD
+            <button class="md:hidden p-2 text-on-surface-variant">
+                <span class="material-symbols-outlined">menu</span>
+=======
             <!-- Mobile Menu Toggle -->
             <button class="md:hidden text-primary">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+>>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
             </button>
         </div>
         <!-- Subtle Prism Stripe Accent -->
