@@ -170,151 +170,53 @@
     </nav>
     <!-- Main Content Canvas -->
     <main class="flex-grow flex items-center justify-center p-margin-mobile md:p-margin-desktop">
-        <form method="POST" action="{{ url_for('main.asesoria') }}" class="w-full flex justify-center">
-            <!-- Onboarding Question Card -->
-            <div
-                class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden relative">
-                <!-- Progress Bar -->
+        <div class="w-full flex justify-center">
+            <!-- Tarjeta principal -->
+            <div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden relative">
+
+                <!-- Barra de progreso -->
                 <div class="w-full h-1 bg-surface-variant absolute top-0 left-0">
-                    <div class="h-full bg-primary-container w-full transition-all duration-500 rounded-r-full"></div>
+                    <div id="progress-bar" class="h-full bg-primary transition-all duration-500 rounded-r-full" style="width: 0%"></div>
                 </div>
+
                 <div class="p-unit-lg md:p-unit-xl">
-                    <!-- Error display -->
-                    {% if error %}
-                    <div class="bg-error-container text-on-error-container rounded-lg px-unit-md py-unit-sm mb-unit-md font-body-md text-body-md">
-                        {{ error }}
-                    </div>
-                    {% endif %}
-                    <!-- Header area with Back button -->
+
+                    <!-- Header con botón volver -->
                     <div class="flex items-center mb-unit-lg">
-                        <a href="{{ url_for('main.index') }}" aria-label="Volver"
-                            class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
-                            <span class="material-symbols-outlined"
-                                style="font-variation-settings: 'FILL' 0;">arrow_back</span>
-                        </a>
+                        <button id="btn-volver" onclick="pasoAnterior()" class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+                        </button>
                         <span class="ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría de producto</span>
                     </div>
 
-                    <!-- PREGUNTA 1: Superficie -->
-                    <h1
-                        class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-xl">
-                        ¿Qué superficie vas a tratar?
-                    </h1>
-                    <!-- Options Grid -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-unit-md mb-unit-xl">
-                        <!-- Option: Madera -->
-                        <label class="cursor-pointer group">
-                            <input class="peer sr-only" name="superficie" type="radio" value="madera" />
-                            <div
-                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                                <span
-                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">nature</span>
-                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Madera</span>
-                            </div>
-                        </label>
-                        <!-- Option: Metal -->
-                        <label class="cursor-pointer group">
-                            <input class="peer sr-only" name="superficie" type="radio" value="metal" />
-                            <div
-                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                                <span
-                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">precision_manufacturing</span>
-                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Metal</span>
-                            </div>
-                        </label>
-                        <!-- Option: Concreto -->
-                        <label class="cursor-pointer group">
-                            <input class="peer sr-only" name="superficie" type="radio" value="concreto" />
-                            <div
-                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                                <span
-                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">foundation</span>
-                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Concreto</span>
-                            </div>
-                        </label>
-                        <!-- Option: Otro -->
-                        <label class="cursor-pointer group">
-                            <input class="peer sr-only" name="superficie" type="radio" value="otro" />
-                            <div
-                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                                <span
-                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">category</span>
-                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Otro</span>
-                            </div>
-                        </label>
-                    </div>
-                    <!-- Custom Input Area -->
-                    <div class="relative mt-unit-md">
-                        <div aria-hidden="true" class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-surface-variant"></div>
+                    <!-- Contenedor de pasos -->
+                    <div id="pasos-container"></div>
+
+                    <!-- Indicador de carga (oculto por default) -->
+                    <div id="loading-indicator" class="hidden flex flex-col items-center justify-center py-unit-xl gap-unit-md">
+                        <div class="flex gap-2">
+                            <span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0s"></span>
+                            <span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.15s"></span>
+                            <span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.3s"></span>
                         </div>
-                        <div class="relative flex justify-center">
-                            <span
-                                class="bg-surface-container-lowest px-4 font-label-sm text-label-sm text-outline uppercase tracking-wider">O
-                                especifica</span>
-                        </div>
-                    </div>
-                    <div class="mt-unit-md">
-                        <input
-                            class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg p-4 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
-                            name="superficie_custom"
-                            placeholder="Escribe la superficie aquí..." type="text" />
+                        <p class="font-body-md text-body-md text-on-surface-variant">Buscando el producto ideal para ti...</p>
                     </div>
 
-                    <!-- PREGUNTA 2: Uso -->
-                    <h2
-                        class="font-headline-md text-headline-md text-on-surface mt-unit-xl mb-unit-md">
-                        ¿Para qué ambiente?
-                    </h2>
-                    <div class="grid grid-cols-2 gap-unit-md">
-                        <label class="cursor-pointer group">
-                            <input class="peer sr-only" name="uso" type="radio" value="interior" required />
-                            <div
-                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                                <span
-                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">home</span>
-                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Interior</span>
-                            </div>
-                        </label>
-                        <label class="cursor-pointer group">
-                            <input class="peer sr-only" name="uso" type="radio" value="exterior" required />
-                            <div
-                                class="bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 peer-checked:border-primary peer-checked:bg-surface-container-low hover:border-primary hover:shadow-sm">
-                                <span
-                                    class="material-symbols-outlined text-[32px] text-on-surface-variant group-hover:text-primary transition-colors">park</span>
-                                <span class="font-body-lg text-body-lg text-on-surface font-semibold">Exterior</span>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- PREGUNTA 3: Área -->
-                    <h2
-                        class="font-headline-md text-headline-md text-on-surface mt-unit-xl mb-unit-md">
-                        ¿Cuántos m² vas a tratar?
-                    </h2>
-                    <div>
-                        <input
-                            class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg p-4 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
-                            name="area_m2"
-                            type="number"
-                            min="0.1"
-                            step="0.1"
-                            placeholder="Ej: 25.5"
-                            required />
-                        <p class="mt-unit-xs font-label-sm text-label-sm text-outline">Metros cuadrados totales a cubrir</p>
-                    </div>
                 </div>
-                <!-- Bottom Actions -->
-                <div
-                    class="bg-surface-container-low px-unit-lg py-unit-md flex justify-end items-center border-t border-surface-variant">
-                    <button type="submit"
-                        class="font-label-md text-label-md bg-primary text-on-primary px-6 py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2">
-                        Obtener recomendación
-                        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+
+                <!-- Botón de acción inferior -->
+                <div id="footer-actions" class="bg-surface-container-low px-unit-lg py-unit-md flex justify-between items-center border-t border-surface-variant">
+                    <p id="paso-label" class="font-label-sm text-label-sm text-outline"></p>
+                    <button id="btn-siguiente" onclick="pasoSiguiente()"
+                        class="font-label-md text-label-md bg-primary text-on-primary px-6 py-3 rounded-lg hover:bg-primary-container transition-colors shadow-sm flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                        disabled>
+                        Siguiente
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                     </button>
                 </div>
+
             </div>
-        </form>
+        </div>
     </main>
     <!-- Footer -->
     <footer class="bg-primary dark:bg-tertiary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
@@ -344,6 +246,194 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // ── Estado ────────────────────────────────────────────────────
+        let historial = [];      // historial completo para /api/chat
+        let pasoNum = 0;         // contador para la barra de progreso
+        let isLoading = false;
+
+        const $ = id => document.getElementById(id);
+
+        // ── Actualizar barra de progreso ──────────────────────────────
+        // No sabemos cuántos pasos habrá, así que avanzamos progresivamente
+        // sin llegar al 100% hasta la recomendación final
+        function avanzarProgreso() {
+            pasoNum++;
+            // Crece rápido al inicio y se frena para no llegar al 100% antes de tiempo
+            const pct = Math.min(90, pasoNum * 18);
+            $('progress-bar').style.width = pct + '%';
+            $('paso-label').textContent = 'Paso ' + pasoNum;
+        }
+
+        // ── Mostrar loading ───────────────────────────────────────────
+        function setLoading(loading) {
+            isLoading = loading;
+            $('loading-indicator').classList.toggle('hidden', !loading);
+            $('pasos-container').classList.toggle('hidden', loading);
+            if (loading) $('footer-actions').classList.add('hidden');
+        }
+
+        // ── Renderizar pregunta con tarjetas ──────────────────────────
+        function renderPregunta(texto, opciones) {
+            $('footer-actions').classList.add('hidden');
+            const c = $('pasos-container');
+            c.innerHTML = '';
+
+            // Título de la pregunta
+            const h1 = document.createElement('h1');
+            h1.className = 'font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-xl';
+            h1.textContent = texto;
+            c.appendChild(h1);
+
+            // Grid de tarjetas
+            const grid = document.createElement('div');
+            // 2 columnas si hay 2-4 opciones
+            grid.className = opciones.length <= 2
+                ? 'grid grid-cols-2 gap-unit-md mb-unit-md'
+                : 'grid grid-cols-2 gap-unit-md mb-unit-md';
+            c.appendChild(grid);
+
+            opciones.forEach(function(op) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 hover:border-primary hover:shadow-sm hover:bg-surface-container-low font-body-lg text-body-lg text-on-surface font-semibold cursor-pointer';
+                btn.textContent = op;
+
+                btn.addEventListener('click', function() {
+                    if (isLoading) return;
+                    // Marcar visualmente
+                    grid.querySelectorAll('button').forEach(function(b) {
+                        b.classList.remove('border-primary', 'bg-surface-container-low');
+                        b.disabled = true;
+                    });
+                    this.classList.add('border-primary', 'bg-surface-container-low');
+                    // Enviar respuesta
+                    enviarRespuesta(op);
+                });
+
+                grid.appendChild(btn);
+            });
+
+            avanzarProgreso();
+        }
+
+        // ── Mostrar recomendación final ───────────────────────────────
+        function mostrarRecomendacion(data) {
+            $('footer-actions').classList.add('hidden');
+            $('progress-bar').style.width = '100%';
+            $('paso-label').textContent = '';
+
+            const c = $('pasos-container');
+            const complementoHTML = data.complemento
+                ? '<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-4 py-2 rounded-full">+ ' + data.complemento + '</span>'
+                : '';
+
+            c.innerHTML =
+                '<div class="flex flex-col gap-unit-md">' +
+                    '<p class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Producto recomendado</p>' +
+                    '<p class="font-headline-lg text-headline-lg text-on-surface font-bold">' + data.producto + '</p>' +
+                    '<p class="font-label-sm text-label-sm text-outline mb-unit-xs">' + data.clave + '</p>' +
+                    '<p class="font-body-lg text-body-lg text-on-surface-variant">' + data.mensaje + '</p>' +
+                    '<div class="flex flex-wrap gap-unit-sm mt-unit-xs">' +
+                        '<span class="bg-primary/10 text-primary font-label-md text-label-md px-4 py-2 rounded-full">🧴 ' + data.litros + ' litros estimados</span>' +
+                        complementoHTML +
+                    '</div>' +
+                    '<button onclick="reiniciar()" class="mt-unit-md font-label-md text-label-md text-primary border border-primary/30 px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors w-fit">Nueva consulta</button>' +
+                '</div>';
+        }
+
+        // ── Mostrar sin resultado ─────────────────────────────────────
+        function mostrarSinResultado(data) {
+            $('footer-actions').classList.add('hidden');
+            $('progress-bar').style.width = '100%';
+            $('paso-label').textContent = '';
+
+            const c = $('pasos-container');
+            c.innerHTML =
+                '<div class="flex flex-col items-center text-center gap-unit-md py-unit-lg">' +
+                    '<div class="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-unit-sm">' +
+                        '<span class="material-symbols-outlined text-[48px] text-primary-container" style="font-variation-settings: \'FILL\' 0;">search_off</span>' +
+                    '</div>' +
+                    '<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">' +
+                        'No encontramos un producto para tu caso' +
+                    '</h1>' +
+                    '<p class="font-body-lg text-body-lg text-on-surface-variant mb-unit-sm">' + data.mensaje + '</p>' +
+                    '<div class="flex flex-col sm:flex-row gap-unit-md w-full justify-center mt-unit-sm">' +
+                        '<button onclick="reiniciar()" class="w-full sm:w-auto font-label-md text-label-md text-on-primary bg-primary-container px-8 py-3 rounded-full hover:bg-primary transition-colors shadow-sm">Intentar de nuevo</button>' +
+                        '<a href="#" class="w-full sm:w-auto font-label-md text-label-md text-primary border-2 border-primary px-8 py-3 rounded-full hover:bg-surface-container-low transition-colors text-center">Contactar asesor</a>' +
+                    '</div>' +
+                '</div>';
+        }
+
+        // ── Enviar respuesta a la IA y procesar lo que devuelve ───────
+        async function enviarRespuesta(mensaje) {
+            if (isLoading) return;
+            setLoading(true);
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: mensaje, history: historial })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || data.error) {
+                    $('pasos-container').innerHTML =
+                        '<p class="text-error font-body-md">Ocurrió un error. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
+                    setLoading(false);
+                    return;
+                }
+
+                // Guardar turno en el historial
+                const resumenIA = data.tipo === 'pregunta' ? data.texto
+                    : data.tipo === 'recomendacion' ? 'Recomendación: ' + data.producto
+                    : data.mensaje || '';
+
+                historial.push({ role: 'user', content: mensaje });
+                historial.push({ role: 'assistant', content: resumenIA });
+
+                setLoading(false);
+
+                if (data.tipo === 'pregunta') {
+                    renderPregunta(data.texto, data.opciones);
+                } else if (data.tipo === 'recomendacion') {
+                    mostrarRecomendacion(data);
+                } else if (data.tipo === 'sin_resultado') {
+                    mostrarSinResultado(data);
+                } else {
+                    $('pasos-container').innerHTML =
+                        '<p class="text-error font-body-md">Respuesta inesperada. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
+                }
+
+            } catch(e) {
+                console.error(e);
+                setLoading(false);
+                $('pasos-container').innerHTML =
+                    '<p class="text-error font-body-md">No se pudo conectar. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
+            }
+        }
+
+        // ── Reiniciar desde cero ──────────────────────────────────────
+        function reiniciar() {
+            historial = [];
+            pasoNum = 0;
+            $('progress-bar').style.width = '0%';
+            $('paso-label').textContent = '';
+            $('footer-actions').classList.add('hidden');
+            arrancar();
+        }
+
+        // ── Arrancar — la IA hace la primera pregunta ─────────────────
+        function arrancar() {
+            enviarRespuesta('Hola, necesito que me ayudes a elegir un producto.');
+        }
+
+        window.addEventListener('DOMContentLoaded', arrancar);
+    </script>
+
 </body>
 
 </html>

@@ -213,22 +213,6 @@
             <!-- Chat Messages -->
             <div id="chat-messages" class="flex-grow overflow-y-auto p-unit-lg flex flex-col gap-unit-md">
 
-                <!-- Welcome message from AI -->
-                <div class="flex gap-unit-sm items-end" id="welcome-msg">
-                    <div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-on-primary text-[18px]"
-                            style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-                    </div>
-                    <div class="max-w-[80%]">
-                        <div class="bg-surface-container rounded-xl rounded-bl-sm px-unit-md py-unit-sm">
-                            <p class="font-body-md text-body-md text-on-surface">
-                                ¡Hola! Soy tu asesor de productos Sayer Dabet. Cuéntame sobre tu proyecto: ¿qué superficie vas a tratar y para qué ambiente?
-                            </p>
-                        </div>
-                        <p class="font-label-sm text-label-sm text-outline mt-1 ml-1">Asesor IA</p>
-                    </div>
-                </div>
-
             </div>
 
             <!-- Typing indicator (hidden by default) -->
@@ -246,28 +230,12 @@
                 </div>
             </div>
 
-            <!-- Input Area -->
-            <div class="border-t border-surface-variant bg-surface-container-low px-unit-lg py-unit-md">
-                <div class="flex gap-unit-sm items-end">
-                    <textarea
-                        id="chat-input"
-                        rows="1"
-                        placeholder="Escribe tu pregunta aquí..."
-                        class="flex-grow bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-xl px-4 py-3 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none resize-none overflow-hidden"
-                        style="max-height: 120px;"
-                    ></textarea>
-                    <button
-                        id="send-btn"
-                        aria-label="Enviar"
-                        class="w-12 h-12 bg-primary text-on-primary rounded-xl flex items-center justify-center hover:bg-primary-container transition-colors shadow-sm flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
-                    </button>
-                </div>
-                <p class="font-label-sm text-label-sm text-outline mt-unit-xs">
-                    Presiona Enter para enviar · Shift+Enter para nueva línea
-                </p>
+            <!-- Opciones de respuesta -->
+            <div id="options-area" class="border-t border-surface-variant bg-surface-container-low px-unit-lg py-unit-md hidden">
+                <p class="font-label-sm text-label-sm text-outline mb-unit-sm uppercase tracking-wider">Selecciona una opcion</p>
+                <div id="options-buttons" class="flex flex-wrap gap-unit-sm"></div>
             </div>
+        </div>
         </div>
     </main>
 
@@ -289,11 +257,10 @@
 
     <script>
         const chatMessages = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const sendBtn = document.getElementById('send-btn');
         const typingIndicator = document.getElementById('typing-indicator');
+        const optionsArea = document.getElementById('options-area');
+        const optionsButtons = document.getElementById('options-buttons');
 
-        // In-session conversation history
         let history = [];
         let isLoading = false;
 
@@ -301,60 +268,115 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        function appendMessage(role, content) {
+        function mkAvatar() {
+            const av = document.createElement('div');
+            av.className = 'w-9 h-9 rounded-full bg-primary flex items-center justify-center flex-shrink-0';
+            av.innerHTML = '<span class="material-symbols-outlined text-on-primary text-[18px]" style="font-variation-settings: \'FILL\' 1;">auto_awesome</span>';
+            return av;
+        }
+
+        function appendMessage(role, text) {
             const isUser = role === 'user';
             const wrapper = document.createElement('div');
-            wrapper.className = isUser
-                ? 'flex gap-unit-sm items-end justify-end'
-                : 'flex gap-unit-sm items-end';
-
-            if (!isUser) {
-                const avatar = document.createElement('div');
-                avatar.className = 'w-9 h-9 rounded-full bg-primary flex items-center justify-center flex-shrink-0';
-                avatar.innerHTML = '<span class="material-symbols-outlined text-on-primary text-[18px]" style="font-variation-settings: \'FILL\' 1;">auto_awesome</span>';
-                wrapper.appendChild(avatar);
-            }
+            wrapper.className = isUser ? 'flex gap-unit-sm items-end justify-end' : 'flex gap-unit-sm items-end';
+            if (!isUser) wrapper.appendChild(mkAvatar());
 
             const bubble = document.createElement('div');
             bubble.className = 'max-w-[80%]';
 
-            const text = document.createElement('div');
-            text.className = isUser
+            const box = document.createElement('div');
+            box.className = isUser
                 ? 'bg-primary text-on-primary rounded-xl rounded-br-sm px-unit-md py-unit-sm'
                 : 'bg-surface-container rounded-xl rounded-bl-sm px-unit-md py-unit-sm';
-
             const p = document.createElement('p');
-            p.className = 'font-body-md text-body-md ai-bubble-content';
-            p.textContent = content;
-            text.appendChild(p);
-            bubble.appendChild(text);
+            p.className = 'font-body-md text-body-md';
+            p.textContent = text;
+            box.appendChild(p);
+            bubble.appendChild(box);
 
-            const label = document.createElement('p');
-            label.className = isUser
+            const lbl = document.createElement('p');
+            lbl.className = isUser
                 ? 'font-label-sm text-label-sm text-outline mt-1 mr-1 text-right'
                 : 'font-label-sm text-label-sm text-outline mt-1 ml-1';
-            label.textContent = isUser ? 'Tú' : 'Asesor IA';
-            bubble.appendChild(label);
+            lbl.textContent = isUser ? 'Tu' : 'Asesor IA';
+            bubble.appendChild(lbl);
 
             wrapper.appendChild(bubble);
             chatMessages.appendChild(wrapper);
             scrollToBottom();
         }
 
-        function setLoading(loading) {
-            isLoading = loading;
-            sendBtn.disabled = loading;
-            chatInput.disabled = loading;
-            typingIndicator.classList.toggle('hidden', !loading);
-            if (loading) scrollToBottom();
+        function appendRecomendacion(data) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-unit-sm items-end';
+            wrapper.appendChild(mkAvatar());
+
+            const complementoHTML = data.complemento
+                ? '<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-3 py-1 rounded-full">+ ' + data.complemento + '</span>'
+                : '';
+
+            const card = document.createElement('div');
+            card.className = 'max-w-[85%] bg-primary/5 border border-primary/20 rounded-xl rounded-bl-sm px-unit-md py-unit-md';
+            card.innerHTML =
+                '<p class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-1">Producto recomendado</p>' +
+                '<p class="text-lg font-bold text-on-surface">' + data.producto + '</p>' +
+                '<p class="font-label-sm text-label-sm text-outline mb-2">' + data.clave + '</p>' +
+                '<p class="font-body-md text-body-md text-on-surface-variant mb-3">' + data.mensaje + '</p>' +
+                '<div class="flex flex-wrap gap-2 mb-3">' +
+                    '<span class="bg-primary/10 text-primary font-label-md text-label-md px-3 py-1 rounded-full">🧴 ' + data.litros + ' litros estimados</span>' +
+                    complementoHTML +
+                '</div>' +
+                '<button onclick="reiniciarChat()" class="font-label-md text-label-md text-primary border border-primary/30 px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Nueva consulta</button>';
+
+            wrapper.appendChild(card);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
         }
 
-        async function sendMessage() {
-            const message = chatInput.value.trim();
-            if (!message || isLoading) return;
+        function appendSinResultado(data) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex gap-unit-sm items-end';
+            wrapper.appendChild(mkAvatar());
 
-            chatInput.value = '';
-            chatInput.style.height = 'auto';
+            const card = document.createElement('div');
+            card.className = 'max-w-[85%] bg-surface-container rounded-xl rounded-bl-sm px-unit-md py-unit-md';
+            card.innerHTML =
+                '<p class="font-body-md text-body-md text-on-surface mb-3">' + data.mensaje + '</p>' +
+                '<button onclick="reiniciarChat()" class="font-label-md text-label-md text-primary border border-primary/30 px-4 py-2 rounded-lg hover:bg-primary/10 transition-colors">Intentar de nuevo</button>';
+
+            wrapper.appendChild(card);
+            chatMessages.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            typingIndicator.classList.toggle('hidden', !loading);
+            if (loading) {
+                optionsArea.classList.add('hidden');
+                scrollToBottom();
+            }
+        }
+
+        function renderOpciones(opciones) {
+            optionsButtons.innerHTML = '';
+            if (!opciones || opciones.length === 0) return;
+            opciones.forEach(function(op) {
+                const btn = document.createElement('button');
+                btn.textContent = op;
+                btn.className = 'font-label-md text-label-md bg-surface-container-lowest border border-outline-variant text-on-surface px-4 py-2 rounded-full hover:bg-primary hover:text-on-primary hover:border-primary transition-all';
+                btn.addEventListener('click', function() {
+                    optionsButtons.querySelectorAll('button').forEach(function(b) { b.disabled = true; });
+                    enviarMensaje(op);
+                });
+                optionsButtons.appendChild(btn);
+            });
+            optionsArea.classList.remove('hidden');
+            scrollToBottom();
+        }
+
+        async function enviarMensaje(message) {
+            if (!message || isLoading) return;
             appendMessage('user', message);
             setLoading(true);
 
@@ -362,41 +384,50 @@
                 const res = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message, history })
+                    body: JSON.stringify({ message: message, history: history })
                 });
-
                 const data = await res.json();
 
                 if (!res.ok || data.error) {
-                    appendMessage('assistant', data.error || 'Ocurrió un error. Intenta de nuevo.');
-                } else {
-                    history.push({ role: 'user', content: message });
-                    history.push({ role: 'assistant', content: data.response });
-                    appendMessage('assistant', data.response);
+                    appendMessage('assistant', data.error || 'Ocurrio un error.');
+                    return;
                 }
-            } catch {
-                appendMessage('assistant', 'No se pudo conectar con el servidor. Revisa tu conexión e intenta de nuevo.');
+
+                const resumen = data.tipo === 'pregunta' ? data.texto
+                    : data.tipo === 'recomendacion' ? 'Recomendacion: ' + data.producto
+                    : data.mensaje || '';
+
+                history.push({ role: 'user', content: message });
+                history.push({ role: 'assistant', content: resumen });
+
+                if (data.tipo === 'pregunta') {
+                    appendMessage('assistant', data.texto);
+                    renderOpciones(data.opciones);
+                } else if (data.tipo === 'recomendacion') {
+                    appendRecomendacion(data);
+                } else if (data.tipo === 'sin_resultado') {
+                    appendSinResultado(data);
+                } else {
+                    appendMessage('assistant', resumen || 'Respuesta no reconocida.');
+                }
+            } catch(e) {
+                console.error(e);
+                appendMessage('assistant', 'No se pudo conectar. Revisa tu conexion.');
             } finally {
                 setLoading(false);
             }
         }
 
-        sendBtn.addEventListener('click', sendMessage);
+        function reiniciarChat() {
+            history = [];
+            chatMessages.innerHTML = '';
+            optionsArea.classList.add('hidden');
+            enviarMensaje('Hola, necesito ayuda para elegir un producto.');
+        }
 
-        chatInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+        window.addEventListener('DOMContentLoaded', function() {
+            enviarMensaje('Hola, necesito ayuda para elegir un producto.');
         });
-
-        // Auto-resize textarea
-        chatInput.addEventListener('input', () => {
-            chatInput.style.height = 'auto';
-            chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
-        });
-
-        scrollToBottom();
     </script>
 
 </body>
