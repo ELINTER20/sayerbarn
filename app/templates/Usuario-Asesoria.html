@@ -152,19 +152,39 @@
                     href="{{ url_for('main.catalogo') }}">Catálogo</a>
             </div>
             <!-- Actions -->
-            <div class="flex items-center gap-unit-sm">
-                <a class="hidden md:flex font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors"
-                    href="#">
+            <div class="hidden md:flex items-center gap-unit-sm">
+                {% if usuario %}
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="p-4 border-b border-outline-variant">
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Cerrar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ url_for('main.login') }}"
+                    class="font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors">
                     Iniciar sesión
                 </a>
-                <a class="font-label-md text-label-md bg-primary text-on-primary px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors scale-95 active:scale-90 shadow-sm"
-                    href="#">
+                <a href="{{ url_for('main.registro') }}"
+                    class="font-label-md text-label-md bg-primary text-on-primary px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors scale-95 active:scale-90 shadow-sm">
                     Registrarse
                 </a>
-                <button class="md:hidden p-2 text-on-surface-variant">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
+                {% endif %}
             </div>
+            <button class="md:hidden p-2 text-on-surface-variant">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
         </div>
         <div class="w-full h-[2px] prism-stripe absolute bottom-0 left-0"></div>
     </nav>

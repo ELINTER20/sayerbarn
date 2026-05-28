@@ -176,8 +176,8 @@
                     <!-- Dropdown Menu -->
                     <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div class="p-4 border-b border-outline-variant">
-                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario[1] }}</p>
-                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario[2] }}</p>
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
                         </div>
                         <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
                             <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">

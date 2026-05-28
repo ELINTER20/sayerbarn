@@ -180,15 +180,35 @@
                     href="#">Catálogo</a>
             </nav>
             <!-- Actions -->
-            <div class="flex items-center space-x-unit-sm md:space-x-unit-md">
-                <button
-                    class="hidden md:block font-label-md text-label-md text-primary hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-unit-md py-unit-sm rounded scale-95 active:scale-90 transition-transform transition-all duration-200 border-2 border-transparent hover:border-primary/20">
+            <div class="hidden md:flex items-center space-x-unit-sm md:space-x-unit-md">
+                {% if usuario %}
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </button>
+                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="p-4 border-b border-outline-variant">
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Cerrar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ url_for('main.login') }}"
+                    class="font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-unit-md py-unit-sm rounded border-2 border-transparent hover:border-primary/20 transition-all duration-200">
                     Iniciar sesión
-                </button>
-                <button
-                    class="font-label-md text-label-md bg-primary text-on-primary px-unit-md py-unit-sm rounded scale-95 active:scale-90 transition-transform hover:bg-primary-container shadow-sm">
+                </a>
+                <a href="{{ url_for('main.registro') }}"
+                    class="font-label-md text-label-md bg-primary text-on-primary px-unit-md py-unit-sm rounded hover:bg-primary-container shadow-sm">
                     Registrarse
-                </button>
+                </a>
+                {% endif %}
             </div>
         </div>
         <!-- Subtle Prism Stripe at bottom of nav -->
