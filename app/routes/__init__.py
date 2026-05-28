@@ -199,78 +199,10 @@ def agregar_favorito(producto_id):
     return redirect(request.referrer or url_for('main.catalogo'))
 
 
-@main.route('/chat')
-def chat_asesoria():
-    return render_template('Usuario-ChatAsesoria.html', usuario=usuario_actual())
 
-
-@main.route('/asesoria', methods=['GET', 'POST'])
+@main.route('/asesoria')
 def asesoria():
-    if request.method == 'GET':
-        return render_template('Usuario-Asesoria.html', usuario=usuario_actual())
-
-    superficie = (request.form.get('superficie_custom') or request.form.get('superficie', '')).strip()
-    uso = request.form.get('uso', '').strip()
-    area_m2_str = request.form.get('area_m2', '').strip()
-
-    if not superficie or not uso or not area_m2_str:
-        return render_template('Usuario-Asesoria.html',
-                               error='Todos los campos son requeridos.',
-                               usuario=usuario_actual())
-
-    try:
-        area_m2 = float(area_m2_str)
-        if area_m2 <= 0:
-            raise ValueError
-    except ValueError:
-        return render_template('Usuario-Asesoria.html',
-                               error='El área debe ser un número mayor a 0.',
-                               usuario=usuario_actual())
-
-    col_map = {
-        'madera': 'sup_madera',
-        'metal': 'sup_metal',
-        'concreto': 'sup_concreto',
-        'otro': 'sup_otro',
-    }
-    sup_col = col_map.get(superficie.lower(), 'sup_otro')
-
-    cur = mysql.connection.cursor()
-    cur.execute(
-        f"SELECT id, nombre, descripcion_ia, imagen_url, rendimiento_min, link_compra_ml, acabado "
-        f"FROM productos WHERE {sup_col} = 1 AND (uso = %s OR uso = 'ambos') AND activo = 1 "
-        f"ORDER BY rendimiento_min DESC LIMIT 1",
-        (uso,)
-    )
-    producto = cur.fetchone()
-
-    if not producto:
-        cur.close()
-        return render_template('Usuario-AsesoriaError.html', usuario=usuario_actual())
-
-    litros = round(area_m2 / float(producto['rendimiento_min']), 2) if producto['rendimiento_min'] else None
-
-    cur.execute(
-        "SELECT p.nombre, p.imagen_url FROM complementos c "
-        "JOIN productos p ON c.complemento_id = p.id "
-        "WHERE c.producto_id = %s LIMIT 1",
-        (producto['id'],)
-    )
-    complemento = cur.fetchone()
-
-    usuario = usuario_actual()
-    user_id = usuario['id'] if usuario else None
-
-    cur.execute(
-        "INSERT INTO asesorias (usuario_id, superficie, uso, area_m2, litros_estimados, producto_recomendado_id) "
-        "VALUES (%s, %s, %s, %s, %s, %s)",
-        (user_id, superficie, uso, area_m2, litros, producto['id'])
-    )
-    mysql.connection.commit()
-    asesoria_id = cur.lastrowid
-    cur.close()
-
-    return redirect(url_for('main.resultado_asesoria', asesoria_id=asesoria_id))
+    return render_template('Usuario-Asesoria.html', usuario=usuario_actual())
 
 
 @main.route('/asesoria/resultado/<int:asesoria_id>')
@@ -279,7 +211,7 @@ def resultado_asesoria(asesoria_id):
     cur.execute(
         "SELECT a.superficie, a.uso, a.area_m2, a.litros_estimados, "
         "p.id AS producto_id, p.nombre, p.descripcion_ia, p.imagen_url, "
-        "p.rendimiento_min, p.link_compra_ml, p.acabado "
+        "p.rendimiento_min, p.link_compra_ml, p.acabado, p.ficha_tecnica_url "
         "FROM asesorias a "
         "JOIN productos p ON a.producto_recomendado_id = p.id "
         "WHERE a.id = %s",
@@ -289,7 +221,7 @@ def resultado_asesoria(asesoria_id):
 
     if not resultado:
         cur.close()
-        return render_template('Usuario-AsesoriaError.html', usuario=usuario_actual())
+        return redirect(url_for('main.asesoria'))
 
     cur.execute(
         "SELECT p.nombre, p.imagen_url FROM complementos c "
@@ -312,7 +244,7 @@ def detalle_producto(producto_id):
     cur.execute(
         "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
         "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, p.link_compra_ml, "
-        "p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+        "p.ficha_tecnica_url, p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
         "c.nombre AS categoria "
         "FROM productos p "
         "LEFT JOIN categorias c ON p.categoria_id = c.id "

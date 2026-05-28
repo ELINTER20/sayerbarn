@@ -383,3 +383,67 @@ def eliminar_producto(producto_id):
         abort(404, description='Producto no encontrado')
 
     return jsonify({'message': 'Producto eliminado.'}), 200
+
+@api_bp.route('/api/guardar-asesoria', methods=['POST'])
+def guardar_asesoria():
+    from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
+    from app.routes import usuario_actual
+
+    data = request.get_json(silent=True) or {}
+    clave       = (data.get('clave') or '').strip()
+    superficie  = (data.get('superficie') or '').strip()
+    uso         = (data.get('uso') or '').strip()
+    area_m2     = data.get('area_m2')
+    litros      = data.get('litros')
+
+    if not clave:
+        return jsonify({'error': 'Clave de producto requerida'}), 400
+
+    # Buscar el producto real en la BD por clave o por nombre
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT id, nombre, descripcion_ia, imagen_url, rendimiento_min, "
+        "link_compra_ml, acabado, uso "
+        "FROM productos WHERE clave = %s AND activo = 1 LIMIT 1",
+        (clave,)
+    )
+    producto = cur.fetchone()
+
+    # Si no encontró por clave, intentar por nombre (por si la IA devolvió el nombre)
+    if not producto:
+        nombre_ia = (data.get('producto') or '').strip()
+        if nombre_ia:
+            cur.execute(
+                "SELECT id, nombre, descripcion_ia, imagen_url, rendimiento_min, "
+                "link_compra_ml, acabado, uso "
+                "FROM productos WHERE nombre LIKE %s AND activo = 1 LIMIT 1",
+                (f"%{nombre_ia}%",)
+            )
+            producto = cur.fetchone()
+
+    if not producto:
+        cur.close()
+        return jsonify({'error': 'Producto no encontrado en catálogo'}), 404
+
+    # Calcular litros si no vienen del frontend
+    if not litros and area_m2 and producto.get('rendimiento_min'):
+        try:
+            litros = round(float(area_m2) / float(producto['rendimiento_min']) * 1.15, 2)
+        except Exception:
+            litros = None
+
+    # Obtener usuario actual (puede ser None si no está logueado)
+    usuario = usuario_actual()
+    user_id = usuario['id'] if usuario else None
+
+    # Guardar asesoría en la BD
+    cur.execute(
+        "INSERT INTO asesorias (usuario_id, superficie, uso, area_m2, litros_estimados, producto_recomendado_id) "
+        "VALUES (%s, %s, %s, %s, %s, %s)",
+        (user_id, superficie or None, uso or None, area_m2 or None, litros, producto['id'])
+    )
+    mysql.connection.commit()
+    asesoria_id = cur.lastrowid
+    cur.close()
+
+    return jsonify({'asesoria_id': asesoria_id}), 201

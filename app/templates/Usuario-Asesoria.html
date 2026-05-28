@@ -132,44 +132,66 @@
 
 <body class="bg-background flex flex-col min-h-screen text-on-background font-body-md">
     <!-- TopNavBar -->
-    <nav
+    <header
         class="bg-surface-container-lowest dark:bg-inverse-surface w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
         <div
             class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Brand -->
-            <a class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim hover:opacity-80 transition-opacity"
-                href="{{ url_for('main.index') }}">
+            <div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">
                 SayerBarn
-            </a>
-            <!-- Navigation Links (Desktop) -->
-            <div class="hidden md:flex items-center gap-unit-lg">
-                <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-3 py-2 rounded-md"
-                    href="{{ url_for('main.index') }}">Inicio</a>
-                <!-- Active Item: Asesoría -->
-                <a class="font-label-md text-label-md text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-3 py-2 rounded-md"
-                    href="{{ url_for('main.asesoria') }}">Asesoría</a>
-                <a class="font-label-md text-label-md text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 px-3 py-2 rounded-md"
-                    href="{{ url_for('main.catalogo') }}">Catálogo</a>
             </div>
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex space-x-gutter">
+                <a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-md text-label-md"
+                    href="{{ url_for('main.index') }}">Inicio</a>
+                <a class="text-primary dark:text-primary-fixed border-b-2 border-primary dark:border-primary-fixed pb-1 font-label-md text-label-md"
+                    href="{{ url_for('main.asesoria') }}">Asesoría</a>
+                <a class="text-on-surface-variant dark:text-surface-variant hover:text-primary transition-colors font-label-md text-label-md"
+                    href="{{ url_for('main.catalogo') }}">Catálogo</a>
+            </nav>
             <!-- Actions -->
-            <div class="flex items-center gap-unit-sm">
-                <a class="hidden md:flex font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors"
-                    href="#">
+            <div class="hidden md:flex items-center space-x-unit-md">
+                {% if usuario %}
+                <!-- User Profile Menu -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </button>
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="p-4 border-b border-outline-variant">
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario[1] }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario[2] }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Cerrar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ url_for('main.login') }}"
+                    class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 scale-95 active:scale-90 transition-transform">
                     Iniciar sesión
                 </a>
-                <a class="font-label-md text-label-md bg-primary text-on-primary px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors scale-95 active:scale-90 shadow-sm"
-                    href="#">
+                <a href="{{ url_for('main.registro') }}"
+                    class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity scale-95 active:scale-90 transition-transform">
                     Registrarse
                 </a>
-                <button class="md:hidden p-2 text-on-surface-variant">
-                    <span class="material-symbols-outlined">menu</span>
-                </button>
+                {% endif %}
             </div>
+            <!-- Mobile Menu Toggle -->
+            <button class="md:hidden text-primary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+            </button>
         </div>
-        <div class="w-full h-[2px] prism-stripe absolute bottom-0 left-0"></div>
-    </nav>
+        <!-- Subtle Prism Stripe Accent -->
+        <div class="h-[2px] w-full prism-stripe"></div>
+    </header>
     <!-- Main Content Canvas -->
-    <main class="flex-grow flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+    <main class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-unit-xl max-w-container-max mx-auto w-full">
         <div class="w-full flex justify-center">
             <!-- Tarjeta principal -->
             <div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden relative">
@@ -204,7 +226,24 @@
 
                 </div>
 
-                <!-- Botón de acción inferior -->
+                <!-- Input libre para contexto adicional -->
+                <div id="input-libre-area" class="hidden border-t border-surface-variant px-unit-lg pt-unit-md pb-unit-sm">
+                    <p class="font-label-sm text-label-sm text-outline mb-unit-xs">O escríbele algo más a la IA</p>
+                    <div class="flex gap-unit-sm items-center">
+                        <input
+                            id="input-libre"
+                            type="text"
+                            placeholder="Ej: es para una puerta de madera en el exterior..."
+                            class="flex-grow bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
+                        />
+                        <button id="btn-enviar-libre" onclick="enviarLibre()"
+                            class="w-10 h-10 bg-primary text-on-primary rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors flex-shrink-0">
+                            <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barra inferior con paso y botón siguiente -->
                 <div id="footer-actions" class="bg-surface-container-low px-unit-lg py-unit-md flex justify-between items-center border-t border-surface-variant">
                     <p id="paso-label" class="font-label-sm text-label-sm text-outline"></p>
                     <button id="btn-siguiente" onclick="pasoSiguiente()"
@@ -271,7 +310,10 @@
             isLoading = loading;
             $('loading-indicator').classList.toggle('hidden', !loading);
             $('pasos-container').classList.toggle('hidden', loading);
-            if (loading) $('footer-actions').classList.add('hidden');
+            if (loading) {
+                $('footer-actions').classList.add('hidden');
+                $('input-libre-area').classList.add('hidden');
+            }
         }
 
         // ── Renderizar pregunta con tarjetas ──────────────────────────
@@ -308,7 +350,8 @@
                         b.disabled = true;
                     });
                     this.classList.add('border-primary', 'bg-surface-container-low');
-                    // Enviar respuesta
+                    // Ocultar input libre y enviar respuesta
+                    $('input-libre-area').classList.add('hidden');
                     enviarRespuesta(op);
                 });
 
@@ -316,6 +359,10 @@
             });
 
             avanzarProgreso();
+
+            // Mostrar input de texto libre debajo de los botones
+            $('input-libre-area').classList.remove('hidden');
+            $('input-libre').value = '';
         }
 
         // ── Mostrar recomendación final ───────────────────────────────
@@ -400,7 +447,7 @@
                 if (data.tipo === 'pregunta') {
                     renderPregunta(data.texto, data.opciones);
                 } else if (data.tipo === 'recomendacion') {
-                    mostrarRecomendacion(data);
+                    await guardarYRedirigir(data);
                 } else if (data.tipo === 'sin_resultado') {
                     mostrarSinResultado(data);
                 } else {
@@ -416,6 +463,86 @@
             }
         }
 
+        // ── Guardar asesoría en BD y redirigir a la página de resultado ─
+        async function guardarYRedirigir(data) {
+            $('pasos-container').innerHTML =
+                '<div class="flex flex-col items-center justify-center py-unit-xl gap-unit-md">' +
+                    '<div class="flex gap-2">' +
+                        '<span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay:0s"></span>' +
+                        '<span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay:0.15s"></span>' +
+                        '<span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay:0.3s"></span>' +
+                    '</div>' +
+                    '<p class="font-body-md text-body-md text-on-surface-variant">Preparando tu resultado...</p>' +
+                '</div>';
+
+            // Extraer superficie, uso y área del historial
+            const historialTexto = historial.map(function(h) { return h.content; }).join(' ').toLowerCase();
+            const superficie = (historialTexto.match(/madera|metal|concreto/) || [''])[0];
+            const uso = (historialTexto.match(/interior|exterior|ambos/) || [''])[0];
+            const areaMatch = historialTexto.match(/(\d+(?:\.\d+)?)\s*m/);
+            const area_m2 = areaMatch ? parseFloat(areaMatch[1]) : null;
+
+            try {
+                const res = await fetch('/api/guardar-asesoria', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clave: data.clave,
+                        producto: data.producto,
+                        superficie: superficie,
+                        uso: uso,
+                        area_m2: area_m2,
+                        litros: data.litros
+                    })
+                });
+                const resultado = await res.json();
+
+                if (res.ok && resultado.asesoria_id) {
+                    window.location.href = '/asesoria/resultado/' + resultado.asesoria_id;
+                } else {
+                    mostrarRecomendacionInline(data);
+                }
+            } catch(e) {
+                console.error(e);
+                mostrarRecomendacionInline(data);
+            }
+        }
+
+        // Fallback si falla el guardado en BD
+        function mostrarRecomendacionInline(data) {
+            $('footer-actions').classList.add('hidden');
+            $('progress-bar').style.width = '100%';
+            const complementoHTML = data.complemento
+                ? '<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-4 py-2 rounded-full">+ ' + data.complemento + '</span>'
+                : '';
+            $('pasos-container').innerHTML =
+                '<div class="flex flex-col gap-unit-md">' +
+                    '<p class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Producto recomendado</p>' +
+                    '<p class="font-headline-lg text-headline-lg text-on-surface font-bold">' + data.producto + '</p>' +
+                    '<p class="font-label-sm text-label-sm text-outline mb-unit-xs">' + data.clave + '</p>' +
+                    '<p class="font-body-lg text-body-lg text-on-surface-variant">' + data.mensaje + '</p>' +
+                    '<div class="flex flex-wrap gap-unit-sm mt-unit-xs">' +
+                        '<span class="bg-primary/10 text-primary font-label-md text-label-md px-4 py-2 rounded-full">🧴 ' + data.litros + ' litros estimados</span>' +
+                        complementoHTML +
+                    '</div>' +
+                    '<button onclick="reiniciar()" class="mt-unit-md font-label-md text-label-md text-primary border border-primary/30 px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors w-fit">Nueva consulta</button>' +
+                '</div>';
+        }
+
+        // ── Enviar texto libre del input ─────────────────────────────────
+        function enviarLibre() {
+            if (isLoading) return;
+            const inputEl = $('input-libre');
+            const texto = inputEl.value.trim();
+            if (!texto) return;
+            inputEl.value = '';
+            // Deshabilitar botones de opciones si los hay
+            const pasos = $('pasos-container');
+            if (pasos) pasos.querySelectorAll('button').forEach(function(b) { b.disabled = true; });
+            $('input-libre-area').classList.add('hidden');
+            enviarRespuesta(texto);
+        }
+
         // ── Reiniciar desde cero ──────────────────────────────────────
         function reiniciar() {
             historial = [];
@@ -423,6 +550,7 @@
             $('progress-bar').style.width = '0%';
             $('paso-label').textContent = '';
             $('footer-actions').classList.add('hidden');
+            inputLibreArea.classList.add('hidden');
             arrancar();
         }
 
@@ -431,7 +559,13 @@
             enviarRespuesta('Hola, necesito que me ayudes a elegir un producto.');
         }
 
-        window.addEventListener('DOMContentLoaded', arrancar);
+        window.addEventListener('DOMContentLoaded', function() {
+            // Enter en el input libre
+            document.getElementById('input-libre').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); enviarLibre(); }
+            });
+            arrancar();
+        });
     </script>
 
 </body>

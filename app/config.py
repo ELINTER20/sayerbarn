@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from dotenv import load_dotenv
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -14,6 +15,9 @@ class Config:
     JWT_COOKIE_SECURE = os.getenv('RAILWAY_ENVIRONMENT') is not None
     JWT_ACCESS_COOKIE_PATH = '/'
     JWT_COOKIE_CSRF_PROTECT = False
+    # La sesión dura 1 día. Al cerrar el navegador y volver,
+    # si pasó más de 1 día tendrá que iniciar sesión de nuevo.
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
 
     MYSQL_HOST = os.getenv('MYSQL_HOST')
     MYSQL_USER = os.getenv('MYSQL_USER')
