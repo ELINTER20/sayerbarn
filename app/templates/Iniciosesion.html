@@ -123,14 +123,21 @@
             100% { background-position: -200% 0; }
         }
         .btn-lift {
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+            will-change: transform, box-shadow, filter;
         }
         .btn-lift:hover {
-            transform: translateY(-4px);
-            box-shadow: 0px 8px 24px rgba(0, 31, 107, 0.25) !important;
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0px 12px 30px rgba(0, 31, 107, 0.25) !important;
+            filter: brightness(1.02);
+        }
+        .btn-lift:focus-visible {
+            outline: 2px solid rgba(0, 51, 160, 0.45);
+            outline-offset: 3px;
         }
         .btn-lift:active {
-            transform: translateY(-2px);
+            transform: translateY(-1px) scale(0.99);
+            box-shadow: 0px 8px 20px rgba(0, 31, 107, 0.2) !important;
         }
     </style>
 </head>
@@ -142,9 +149,7 @@
         class="absolute top-0 left-0 w-full h-[409px] bg-gradient-to-b from-secondary-fixed/30 to-transparent -z-10 pointer-events-none">
     </div>
     <main class="w-full max-w-md px-margin-mobile md:px-0">
-        <!-- Login Card -->
-        <div
-            class="bg-surface-container-lowest rounded-[1rem] shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-surface-container-high overflow-hidden relative">
+        <div class="bg-surface-container-lowest rounded-[1rem] shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-surface-container-high overflow-hidden relative">
             <!-- Prism Stripe Accent -->
             <div class="h-1 w-full prism-stripe"></div>
             <div class="p-8 md:p-10 flex flex-col items-center">
@@ -181,8 +186,8 @@
                                 id="password" name="password" placeholder="••••••••" required="" type="password" />
                             <button
                                 class="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors focus:outline-none"
-                                type="button">
-                                <span class="material-symbols-outlined"
+                                type="button" onclick="togglePassword()">
+                                <span class="material-symbols-outlined" id="toggleIcon"
                                     style="font-variation-settings: 'FILL' 0;">visibility_off</span>
                             </button>
                         </div>
@@ -230,6 +235,20 @@
                 href="#">Términos</a>
         </div>
     </main>
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = 'visibility';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = 'visibility_off';
+            }
+        }
+    </script>
 </body>
 
 </html>
