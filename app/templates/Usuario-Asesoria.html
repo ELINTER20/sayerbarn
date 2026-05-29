@@ -9,12 +9,8 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
     <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600;700&amp;display=swap"
-        rel="stylesheet" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <link rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
@@ -123,7 +119,6 @@
             0%   { background-position: 0% 0; }
             100% { background-position: -200% 0; }
         }
-
         .soft-ambient-shadow {
             box-shadow: 0px 4px 20px rgba(0, 31, 107, 0.05);
         }
@@ -131,11 +126,10 @@
 </head>
 
 <body class="bg-background flex flex-col min-h-screen text-on-background font-body-md">
+
     <!-- TopNavBar -->
-    <header
-        class="bg-surface-container-lowest dark:bg-inverse-surface w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
-        <div
-            class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+    <header class="bg-surface-container-lowest dark:bg-inverse-surface w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
+        <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Brand -->
             <div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">
                 SayerBarn
@@ -150,30 +144,17 @@
                     href="{{ url_for('main.catalogo') }}">Catálogo</a>
             </nav>
             <!-- Actions -->
-<<<<<<< HEAD
-            <div class="hidden md:flex items-center gap-unit-sm">
-                {% if usuario %}
-=======
             <div class="hidden md:flex items-center space-x-unit-md">
                 {% if usuario %}
-                <!-- User Profile Menu -->
->>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
                 <div class="relative group">
                     <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
                         <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </button>
-<<<<<<< HEAD
-                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                        <div class="p-4 border-b border-outline-variant">
-                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
-                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
-=======
-                    <!-- Dropdown Menu -->
+                    <!-- Dropdown -->
                     <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div class="p-4 border-b border-outline-variant">
                             <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario[1] }}</p>
                             <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario[2] }}</p>
->>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
                         </div>
                         <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
                             <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
@@ -185,40 +166,25 @@
                 </div>
                 {% else %}
                 <a href="{{ url_for('main.login') }}"
-<<<<<<< HEAD
-                    class="font-label-md text-label-md text-primary hover:bg-surface-container-high/50 px-4 py-2 rounded-lg transition-colors">
+                    class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200 scale-95 active:scale-90">
                     Iniciar sesión
                 </a>
                 <a href="{{ url_for('main.registro') }}"
-                    class="font-label-md text-label-md bg-primary text-on-primary px-5 py-2.5 rounded-lg hover:bg-primary-container transition-colors scale-95 active:scale-90 shadow-sm">
-=======
-                    class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/20 transition-all duration-200 scale-95 active:scale-90 transition-transform">
-                    Iniciar sesión
-                </a>
-                <a href="{{ url_for('main.registro') }}"
-                    class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity scale-95 active:scale-90 transition-transform">
->>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
+                    class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity scale-95 active:scale-90">
                     Registrarse
                 </a>
                 {% endif %}
             </div>
-<<<<<<< HEAD
-            <button class="md:hidden p-2 text-on-surface-variant">
-                <span class="material-symbols-outlined">menu</span>
-=======
             <!-- Mobile Menu Toggle -->
             <button class="md:hidden text-primary">
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
->>>>>>> 8d316f51fc8639e24f1c7fb80c2b82d3ef07800d
             </button>
         </div>
-        <!-- Subtle Prism Stripe Accent -->
         <div class="h-[2px] w-full prism-stripe"></div>
     </header>
-    <!-- Main Content Canvas -->
+
     <main class="flex-grow flex items-center justify-center px-margin-mobile md:px-margin-desktop py-unit-xl max-w-container-max mx-auto w-full">
         <div class="w-full flex justify-center">
-            <!-- Tarjeta principal -->
             <div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl soft-ambient-shadow overflow-hidden relative">
 
                 <!-- Barra de progreso -->
@@ -227,10 +193,9 @@
                 </div>
 
                 <div class="p-unit-lg md:p-unit-xl">
-
                     <!-- Header con botón volver -->
                     <div class="flex items-center mb-unit-lg">
-                        <button id="btn-volver" onclick="pasoAnterior()" class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
+                        <button onclick="pasoAnterior()" class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
                             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
                         </button>
                         <span class="ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría de producto</span>
@@ -239,7 +204,7 @@
                     <!-- Contenedor de pasos -->
                     <div id="pasos-container"></div>
 
-                    <!-- Indicador de carga (oculto por default) -->
+                    <!-- Indicador de carga -->
                     <div id="loading-indicator" class="hidden flex flex-col items-center justify-center py-unit-xl gap-unit-md">
                         <div class="flex gap-2">
                             <span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0s"></span>
@@ -248,10 +213,9 @@
                         </div>
                         <p class="font-body-md text-body-md text-on-surface-variant">Buscando el producto ideal para ti...</p>
                     </div>
-
                 </div>
 
-                <!-- Input libre para contexto adicional -->
+                <!-- Input libre -->
                 <div id="input-libre-area" class="hidden border-t border-surface-variant px-unit-lg pt-unit-md pb-unit-sm">
                     <p class="font-label-sm text-label-sm text-outline mb-unit-xs">O escríbele algo más a la IA</p>
                     <div class="flex gap-unit-sm items-center">
@@ -261,14 +225,14 @@
                             placeholder="Ej: es para una puerta de madera en el exterior..."
                             class="flex-grow bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none"
                         />
-                        <button id="btn-enviar-libre" onclick="enviarLibre()"
+                        <button onclick="enviarLibre()"
                             class="w-10 h-10 bg-primary text-on-primary rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors flex-shrink-0">
                             <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Barra inferior con paso y botón siguiente -->
+                <!-- Barra inferior -->
                 <div id="footer-actions" class="bg-surface-container-low px-unit-lg py-unit-md flex justify-between items-center border-t border-surface-variant">
                     <p id="paso-label" class="font-label-sm text-label-sm text-outline"></p>
                     <button id="btn-siguiente" onclick="pasoSiguiente()"
@@ -282,55 +246,41 @@
             </div>
         </div>
     </main>
+
     <!-- Footer -->
     <footer class="bg-primary dark:bg-tertiary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
-        <div
-            class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-            <!-- Brand & Copyright -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <div class="col-span-1 md:col-span-2 flex flex-col gap-unit-md">
                 <span class="font-headline-sm text-headline-sm font-bold text-on-primary">SayerBarn</span>
-                <p class="font-body-md text-body-md text-on-primary opacity-80">
-                    © 2024 SayerBarn. Sayer Dabet Branding.
-                </p>
+                <p class="font-body-md text-body-md text-on-primary opacity-80">© 2024 SayerBarn. Sayer Dabet Branding.</p>
             </div>
-            <!-- Links -->
             <div class="col-span-1 md:col-span-2 flex flex-col sm:flex-row gap-unit-md sm:gap-unit-xl justify-end">
                 <div class="flex flex-col gap-unit-sm">
-                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all"
-                        href="#">Contacto</a>
-                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all"
-                        href="#">Aviso de Privacidad</a>
+                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all" href="#">Contacto</a>
+                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all" href="#">Aviso de Privacidad</a>
                 </div>
                 <div class="flex flex-col gap-unit-sm">
-                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all"
-                        href="#">Términos y Condiciones</a>
-                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all"
-                        href="#">Sucursales</a>
+                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all" href="#">Términos y Condiciones</a>
+                    <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed hover:underline decoration-secondary-container opacity-80 hover:opacity-100 transition-all" href="#">Sucursales</a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        // ── Estado ────────────────────────────────────────────────────
-        let historial = [];      // historial completo para /api/chat
-        let pasoNum = 0;         // contador para la barra de progreso
+        let historial = [];
+        let pasoNum = 0;
         let isLoading = false;
 
         const $ = id => document.getElementById(id);
 
-        // ── Actualizar barra de progreso ──────────────────────────────
-        // No sabemos cuántos pasos habrá, así que avanzamos progresivamente
-        // sin llegar al 100% hasta la recomendación final
         function avanzarProgreso() {
             pasoNum++;
-            // Crece rápido al inicio y se frena para no llegar al 100% antes de tiempo
             const pct = Math.min(90, pasoNum * 18);
             $('progress-bar').style.width = pct + '%';
             $('paso-label').textContent = 'Paso ' + pasoNum;
         }
 
-        // ── Mostrar loading ───────────────────────────────────────────
         function setLoading(loading) {
             isLoading = loading;
             $('loading-indicator').classList.toggle('hidden', !loading);
@@ -341,24 +291,18 @@
             }
         }
 
-        // ── Renderizar pregunta con tarjetas ──────────────────────────
         function renderPregunta(texto, opciones) {
             $('footer-actions').classList.add('hidden');
             const c = $('pasos-container');
             c.innerHTML = '';
 
-            // Título de la pregunta
             const h1 = document.createElement('h1');
             h1.className = 'font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-xl';
             h1.textContent = texto;
             c.appendChild(h1);
 
-            // Grid de tarjetas
             const grid = document.createElement('div');
-            // 2 columnas si hay 2-4 opciones
-            grid.className = opciones.length <= 2
-                ? 'grid grid-cols-2 gap-unit-md mb-unit-md'
-                : 'grid grid-cols-2 gap-unit-md mb-unit-md';
+            grid.className = 'grid grid-cols-2 gap-unit-md mb-unit-md';
             c.appendChild(grid);
 
             opciones.forEach(function(op) {
@@ -366,70 +310,35 @@
                 btn.type = 'button';
                 btn.className = 'bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 hover:border-primary hover:shadow-sm hover:bg-surface-container-low font-body-lg text-body-lg text-on-surface font-semibold cursor-pointer';
                 btn.textContent = op;
-
                 btn.addEventListener('click', function() {
                     if (isLoading) return;
-                    // Marcar visualmente
                     grid.querySelectorAll('button').forEach(function(b) {
                         b.classList.remove('border-primary', 'bg-surface-container-low');
                         b.disabled = true;
                     });
                     this.classList.add('border-primary', 'bg-surface-container-low');
-                    // Ocultar input libre y enviar respuesta
                     $('input-libre-area').classList.add('hidden');
                     enviarRespuesta(op);
                 });
-
                 grid.appendChild(btn);
             });
 
             avanzarProgreso();
-
-            // Mostrar input de texto libre debajo de los botones
             $('input-libre-area').classList.remove('hidden');
             $('input-libre').value = '';
         }
 
-        // ── Mostrar recomendación final ───────────────────────────────
-        function mostrarRecomendacion(data) {
-            $('footer-actions').classList.add('hidden');
-            $('progress-bar').style.width = '100%';
-            $('paso-label').textContent = '';
-
-            const c = $('pasos-container');
-            const complementoHTML = data.complemento
-                ? '<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-4 py-2 rounded-full">+ ' + data.complemento + '</span>'
-                : '';
-
-            c.innerHTML =
-                '<div class="flex flex-col gap-unit-md">' +
-                    '<p class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Producto recomendado</p>' +
-                    '<p class="font-headline-lg text-headline-lg text-on-surface font-bold">' + data.producto + '</p>' +
-                    '<p class="font-label-sm text-label-sm text-outline mb-unit-xs">' + data.clave + '</p>' +
-                    '<p class="font-body-lg text-body-lg text-on-surface-variant">' + data.mensaje + '</p>' +
-                    '<div class="flex flex-wrap gap-unit-sm mt-unit-xs">' +
-                        '<span class="bg-primary/10 text-primary font-label-md text-label-md px-4 py-2 rounded-full">🧴 ' + data.litros + ' litros estimados</span>' +
-                        complementoHTML +
-                    '</div>' +
-                    '<button onclick="reiniciar()" class="mt-unit-md font-label-md text-label-md text-primary border border-primary/30 px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors w-fit">Nueva consulta</button>' +
-                '</div>';
-        }
-
-        // ── Mostrar sin resultado ─────────────────────────────────────
         function mostrarSinResultado(data) {
             $('footer-actions').classList.add('hidden');
             $('progress-bar').style.width = '100%';
             $('paso-label').textContent = '';
-
             const c = $('pasos-container');
             c.innerHTML =
                 '<div class="flex flex-col items-center text-center gap-unit-md py-unit-lg">' +
                     '<div class="w-24 h-24 bg-surface-container-high rounded-full flex items-center justify-center mb-unit-sm">' +
                         '<span class="material-symbols-outlined text-[48px] text-primary-container" style="font-variation-settings: \'FILL\' 0;">search_off</span>' +
                     '</div>' +
-                    '<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">' +
-                        'No encontramos un producto para tu caso' +
-                    '</h1>' +
+                    '<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">No encontramos un producto para tu caso</h1>' +
                     '<p class="font-body-lg text-body-lg text-on-surface-variant mb-unit-sm">' + data.mensaje + '</p>' +
                     '<div class="flex flex-col sm:flex-row gap-unit-md w-full justify-center mt-unit-sm">' +
                         '<button onclick="reiniciar()" class="w-full sm:w-auto font-label-md text-label-md text-on-primary bg-primary-container px-8 py-3 rounded-full hover:bg-primary transition-colors shadow-sm">Intentar de nuevo</button>' +
@@ -438,7 +347,6 @@
                 '</div>';
         }
 
-        // ── Enviar respuesta a la IA y procesar lo que devuelve ───────
         async function enviarRespuesta(mensaje) {
             if (isLoading) return;
             setLoading(true);
@@ -453,13 +361,11 @@
                 const data = await res.json();
 
                 if (!res.ok || data.error) {
-                    $('pasos-container').innerHTML =
-                        '<p class="text-error font-body-md">Ocurrió un error. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
+                    $('pasos-container').innerHTML = '<p class="text-error font-body-md">Ocurrió un error. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
                     setLoading(false);
                     return;
                 }
 
-                // Guardar turno en el historial
                 const resumenIA = data.tipo === 'pregunta' ? data.texto
                     : data.tipo === 'recomendacion' ? 'Recomendación: ' + data.producto
                     : data.mensaje || '';
@@ -476,19 +382,16 @@
                 } else if (data.tipo === 'sin_resultado') {
                     mostrarSinResultado(data);
                 } else {
-                    $('pasos-container').innerHTML =
-                        '<p class="text-error font-body-md">Respuesta inesperada. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
+                    $('pasos-container').innerHTML = '<p class="text-error font-body-md">Respuesta inesperada. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
                 }
 
             } catch(e) {
                 console.error(e);
                 setLoading(false);
-                $('pasos-container').innerHTML =
-                    '<p class="text-error font-body-md">No se pudo conectar. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
+                $('pasos-container').innerHTML = '<p class="text-error font-body-md">No se pudo conectar. <button onclick="reiniciar()" class="underline">Intentar de nuevo</button></p>';
             }
         }
 
-        // ── Guardar asesoría en BD y redirigir a la página de resultado ─
         async function guardarYRedirigir(data) {
             $('pasos-container').innerHTML =
                 '<div class="flex flex-col items-center justify-center py-unit-xl gap-unit-md">' +
@@ -500,7 +403,6 @@
                     '<p class="font-body-md text-body-md text-on-surface-variant">Preparando tu resultado...</p>' +
                 '</div>';
 
-            // Extraer superficie, uso y área del historial
             const historialTexto = historial.map(function(h) { return h.content; }).join(' ').toLowerCase();
             const superficie = (historialTexto.match(/madera|metal|concreto/) || [''])[0];
             const uso = (historialTexto.match(/interior|exterior|ambos/) || [''])[0];
@@ -533,7 +435,6 @@
             }
         }
 
-        // Fallback si falla el guardado en BD
         function mostrarRecomendacionInline(data) {
             $('footer-actions').classList.add('hidden');
             $('progress-bar').style.width = '100%';
@@ -554,39 +455,40 @@
                 '</div>';
         }
 
-        // ── Enviar texto libre del input ─────────────────────────────────
         function enviarLibre() {
             if (isLoading) return;
             const inputEl = $('input-libre');
             const texto = inputEl.value.trim();
             if (!texto) return;
             inputEl.value = '';
-            // Deshabilitar botones de opciones si los hay
             const pasos = $('pasos-container');
             if (pasos) pasos.querySelectorAll('button').forEach(function(b) { b.disabled = true; });
             $('input-libre-area').classList.add('hidden');
             enviarRespuesta(texto);
         }
 
-        // ── Reiniciar desde cero ──────────────────────────────────────
+        function pasoAnterior() {
+            window.location.href = '/';
+        }
+
+        function pasoSiguiente() {}
+
         function reiniciar() {
             historial = [];
             pasoNum = 0;
             $('progress-bar').style.width = '0%';
             $('paso-label').textContent = '';
             $('footer-actions').classList.add('hidden');
-            inputLibreArea.classList.add('hidden');
+            $('input-libre-area').classList.add('hidden');
             arrancar();
         }
 
-        // ── Arrancar — la IA hace la primera pregunta ─────────────────
         function arrancar() {
             enviarRespuesta('Hola, necesito que me ayudes a elegir un producto.');
         }
 
         window.addEventListener('DOMContentLoaded', function() {
-            // Enter en el input libre
-            document.getElementById('input-libre').addEventListener('keydown', function(e) {
+            $('input-libre').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') { e.preventDefault(); enviarLibre(); }
             });
             arrancar();
@@ -594,5 +496,4 @@
     </script>
 
 </body>
-
 </html>
