@@ -1,290 +1,141 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>{{ producto.nombre }} - SayerBarn</title>
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "primary": "#00216e", "primary-fixed": "#dce1ff", "on-primary-fixed": "#001550",
-                        "surface-container-high": "#e7e8e9", "inverse-surface": "#2e3132",
-                        "surface-bright": "#f8f9fa", "on-secondary": "#ffffff",
-                        "tertiary-fixed-dim": "#c1c7d0", "secondary-container": "#98adfe",
-                        "tertiary-container": "#393f47", "on-secondary-fixed-variant": "#2b418c",
-                        "inverse-on-surface": "#f0f1f2", "surface-variant": "#e1e3e4",
-                        "surface-container-highest": "#e1e3e4", "on-tertiary-fixed": "#161c23",
-                        "primary-fixed-dim": "#b6c4ff", "on-error": "#ffffff", "error": "#ba1a1a",
-                        "error-container": "#ffdad6", "secondary-fixed": "#dce1ff",
-                        "on-tertiary-container": "#a5aab3", "outline": "#747684",
-                        "surface-container": "#edeeef", "on-primary-container": "#8ea6ff",
-                        "on-surface-variant": "#444653", "tertiary": "#232930",
-                        "primary-container": "#0033a0", "on-primary": "#ffffff",
-                        "background": "#f8f9fa", "surface-tint": "#3456c1", "surface-dim": "#d9dadb",
-                        "on-background": "#191c1d", "on-surface": "#191c1d",
-                        "outline-variant": "#c4c5d5", "on-tertiary-fixed-variant": "#41474f",
-                        "secondary": "#455aa5", "on-secondary-container": "#283e88",
-                        "on-error-container": "#93000a", "surface-container-lowest": "#ffffff",
-                        "on-secondary-fixed": "#001550", "secondary-fixed-dim": "#b6c4ff",
-                        "inverse-primary": "#b6c4ff", "on-primary-fixed-variant": "#133ca8",
-                        "on-tertiary": "#ffffff", "surface-container-low": "#f3f4f5",
-                        "surface": "#f8f9fa", "tertiary-fixed": "#dee3ed"
-                    },
-                    "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
-                    "spacing": {
-                        "unit-sm": "8px", "margin-desktop": "40px", "unit-lg": "24px", "gutter": "24px",
-                        "unit-xs": "4px", "unit-xl": "48px", "margin-mobile": "16px",
-                        "unit-md": "16px", "container-max": "1280px"
-                    },
-                    "fontFamily": {
-                        "headline-lg-mobile": ["Hanken Grotesk"], "label-md": ["Manrope"],
-                        "headline-lg": ["Hanken Grotesk"], "body-md": ["Manrope"],
-                        "label-sm": ["Manrope"], "headline-md": ["Hanken Grotesk"],
-                        "headline-xl": ["Hanken Grotesk"], "body-lg": ["Manrope"]
-                    },
-                    "fontSize": {
-                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
-                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
-                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
-                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .prism-stripe {
-            background: linear-gradient(90deg,
-                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%,
-                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
-            background-size: 200% 100%;
-            animation: prism-walk 4s linear infinite;
-        }
-        @keyframes prism-walk {
-            0%   { background-position: 0% 0; }
-            100% { background-position: -200% 0; }
-        }
-    </style>
-</head>
+{% extends 'base.html' %}
+{% block title %}SayerBarn - {{ producto.nombre }}{% endblock %}
 
-<body class="min-h-screen flex flex-col font-body-md bg-surface text-on-surface">
-    <!-- TopNavBar -->
-    <nav class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
-        <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-            <a class="font-headline-md text-headline-md font-bold text-primary" href="{{ url_for('main.index') }}">SayerBarn</a>
-            <nav class="hidden md:flex space-x-gutter">
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="{{ url_for('main.index') }}">Inicio</a>
-                <a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="{{ url_for('main.asesoria') }}">Asesoría</a>
-                <a class="text-primary border-b-2 border-primary pb-1 font-label-md text-label-md" href="{{ url_for('main.catalogo') }}">Catálogo</a>
-            </nav>
-            <div class="hidden md:flex items-center space-x-unit-md">
-                {% if usuario %}
-                <div class="relative group">
-                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
-                        <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
-                    </button>
-                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                        <div class="p-4 border-b border-outline-variant">
-                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
-                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
+{% block content %}
+<div class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 mb-unit-lg font-label-sm text-label-sm text-on-surface-variant">
+        <a href="{{ url_for('main.catalogo') }}" class="hover:text-primary transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            Volver al catálogo
+        </a>
+    </div>
+
+    <div class="max-w-[900px] mx-auto flex flex-col gap-unit-lg">
+        <!-- Tarjeta principal -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border-t-[4px] border-primary-container overflow-hidden">
+            <!-- Columna izquierda: Detalles -->
+            <div class="md:col-span-7 p-unit-lg flex flex-col justify-between">
+                <div>
+                    <div class="flex gap-unit-xs mb-unit-sm flex-wrap">
+                        {% if producto.categoria %}
+                        <span class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ producto.categoria }}</span>
+                        {% endif %}
+                        {% if producto.uso %}
+                        <span class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ producto.uso | capitalize }}</span>
+                        {% endif %}
+                        {% if producto.acabado %}
+                        <span class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ producto.acabado | capitalize }}</span>
+                        {% endif %}
+                    </div>
+                    <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary mb-unit-md tracking-tight">
+                        {{ producto.nombre }}
+                    </h1>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-unit-lg">
+                        {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
+                    </p>
+                    <div class="space-y-4 mb-unit-lg">
+                        {% if producto.rendimiento_min %}
+                        <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                            <span class="material-symbols-outlined text-primary mt-1">format_paint</span>
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rendimiento</p>
+                                <p class="font-body-md text-body-md text-on-surface">{{ producto.rendimiento_min }} m² por litro (aprox.)</p>
+                            </div>
                         </div>
-                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
-                            <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
-                                <span class="material-symbols-outlined">logout</span>
-                                <span>Cerrar sesión</span>
-                            </button>
-                        </form>
+                        {% endif %}
+                        {% if producto.precio_referencia %}
+                        <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                            <span class="material-symbols-outlined text-primary mt-1">sell</span>
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Precio de referencia</p>
+                                <p class="font-body-md text-body-md text-on-surface">${{ "%.2f"|format(producto.precio_referencia) }} MXN</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% set superficies = [] %}
+                        {% if producto.sup_madera %}{% set superficies = superficies + ['Madera'] %}{% endif %}
+                        {% if producto.sup_metal %}{% set superficies = superficies + ['Metal'] %}{% endif %}
+                        {% if producto.sup_concreto %}{% set superficies = superficies + ['Concreto'] %}{% endif %}
+                        {% if superficies %}
+                        <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                            <span class="material-symbols-outlined text-primary mt-1">layers</span>
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Superficies</p>
+                                <p class="font-body-md text-body-md text-on-surface">{{ superficies | join(', ') }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
-                {% else %}
-                <a href="{{ url_for('main.login') }}" class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200">Iniciar sesión</a>
-                <a href="{{ url_for('main.registro') }}" class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity">Registrarse</a>
-                {% endif %}
+                <!-- Acciones -->
+                <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
+                    {% if producto.link_compra_ml %}
+                    <a href="{{ producto.link_compra_ml }}" target="_blank" rel="noopener"
+                       class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                        Ir a comprar
+                    </a>
+                    {% else %}
+                    <span class="w-full sm:w-auto bg-surface-container text-outline font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                        Ir a comprar
+                    </span>
+                    {% endif %}
+                    {% if producto.ficha_tecnica_url %}
+                    <a href="{{ producto.ficha_tecnica_url }}" target="_blank" rel="noopener"
+                       class="w-full sm:w-auto bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">picture_as_pdf</span>
+                        Ficha técnica
+                    </a>
+                    {% endif %}
+                    <a href="{{ url_for('main.asesoria') }}"
+                       class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline underline-offset-4 px-4 py-3 border-2 border-primary rounded-lg hover:bg-surface-container-high/50 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                        Solicitar asesoría
+                    </a>
+                </div>
             </div>
-            <button class="md:hidden text-primary">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
-        </div>
-        <div class="h-[2px] w-full prism-stripe"></div>
-    </nav>
-
-    <main class="flex-grow w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
-        <!-- Breadcrumb -->
-        <div class="flex items-center gap-2 mb-unit-lg font-label-sm text-label-sm text-on-surface-variant">
-            <a href="{{ url_for('main.catalogo') }}" class="hover:text-primary transition-colors flex items-center gap-1">
-                <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-                Volver al catálogo
-            </a>
-        </div>
-
-        <div class="max-w-[900px] mx-auto flex flex-col gap-unit-lg">
-            <!-- Tarjeta principal -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border-t-[4px] border-primary-container overflow-hidden">
-                <!-- Columna izquierda: Detalles -->
-                <div class="md:col-span-7 p-unit-lg flex flex-col justify-between">
-                    <div>
-                        <!-- Badges -->
-                        <div class="flex gap-unit-xs mb-unit-sm flex-wrap">
-                            {% if producto.categoria %}
-                            <span class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ producto.categoria }}</span>
-                            {% endif %}
-                            {% if producto.uso %}
-                            <span class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ producto.uso | capitalize }}</span>
-                            {% endif %}
-                            {% if producto.acabado %}
-                            <span class="bg-[#E8EDF7] text-primary px-3 py-1 rounded-full font-label-sm text-label-sm border border-primary/10">{{ producto.acabado | capitalize }}</span>
-                            {% endif %}
-                        </div>
-
-                        <!-- Nombre -->
-                        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary mb-unit-md tracking-tight">
-                            {{ producto.nombre }}
-                        </h1>
-
-                        <!-- Descripción -->
-                        <p class="font-body-md text-body-md text-on-surface-variant mb-unit-lg">
-                            {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
-                        </p>
-
-                        <!-- Especificaciones -->
-                        <div class="space-y-4 mb-unit-lg">
-                            {% if producto.rendimiento_min %}
-                            <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
-                                <span class="material-symbols-outlined text-primary mt-1">format_paint</span>
-                                <div>
-                                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rendimiento</p>
-                                    <p class="font-body-md text-body-md text-on-surface">{{ producto.rendimiento_min }} m² por litro (aprox.)</p>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if producto.precio_referencia %}
-                            <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
-                                <span class="material-symbols-outlined text-primary mt-1">sell</span>
-                                <div>
-                                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Precio de referencia</p>
-                                    <p class="font-body-md text-body-md text-on-surface">${{ "%.2f"|format(producto.precio_referencia) }} MXN</p>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% set superficies = [] %}
-                            {% if producto.sup_madera %}{% set superficies = superficies + ['Madera'] %}{% endif %}
-                            {% if producto.sup_metal %}{% set superficies = superficies + ['Metal'] %}{% endif %}
-                            {% if producto.sup_concreto %}{% set superficies = superficies + ['Concreto'] %}{% endif %}
-                            {% if superficies %}
-                            <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
-                                <span class="material-symbols-outlined text-primary mt-1">layers</span>
-                                <div>
-                                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Superficies</p>
-                                    <p class="font-body-md text-body-md text-on-surface">{{ superficies | join(', ') }}</p>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
+            <!-- Columna derecha: Imagen -->
+            <div class="md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center min-h-[300px]">
+                <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
+                    {% if producto.imagen_url %}
+                    <img alt="{{ producto.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ producto.imagen_url }}" />
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-surface-container rounded-lg">
+                        <span class="material-symbols-outlined text-[80px] text-outline" style="font-variation-settings: 'FILL' 1;">water_drop</span>
                     </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-                    <!-- Acciones -->
-                    <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
-                        {% if producto.link_compra_ml %}
-                        <a href="{{ producto.link_compra_ml }}" target="_blank" rel="noopener"
-                            class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
-                            Ir a comprar
-                        </a>
+        <!-- Complementos -->
+        {% if complementos %}
+        <div class="mt-unit-sm">
+            <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-sm pl-1">Complementos requeridos</h3>
+            <div class="flex flex-col gap-unit-md">
+                {% for comp in complementos %}
+                <div class="bg-surface-container-lowest p-unit-md rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] flex flex-col sm:flex-row items-center gap-unit-md">
+                    <div class="w-20 h-20 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center">
+                        {% if comp.imagen_url %}
+                        <img src="{{ comp.imagen_url }}" alt="{{ comp.nombre }}" class="w-full h-full object-contain" />
                         {% else %}
-                        <span
-                            class="w-full sm:w-auto bg-surface-container text-outline font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed"
-                            title="Enlace de compra próximamente disponible">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
-                            Ir a comprar
-                        </span>
+                        <span class="material-symbols-outlined text-outline text-[40px]">science</span>
                         {% endif %}
-                        {% if producto.ficha_tecnica_url %}
-                        <a href="{{ producto.ficha_tecnica_url }}" target="_blank" rel="noopener"
-                            class="w-full sm:w-auto bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
-                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">picture_as_pdf</span>
-                            Ficha técnica
-                        </a>
-                        {% endif %}
-                        <a href="{{ url_for('main.asesoria') }}"
-                            class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline underline-offset-4 px-4 py-3 border-2 border-primary rounded-lg hover:bg-surface-container-high/50 transition-all">
-                            <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-                            Solicitar asesoría
-                        </a>
                     </div>
-                </div>
-
-                <!-- Columna derecha: Imagen -->
-                <div class="md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center min-h-[300px]">
-                    <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
-                        {% if producto.imagen_url %}
-                        <img alt="{{ producto.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ producto.imagen_url }}" />
-                        {% else %}
-                        <div class="w-full h-full flex items-center justify-center bg-surface-container rounded-lg">
-                            <span class="material-symbols-outlined text-[80px] text-outline" style="font-variation-settings: 'FILL' 1;">water_drop</span>
-                        </div>
+                    <div class="flex-grow text-center sm:text-left">
+                        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{{ comp.tipo | capitalize }}</span>
+                        <h4 class="font-headline-md text-headline-md text-primary">{{ comp.nombre }}</h4>
+                        {% if comp.proporcion %}
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Proporción: {{ comp.proporcion }}</p>
                         {% endif %}
                     </div>
                 </div>
-            </div>
-
-            <!-- Complementos -->
-            {% if complementos %}
-            <div class="mt-unit-sm">
-                <h3 class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider mb-unit-sm pl-1">
-                    Complementos requeridos
-                </h3>
-                <div class="flex flex-col gap-unit-md">
-                    {% for comp in complementos %}
-                    <div class="bg-surface-container-lowest p-unit-md rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] flex flex-col sm:flex-row items-center gap-unit-md">
-                        <div class="w-20 h-20 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center">
-                            {% if comp.imagen_url %}
-                            <img src="{{ comp.imagen_url }}" alt="{{ comp.nombre }}" class="w-full h-full object-contain" />
-                            {% else %}
-                            <span class="material-symbols-outlined text-outline text-[40px]">science</span>
-                            {% endif %}
-                        </div>
-                        <div class="flex-grow text-center sm:text-left">
-                            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{{ comp.tipo | capitalize }}</span>
-                            <h4 class="font-headline-md text-headline-md text-primary">{{ comp.nombre }}</h4>
-                            {% if comp.proporcion %}
-                            <p class="font-body-md text-body-md text-on-surface-variant mt-1">Proporción: {{ comp.proporcion }}</p>
-                            {% endif %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </main>
-
-    <!-- Footer -->
-    <footer class="bg-primary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-            <div class="col-span-1 md:col-span-2 space-y-unit-sm">
-                <div class="font-headline-sm text-[20px] leading-[28px] font-bold text-on-primary">SayerBarn</div>
-                <p class="font-body-md text-body-md text-primary-fixed-dim/80">La Mejor Pintura</p>
-                <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
-            </div>
-            <div class="col-span-1 flex flex-col space-y-unit-sm">
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Contacto</a>
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
-            </div>
-            <div class="col-span-1 flex flex-col space-y-unit-sm">
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Sucursales</a>
+                {% endfor %}
             </div>
         </div>
-    </footer>
-</body>
-</html>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

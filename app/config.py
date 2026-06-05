@@ -2,29 +2,38 @@ import os
 from datetime import timedelta
 from dotenv import load_dotenv
 
+# Calcula la ruta raíz del proyecto y carga el archivo .env desde ahí
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 ENV_PATH = os.path.join(ROOT_DIR, '.env')
-load_dotenv(ENV_PATH, override=True)
+load_dotenv(ENV_PATH, override=True)  # override=True hace que .env sobreescriba variables del sistema
 
 class Config:
+    # Clave secreta de Flask para firmar sesiones y cookies
     SECRET_KEY = os.getenv('SECRET_KEY')
+    # Clave secreta exclusiva para firmar los tokens JWT
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
 
+    # Guarda el token JWT en cookies del navegador (no en localStorage)
     JWT_TOKEN_LOCATION = ['cookies']
     # En Railway (HTTPS) las cookies deben ser Secure
     JWT_COOKIE_SECURE = os.getenv('RAILWAY_ENVIRONMENT') is not None
+    # La cookie del token aplica para todas las rutas del sitio
     JWT_ACCESS_COOKIE_PATH = '/'
+    # Desactiva la protección CSRF (se confía en el dominio propio)
     JWT_COOKIE_CSRF_PROTECT = False
     # La sesión dura 1 día. Al cerrar el navegador y volver,
     # si pasó más de 1 día tendrá que iniciar sesión de nuevo.
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(days=1)
 
+    # Datos de conexión a MySQL leídos desde variables de entorno
     MYSQL_HOST = os.getenv('MYSQL_HOST')
     MYSQL_USER = os.getenv('MYSQL_USER')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
     # Railway expone MYSQL_DATABASE; localmente se usa MYSQL_DB
     MYSQL_DB = os.getenv('MYSQL_DATABASE') or os.getenv('MYSQL_DB')
-    MYSQL_PORT = int(os.getenv('MYSQL_PORT'))
+    MYSQL_PORT = int(os.getenv('MYSQL_PORT', 3306))
+    # DictCursor devuelve filas como diccionarios en vez de tuplas
     MYSQL_CURSORCLASS = 'DictCursor'
 
+    # API key de OpenAI para el asistente de asesoría con IA
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')

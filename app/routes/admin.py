@@ -3,22 +3,26 @@ from flask import Blueprint, render_template, request, redirect, url_for, abort
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 from app import mysql
 
+# Blueprint de administración: todas sus rutas empiezan con /admin
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 
 def admin_required(f):
+    """Decorador que protege rutas: solo permite acceso a usuarios con rol 'admin'."""
     @wraps(f)
     def decorated(*args, **kwargs):
         try:
-            verify_jwt_in_request()
+            verify_jwt_in_request()  # Verifica que haya un JWT válido en la cookie
             user_id = get_jwt_identity()
             cur = mysql.connection.cursor()
             cur.execute("SELECT rol FROM usuarios WHERE id = %s AND activo = 1", (user_id,))
             usuario = cur.fetchone()
             cur.close()
+            # Si el usuario no existe o no es admin, devuelve error 403
             if not usuario or usuario['rol'] != 'admin':
                 abort(403)
         except Exception:
+            # Si no hay sesión válida, redirige al login
             return redirect(url_for('main.login'))
         return f(*args, **kwargs)
     return decorated
@@ -31,15 +35,19 @@ def admin_required(f):
 def dashboard():
     cur = mysql.connection.cursor()
 
+    # Cuenta total de productos activos en el catálogo
     cur.execute("SELECT COUNT(*) as total FROM productos WHERE activo = 1")
     productos_activos = cur.fetchone()['total']
 
+    # Cuenta el total de asesorías realizadas en todo el historial
     cur.execute("SELECT COUNT(*) as total FROM asesorias")
     total_asesorias = cur.fetchone()['total']
 
+    # Cuenta publicaciones actualmente en estado 'publicado' en marketplace
     cur.execute("SELECT COUNT(*) as total FROM publicaciones_marketplace WHERE estado = 'publicado'")
     publicaciones_ml = cur.fetchone()['total']
 
+    # Los 5 productos más recomendados por la IA en los últimos 7 días
     cur.execute("""
         SELECT p.nombre, COUNT(a.id) as recomendaciones
         FROM productos p
@@ -53,7 +61,7 @@ def dashboard():
     cur.close()
 
     return render_template(
-        'Admin-Dashboard.html',
+        'admin/dashboard.html',
         productos_activos=productos_activos,
         total_asesorias=total_asesorias,
         publicaciones_ml=publicaciones_ml,
@@ -66,9 +74,10 @@ def dashboard():
 @admin_bp.route('/productos')
 @admin_required
 def productos():
+    # Lista productos con paginación (20 por página)
     pagina = request.args.get('pagina', 1, type=int)
     por_pagina = 20
-    offset = (pagina - 1) * por_pagina
+    offset = (pagina - 1) * por_pagina  # Calcula desde qué registro empezar
 
     cur = mysql.connection.cursor()
     cur.execute(
@@ -81,12 +90,13 @@ def productos():
     )
     productos_lista = cur.fetchall()
 
+    # Cuenta el total para calcular cuántas páginas hay
     cur.execute("SELECT COUNT(*) as total FROM productos")
     total = cur.fetchone()['total']
     cur.close()
 
     return render_template(
-        'Admin-GestionProduc.html',
+        'admin/productos.html',
         productos=productos_lista,
         pagina=pagina,
         total=total,
@@ -100,6 +110,7 @@ def editar_producto(id):
     cur = mysql.connection.cursor()
 
     if request.method == 'POST':
+        # Recoge los campos del formulario; campos vacíos se guardan como NULL
         nombre = request.form.get('nombre', '').strip()
         descripcion = request.form.get('descripcion', '').strip()
         acabado = request.form.get('acabado') or None
@@ -107,6 +118,7 @@ def editar_producto(id):
         enlace = request.form.get('enlace', '').strip() or None
         uso = request.form.get('uso') or None
         imagen_url = request.form.get('imagen_url', '').strip() or None
+        # Los checkboxes de superficie: 1 si están marcados, 0 si no
         sup_madera = 1 if request.form.get('sup_madera') else 0
         sup_metal = 1 if request.form.get('sup_metal') else 0
         sup_concreto = 1 if request.form.get('sup_concreto') else 0
@@ -125,6 +137,7 @@ def editar_producto(id):
         cur.close()
         return redirect(url_for('admin.productos'))
 
+    # GET: carga los datos actuales del producto para prellenar el formulario
     cur.execute("SELECT * FROM productos WHERE id = %s", (id,))
     producto = cur.fetchone()
     cur.close()
@@ -132,12 +145,13 @@ def editar_producto(id):
     if not producto:
         abort(404)
 
-    return render_template('Admin-Editar-Eliminar.html', producto=producto)
+    return render_template('admin/editar_producto.html', producto=producto)
 
 
 @admin_bp.route('/productos/<int:id>/toggle', methods=['POST'])
 @admin_required
 def toggle_producto(id):
+    # Alterna el estado activo/inactivo del producto sin borrarlo
     cur = mysql.connection.cursor()
     cur.execute("UPDATE productos SET activo = NOT activo WHERE id = %s", (id,))
     mysql.connection.commit()
@@ -148,6 +162,7 @@ def toggle_producto(id):
 @admin_bp.route('/productos/<int:id>/eliminar', methods=['POST'])
 @admin_required
 def eliminar_producto(id):
+    # Baja lógica: marca el producto como inactivo en vez de borrarlo físicamente
     cur = mysql.connection.cursor()
     cur.execute("UPDATE productos SET activo = 0 WHERE id = %s", (id,))
     mysql.connection.commit()
@@ -160,6 +175,7 @@ def eliminar_producto(id):
 @admin_bp.route('/complementos')
 @admin_required
 def complementos():
+    # Lista todas las relaciones producto-complemento (ej: barniz + diluyente)
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT c.id, c.tipo, c.proporcion,
@@ -172,12 +188,13 @@ def complementos():
     """)
     complementos_lista = cur.fetchall()
 
+    # Carga la lista de productos activos para el selector del formulario de agregar
     cur.execute("SELECT id, nombre FROM productos WHERE activo = 1 ORDER BY nombre")
     productos_lista = cur.fetchall()
     cur.close()
 
     return render_template(
-        'admin-complementos.html',
+        'admin/complementos.html',
         complementos=complementos_lista,
         productos=productos_lista
     )
@@ -186,11 +203,13 @@ def complementos():
 @admin_bp.route('/complementos/agregar', methods=['POST'])
 @admin_required
 def agregar_complemento():
+    # Crea una nueva relación entre un producto y su complemento
     producto_id = request.form.get('producto_id', type=int)
     complemento_id = request.form.get('complemento_id', type=int)
     tipo = request.form.get('tipo')
     proporcion = request.form.get('proporcion', '').strip() or None
 
+    # Valida que los campos obligatorios estén presentes
     if not producto_id or not complemento_id or not tipo:
         return redirect(url_for('admin.complementos'))
 
@@ -207,6 +226,7 @@ def agregar_complemento():
 @admin_bp.route('/complementos/<int:id>/eliminar', methods=['POST'])
 @admin_required
 def eliminar_complemento(id):
+    # Elimina permanentemente la relación complemento de la BD
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM complementos WHERE id = %s", (id,))
     mysql.connection.commit()
@@ -219,6 +239,7 @@ def eliminar_complemento(id):
 @admin_bp.route('/publicar')
 @admin_required
 def publicar():
+    # Muestra las últimas 50 publicaciones en marketplace con su estado
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT pm.id, pm.canal, pm.estado, pm.created_at,
@@ -230,4 +251,4 @@ def publicar():
     """)
     publicaciones = cur.fetchall()
     cur.close()
-    return render_template('admin-publicarMC.html', publicaciones=publicaciones)
+    return render_template('admin/publicar.html', publicaciones=publicaciones)

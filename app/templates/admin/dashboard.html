@@ -1,0 +1,116 @@
+{% extends 'base_admin.html' %}
+{% block title %}SayerBarn Admin - Dashboard{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-end mb-unit-xl">
+    <div>
+        <h2 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Dashboard</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-2">Panel de control del catálogo</p>
+    </div>
+    <div class="flex gap-4">
+        <a href="{{ url_for('admin.publicar') }}"
+           class="bg-surface-container-lowest border border-outline-variant text-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Nueva publicación
+        </a>
+        <a href="{{ url_for('admin.productos') }}"
+           class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-surface-tint shadow-sm transition-colors flex items-center gap-2">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Agregar producto
+        </a>
+    </div>
+</div>
+
+<!-- KPIs -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-unit-xl">
+    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-primary-container flex flex-col justify-between h-32">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Productos activos</span>
+        <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ productos_activos }}</span>
+    </div>
+    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-secondary flex flex-col justify-between h-32">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Asesorías realizadas</span>
+        <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ total_asesorias }}</span>
+    </div>
+    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-tertiary-container flex flex-col justify-between h-32">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Productos más vistos</span>
+        <span class="font-headline-md text-headline-md text-primary font-bold truncate">
+            {% if top_productos %}{{ top_productos[0].nombre }}{% else %}—{% endif %}
+        </span>
+    </div>
+    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-outline flex flex-col justify-between h-32">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Publicaciones M. Libre</span>
+        <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ publicaciones_ml }}</span>
+    </div>
+</div>
+
+<!-- Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+    <!-- Productos más recomendados -->
+    <div class="lg:col-span-2 bg-surface-container-lowest rounded-xl card-shadow p-8 flex flex-col border border-surface-container-high">
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="font-headline-md text-headline-md text-on-surface">Productos más recomendados esta semana</h3>
+            <a href="{{ url_for('admin.productos') }}" class="text-primary font-label-sm text-label-sm flex items-center gap-1 hover:underline">
+                Ver todos <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </a>
+        </div>
+        {% if top_productos %}
+        <div class="flex flex-col gap-3">
+            {% for prod in top_productos %}
+            <div class="flex items-center justify-between py-3 border-b border-surface-container-high last:border-0">
+                <span class="font-label-md text-label-md text-on-surface">{{ prod.nombre }}</span>
+                <span class="bg-primary-fixed text-primary font-label-sm text-label-sm px-3 py-1 rounded-full">{{ prod.recomendaciones }} recomendaciones</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="font-body-md text-body-md text-on-surface-variant">Sin datos esta semana.</p>
+        {% endif %}
+    </div>
+    <!-- Canales de venta -->
+    <div class="lg:col-span-1 bg-surface-container-lowest rounded-xl card-shadow p-8 flex flex-col border border-surface-container-high">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-8">Rendimiento por canal</h3>
+        <div class="flex flex-col gap-6 flex-1">
+            <div class="flex items-center justify-between border-b border-surface-container-high pb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-surface-variant flex items-center justify-center text-primary">
+                        <span class="material-symbols-outlined">storefront</span>
+                    </div>
+                    <div>
+                        <p class="font-label-md text-label-md text-on-surface">Mercado Libre</p>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Activo</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-headline-md text-headline-md text-on-surface font-bold">{{ publicaciones_ml }}</p>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">publicaciones</p>
+                </div>
+            </div>
+            <div class="flex items-center justify-between border-b border-surface-container-high pb-4 opacity-60">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-outline">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                    </div>
+                    <div>
+                        <p class="font-label-md text-label-md text-on-surface">Amazon</p>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Próximamente</p>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined text-outline">pending</span>
+            </div>
+            <div class="flex items-center justify-between opacity-60">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-outline">
+                        <span class="material-symbols-outlined">smart_display</span>
+                    </div>
+                    <div>
+                        <p class="font-label-md text-label-md text-on-surface">TikTok Shop</p>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Próximamente</p>
+                    </div>
+                </div>
+                <span class="material-symbols-outlined text-outline">pending</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

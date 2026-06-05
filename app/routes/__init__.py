@@ -5,12 +5,14 @@ from flask_jwt_extended import (
 )
 from app import mysql, bcrypt
 
+# Blueprint principal: agrupa todas las rutas públicas y de usuario
 main = Blueprint('main', __name__)
 
 
 def usuario_actual():
-    """Devuelve el usuario logueado como dict, o None."""
+    """Devuelve el usuario logueado como dict, o None si no hay sesión activa."""
     try:
+        # Lee el JWT de la cookie sin lanzar error si no existe
         verify_jwt_in_request(optional=True)
         user_id = get_jwt_identity()
         if user_id:
@@ -31,6 +33,7 @@ def usuario_actual():
 
 @main.route('/')
 def index():
+    # Obtiene los 3 primeros productos activos para mostrarlos como destacados en la landing
     productos_destacados = []
     try:
         cur = mysql.connection.cursor()
@@ -51,6 +54,7 @@ def login():
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '')
 
+        # Busca al usuario activo por email en la BD
         cur = mysql.connection.cursor()
         cur.execute(
             "SELECT id, nombre, password_hash, rol FROM usuarios "
@@ -60,15 +64,19 @@ def login():
         usuario = cur.fetchone()
         cur.close()
 
+        # Verifica que el usuario exista y que la contraseña coincida con el hash guardado
         if usuario and bcrypt.check_password_hash(usuario['password_hash'], password):
             token = create_access_token(identity=str(usuario['id']))
             response = make_response(redirect(url_for('main.index')))
+            # Guarda el token JWT en una cookie segura del navegador
             set_access_cookies(response, token)
             return response
 
-        return render_template('Iniciosesion.html', error='Correo o contraseña incorrectos.', email=email, usuario=usuario_actual())
+        # Si las credenciales son incorrectas, vuelve al formulario con el error
+        return render_template('auth/login.html', error='Correo o contraseña incorrectos.', email=email, usuario=usuario_actual())
 
-    return render_template('Iniciosesion.html', usuario=usuario_actual())
+    # GET: muestra el formulario vacío
+    return render_template('auth/login.html', usuario=usuario_actual())
 
 
 @main.route('/registro', methods=['GET', 'POST'])
@@ -79,12 +87,15 @@ def registro():
         password = request.form.get('password', '')
         confirm_password = request.form.get('confirmPassword', '')
 
+        # Valida que todos los campos estén llenos
         if not nombre or not email or not password or not confirm_password:
-            return render_template('Registro.html', error='Todos los campos son requeridos.', nombre=nombre, email=email, usuario=usuario_actual())
+            return render_template('auth/registro.html', error='Todos los campos son requeridos.', nombre=nombre, email=email, usuario=usuario_actual())
 
+        # Valida que las dos contraseñas coincidan
         if password != confirm_password:
-            return render_template('Registro.html', error='Las contraseñas no coinciden.', nombre=nombre, email=email, usuario=usuario_actual())
+            return render_template('auth/registro.html', error='Las contraseñas no coinciden.', nombre=nombre, email=email, usuario=usuario_actual())
 
+        # Genera el hash de la contraseña antes de guardarla (nunca se guarda en texto plano)
         password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
         try:
@@ -94,25 +105,28 @@ def registro():
                 (nombre, email, password_hash)
             )
             mysql.connection.commit()
-            usuario_id = cur.lastrowid
+            usuario_id = cur.lastrowid  # ID del nuevo usuario recién creado
             cur.close()
         except Exception as e:
             print(f"[ERROR REGISTRO] {type(e).__name__}: {e}")
-            # Error 1062 = Duplicate entry en MySQL
+            # Error 1062 = Duplicate entry en MySQL (email repetido)
             if hasattr(e, 'args') and e.args and e.args[0] == 1062:
-                return render_template('Registro.html', error='El correo ya está registrado.', nombre=nombre, email=email, usuario=usuario_actual())
-            return render_template('Registro.html', error=f'Error al crear la cuenta: {e}', nombre=nombre, email=email, usuario=usuario_actual())
+                return render_template('auth/registro.html', error='El correo ya está registrado.', nombre=nombre, email=email, usuario=usuario_actual())
+            return render_template('auth/registro.html', error=f'Error al crear la cuenta: {e}', nombre=nombre, email=email, usuario=usuario_actual())
 
+        # Inicia sesión automáticamente después del registro exitoso
         token = create_access_token(identity=str(usuario_id))
         response = make_response(redirect(url_for('main.index')))
         set_access_cookies(response, token)
         return response
 
-    return render_template('Registro.html', usuario=usuario_actual())
+    # GET: muestra el formulario vacío
+    return render_template('auth/registro.html', usuario=usuario_actual())
 
 
 @main.route('/logout', methods=['POST'])
 def logout():
+    # Elimina las cookies JWT del navegador para cerrar la sesión
     response = make_response(redirect(url_for('main.login')))
     unset_jwt_cookies(response)
     return response
@@ -122,6 +136,7 @@ def logout():
 
 @main.route('/catalogo')
 def catalogo():
+    # Obtiene todos los productos activos junto con su categoría
     productos = []
     error = None
     try:
@@ -145,8 +160,9 @@ def catalogo():
 # ── Rutas protegidas (requieren login) ───────────────────
 
 @main.route('/favoritos')
-@jwt_required()
+@jwt_required()  # Redirige al login si el usuario no tiene sesión activa
 def favoritos():
+    # Muestra todos los productos que el usuario ha marcado como favoritos
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
@@ -164,6 +180,7 @@ def favoritos():
 @main.route('/historial')
 @jwt_required()
 def historial():
+    # Muestra el historial de asesorías realizadas por el usuario
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
@@ -182,6 +199,7 @@ def historial():
 @main.route('/favoritos/agregar/<int:producto_id>', methods=['POST'])
 @jwt_required()
 def agregar_favorito(producto_id):
+    # Agrega un producto a favoritos; INSERT IGNORE evita duplicados silenciosamente
     user_id = get_jwt_identity()
     cur = None
     try:
@@ -196,17 +214,19 @@ def agregar_favorito(producto_id):
     finally:
         if cur:
             cur.close()
+    # Regresa a la página anterior; si no hay referrer, va al catálogo
     return redirect(request.referrer or url_for('main.catalogo'))
-
 
 
 @main.route('/asesoria')
 def asesoria():
+    # Muestra la página del asistente de asesoría con IA
     return render_template('Usuario-Asesoria.html', usuario=usuario_actual())
 
 
 @main.route('/asesoria/resultado/<int:asesoria_id>')
 def resultado_asesoria(asesoria_id):
+    # Muestra el resultado de una asesoría específica con el producto recomendado
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT a.superficie, a.uso, a.area_m2, a.litros_estimados, "
@@ -219,10 +239,12 @@ def resultado_asesoria(asesoria_id):
     )
     resultado = cur.fetchone()
 
+    # Si no existe la asesoría, regresa al formulario
     if not resultado:
         cur.close()
         return redirect(url_for('main.asesoria'))
 
+    # Busca el complemento recomendado para el producto (ej: diluyente o catalizador)
     cur.execute(
         "SELECT p.nombre, p.imagen_url FROM complementos c "
         "JOIN productos p ON c.complemento_id = p.id "
@@ -240,6 +262,7 @@ def resultado_asesoria(asesoria_id):
 
 @main.route('/producto/<int:producto_id>')
 def detalle_producto(producto_id):
+    # Muestra la página de detalle de un producto con sus datos y complementos
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
@@ -255,7 +278,8 @@ def detalle_producto(producto_id):
     if not producto:
         cur.close()
         from flask import abort
-        abort(404)
+        abort(404)  # Producto no encontrado o inactivo
+    # Obtiene todos los complementos (diluyentes, catalizadores, etc.) del producto
     cur.execute(
         "SELECT p.nombre, p.imagen_url, c.tipo, c.proporcion "
         "FROM complementos c "
@@ -274,6 +298,7 @@ def detalle_producto(producto_id):
 @main.route('/favoritos/eliminar/<int:producto_id>', methods=['POST'])
 @jwt_required()
 def eliminar_favorito(producto_id):
+    # Elimina un producto de la lista de favoritos del usuario
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(

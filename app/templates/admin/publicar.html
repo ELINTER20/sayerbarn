@@ -1,0 +1,71 @@
+{% extends 'base_admin.html' %}
+{% block title %}Admin - Publicaciones Mercado Libre{% endblock %}
+{% block page_title %}Publicaciones Mercado Libre{% endblock %}
+
+{% block content %}
+<div class="flex justify-between items-end mb-unit-xl">
+    <div>
+        <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Publicaciones en Mercado Libre</h1>
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Últimas {{ publicaciones | length }} publicaciones en el marketplace.</p>
+    </div>
+</div>
+
+<div class="bg-surface-container-lowest rounded-xl card-shadow border border-outline-variant/30 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-surface-bright border-b border-outline-variant">
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Imagen</th>
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Producto</th>
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Canal</th>
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Estado</th>
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Fecha</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/50">
+                {% for pub in publicaciones %}
+                <tr class="hover:bg-surface-bright/50 transition-colors">
+                    <td class="py-3 px-6">
+                        <div class="w-12 h-12 rounded-lg bg-surface-variant border border-outline-variant/50 overflow-hidden flex items-center justify-center">
+                            {% if pub.imagen_url %}
+                            <img alt="{{ pub.producto_nombre }}" class="w-full h-full object-contain" src="{{ pub.imagen_url }}" />
+                            {% else %}
+                            <span class="material-symbols-outlined text-outline text-[24px]">water_drop</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="py-3 px-6 font-label-md text-label-md text-on-surface">{{ pub.producto_nombre }}</td>
+                    <td class="py-3 px-6">
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
+                            <span class="material-symbols-outlined text-[14px]">storefront</span>
+                            {{ pub.canal | capitalize }}
+                        </span>
+                    </td>
+                    <td class="py-3 px-6">
+                        {% if pub.estado == 'publicado' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800 border border-green-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                            Publicado
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-surface-variant text-on-surface-variant border border-outline-variant">
+                            {{ pub.estado | capitalize }}
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">
+                        {{ pub.created_at.strftime('%d/%m/%Y') if pub.created_at else '—' }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="py-12 text-center font-body-md text-body-md text-on-surface-variant">
+                        No hay publicaciones registradas.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

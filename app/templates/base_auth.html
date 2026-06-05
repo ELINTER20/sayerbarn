@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>if(localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark');</script>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{% block title %}SayerBarn{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#00216e", "primary-fixed": "#dce1ff", "on-primary-fixed": "#001550",
+                        "surface-container-high": "#e7e8e9", "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa", "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#c1c7d0", "secondary-container": "#98adfe",
+                        "tertiary-container": "#393f47", "on-secondary-fixed-variant": "#2b418c",
+                        "inverse-on-surface": "#f0f1f2", "surface-variant": "#e1e3e4",
+                        "surface-container-highest": "#e1e3e4", "on-tertiary-fixed": "#161c23",
+                        "primary-fixed-dim": "#b6c4ff", "on-error": "#ffffff",
+                        "error": "#ba1a1a", "error-container": "#ffdad6",
+                        "secondary-fixed": "#dce1ff", "on-tertiary-container": "#a5aab3",
+                        "outline": "#747684", "surface-container": "#edeeef",
+                        "on-primary-container": "#8ea6ff", "on-surface-variant": "#444653",
+                        "tertiary": "#232930", "primary-container": "#0033a0",
+                        "on-primary": "#ffffff", "background": "#f8f9fa",
+                        "surface-tint": "#3456c1", "surface-dim": "#d9dadb",
+                        "on-background": "#191c1d", "on-surface": "#191c1d",
+                        "outline-variant": "#c4c5d5", "on-tertiary-fixed-variant": "#41474f",
+                        "secondary": "#455aa5", "on-secondary-container": "#283e88",
+                        "on-error-container": "#93000a", "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001550", "secondary-fixed-dim": "#b6c4ff",
+                        "inverse-primary": "#b6c4ff", "on-primary-fixed-variant": "#133ca8",
+                        "on-tertiary": "#ffffff", "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa", "tertiary-fixed": "#dee3ed"
+                    },
+                    "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    "spacing": {
+                        "unit-xs": "4px", "unit-sm": "8px", "unit-md": "16px",
+                        "unit-lg": "24px", "unit-xl": "48px", "gutter": "24px",
+                        "margin-mobile": "16px", "margin-desktop": "40px", "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Hanken Grotesk"], "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"], "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Manrope"], "body-md": ["Manrope"],
+                        "label-md": ["Manrope"], "label-sm": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prism-stripe {
+            background: linear-gradient(90deg,
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%,
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk 4s linear infinite;
+        }
+        @keyframes prism-walk { 0% { background-position: 0% 0; } 100% { background-position: -200% 0; } }
+        .btn-lift { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .btn-lift:hover { transform: translateY(-4px); box-shadow: 0px 8px 24px rgba(0,31,107,0.25) !important; }
+        .btn-lift:active { transform: translateY(-2px); }
+        {% block extra_styles %}{% endblock %}
+        /* === MODO OSCURO === */
+        html.dark body{background-color:#0f172a;color:#e2e8f0}
+        html.dark .bg-background,html.dark .bg-surface{background-color:#0f172a}
+        html.dark .bg-surface-bright,html.dark .bg-surface-container-lowest,html.dark .bg-surface-container-low{background-color:#1e293b}
+        html.dark .bg-surface-container,html.dark .bg-surface-container-high,html.dark .bg-surface-container-highest,html.dark .bg-surface-variant{background-color:#293548}
+        html.dark .text-on-background,html.dark .text-on-surface{color:#e2e8f0}
+        html.dark .text-on-surface-variant{color:#94a3b8}
+        html.dark .text-primary{color:#60a5fa}
+        html.dark .border-outline-variant{border-color:#334155}
+        html.dark .border-surface-container{border-color:#334155}
+        html.dark .bg-primary-container{background-color:#1d4ed8}
+        html.dark .border-primary\/10{border-color:rgba(96,165,250,0.18)}
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<!-- Layout centrado para páginas de autenticación -->
+<body class="{% block body_class %}bg-surface text-on-surface font-body-md text-body-md antialiased min-h-screen flex items-center justify-center relative overflow-hidden{% endblock %}">
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+    <script>
+        function toggleTheme() {
+            var isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            document.querySelectorAll('.theme-icon').forEach(function(el) {
+                el.textContent = isDark ? 'light_mode' : 'dark_mode';
+            });
+        }
+        document.querySelectorAll('.theme-icon').forEach(function(el) {
+            el.textContent = document.documentElement.classList.contains('dark') ? 'light_mode' : 'dark_mode';
+        });
+    </script>
+</body>
+</html>
