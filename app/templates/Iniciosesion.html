@@ -155,7 +155,7 @@
                                 style="font-variation-settings: 'FILL' 0;">mail</span>
                             <input
                                 class="w-full bg-surface-bright border border-outline-variant rounded-DEFAULT py-3 pl-10 pr-4 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors text-on-surface"
-                                id="email" name="email" placeholder="tu@correo.com" required="" type="email" />
+                                id="email" name="email" placeholder="tu@correo.com" required="" type="email" value="{{ email|default('') }}" />
                         </div>
                     </div>
                     <!-- Password Field -->
@@ -223,3 +223,7 @@
 </body>
 
 </html>
+
+
+</html>
+ 

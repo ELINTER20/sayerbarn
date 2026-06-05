@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from flask import Blueprint, jsonify, request, abort
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import mysql
 
 api_bp = Blueprint('api', __name__)
@@ -50,6 +51,89 @@ def detalle_producto(producto_id):
         abort(404, description='Producto no encontrado')
 
     return jsonify(_serialize_product(producto)), 200
+
+
+@api_bp.route('/api/asesorias', methods=['GET'])
+@jwt_required()
+def listar_asesorias():
+    user_id = get_jwt_identity()
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """
+        SELECT a.id, a.created_at, p.nombre AS producto_nombre, p.imagen_url AS producto_imagen_url,
+               a.resultado, a.superficie, a.uso, a.area_m2, a.litros_estimados
+        FROM asesorias a
+        LEFT JOIN productos p ON a.producto_recomendado_id = p.id
+        WHERE a.usuario_id = %s
+        ORDER BY a.created_at DESC
+        """,
+        (user_id,)
+    )
+    asesorias = cur.fetchall()
+    cur.close()
+
+    return jsonify([
+        {
+            'id': a['id'],
+            'fecha': a['created_at'].isoformat() if a.get('created_at') else None,
+            'producto_recomendado': a.get('producto_nombre'),
+            'imagen_url': a.get('producto_imagen_url'),
+            'resultado': a.get('resultado'),
+            'superficie': a.get('superficie'),
+            'uso': a.get('uso'),
+            'area_m2': a.get('area_m2'),
+            'litros_estimados': a.get('litros_estimados'),
+        }
+        for a in asesorias
+    ]), 200
+
+
+@api_bp.route('/api/favoritos', methods=['GET'])
+@jwt_required()
+def listar_favoritos():
+    user_id = get_jwt_identity()
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT p.id, p.nombre, p.imagen_url, p.precio_referencia, p.acabado, p.uso "
+        "FROM favoritos f "
+        "JOIN productos p ON f.producto_id = p.id "
+        "WHERE f.usuario_id = %s "
+        "ORDER BY f.created_at DESC",
+        (user_id,)
+    )
+    favoritos = cur.fetchall()
+    cur.close()
+
+    return jsonify([
+        {
+            'id': f['id'],
+            'nombre': f['nombre'],
+            'imagen_url': f.get('imagen_url'),
+            'precio_referencia': float(f['precio_referencia']) if isinstance(f.get('precio_referencia'), Decimal) else f.get('precio_referencia'),
+            'acabado': f.get('acabado'),
+            'uso': f.get('uso'),
+        }
+        for f in favoritos
+    ]), 200
+
+
+@api_bp.route('/api/favoritos/<int:producto_id>', methods=['DELETE'])
+@jwt_required()
+def eliminar_favorito(producto_id):
+    user_id = get_jwt_identity()
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "DELETE FROM favoritos WHERE usuario_id = %s AND producto_id = %s",
+        (user_id, producto_id)
+    )
+    deleted = cur.rowcount
+    mysql.connection.commit()
+    cur.close()
+
+    if deleted == 0:
+        abort(404, description='Favorito no encontrado')
+
+    return jsonify({'message': 'Favorito eliminado.'}), 200
 
 
 @api_bp.route('/api/productos', methods=['POST'])
