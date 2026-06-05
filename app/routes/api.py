@@ -1,14 +1,38 @@
 from decimal import Decimal
+from functools import wraps
 
 from flask import Blueprint, jsonify, request, abort, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from app import mysql
 
+# Blueprint de la API REST: todas sus rutas empiezan con /api/
 api_bp = Blueprint('api', __name__)
+
+
+def api_admin_required(f):
+    """Decorador para endpoints de API que solo permiten acceso a admins. Devuelve JSON."""
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        try:
+            verify_jwt_in_request()
+            user_id = get_jwt_identity()
+            cur = mysql.connection.cursor()
+            cur.execute("SELECT rol FROM usuarios WHERE id = %s AND activo = 1", (user_id,))
+            usuario = cur.fetchone()
+            cur.close()
+            if not usuario or usuario['rol'] != 'admin':
+                return jsonify({'error': 'Acceso no autorizado'}), 403
+        except Exception:
+            return jsonify({'error': 'Autenticación requerida'}), 401
+        return f(*args, **kwargs)
+    return decorated
 
 
 @api_bp.route('/api/chat', methods=['POST'])
 def chat():
+    """Endpoint del asistente de asesoría con IA (GPT-4o-mini).
+    Recibe el mensaje del usuario y el historial de la conversación,
+    consulta el catálogo en la BD y devuelve una respuesta en JSON."""
     from openai import OpenAI
 
     data = request.get_json(silent=True)
@@ -19,6 +43,7 @@ def chat():
     if not user_message:
         return jsonify({'error': 'Mensaje vacío'}), 400
 
+    # Filtra el historial para aceptar solo mensajes válidos de user/assistant
     raw_history = data.get('history') or []
     safe_history = [
         {'role': msg['role'], 'content': msg['content']}
@@ -199,6 +224,8 @@ def chat():
         return jsonify({'error': 'Error al contactar al asistente. Intenta de nuevo.'}), 500
 
 def _serialize_product(product):
+    """Convierte una fila de producto de la BD a un dict serializable como JSON.
+    Convierte Decimal a float para que JSON no falle al serializar."""
     return {
         'id': product['id'],
         'clave': product['clave'],
@@ -216,6 +243,7 @@ def _serialize_product(product):
 
 @api_bp.route('/api/productos', methods=['GET'])
 def listar_productos():
+    # Devuelve todos los productos activos en formato JSON
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, acabado, uso, activo, created_at, updated_at "
@@ -229,6 +257,7 @@ def listar_productos():
 
 @api_bp.route('/api/productos/<int:producto_id>', methods=['GET'])
 def detalle_producto(producto_id):
+    # Devuelve los datos básicos de un producto específico por su ID
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, acabado, uso, activo, created_at, updated_at "
@@ -246,6 +275,7 @@ def detalle_producto(producto_id):
 
 @api_bp.route('/api/productos/<int:producto_id>/detalle', methods=['GET'])
 def detalle_producto_completo(producto_id):
+    # Devuelve datos completos del producto incluyendo superficies y sus complementos
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, "
@@ -260,6 +290,7 @@ def detalle_producto_completo(producto_id):
         cur.close()
         abort(404, description='Producto no encontrado')
 
+    # Obtiene los complementos asociados al producto (diluyentes, catalizadores, etc.)
     cur.execute(
         "SELECT p.id, p.nombre, p.imagen_url, c.tipo, c.proporcion "
         "FROM complementos c "
@@ -282,6 +313,7 @@ def detalle_producto_completo(producto_id):
         'rendimiento_min': float(producto['rendimiento_min']) if isinstance(producto.get('rendimiento_min'), Decimal) else producto.get('rendimiento_min'),
         'link_compra_ml': producto.get('link_compra_ml'),
         'activo': bool(producto.get('activo')),
+        # Superficies compatibles como booleanos
         'superficies': {
             'madera': bool(producto.get('sup_madera')),
             'metal': bool(producto.get('sup_metal')),
@@ -304,7 +336,9 @@ def detalle_producto_completo(producto_id):
 
 
 @api_bp.route('/api/productos', methods=['POST'])
+@api_admin_required
 def crear_producto():
+    # Crea un nuevo producto en la BD con los datos enviados en JSON
     data = request.get_json() or {}
     nombre = data.get('nombre')
     clave = data.get('clave')
@@ -315,6 +349,7 @@ def crear_producto():
     uso = data.get('uso')
     activo = 1 if data.get('activo', True) else 0
 
+    # nombre y clave son los únicos campos obligatorios
     if not nombre or not clave:
         return jsonify({'error': 'Los campos nombre y clave son obligatorios.'}), 400
 
@@ -325,18 +360,22 @@ def crear_producto():
         (clave, nombre, descripcion, imagen_url, precio_referencia, acabado, uso, activo)
     )
     mysql.connection.commit()
-    producto_id = cur.lastrowid
+    producto_id = cur.lastrowid  # ID del producto recién insertado
     cur.close()
 
+    # Reutiliza detalle_producto para devolver el objeto completo con código 201
     response, status = detalle_producto(producto_id)
     return response, 201
 
 
 @api_bp.route('/api/productos/<int:producto_id>', methods=['PUT'])
+@api_admin_required
 def editar_producto(producto_id):
+    # Actualiza solo los campos enviados en el JSON (actualización parcial)
     data = request.get_json() or {}
     campo_update = []
     valores = []
+    # Mapeo de nombre del campo en JSON → nombre de columna en la BD
     campo_map = {
         'clave': 'clave',
         'nombre': 'nombre',
@@ -348,11 +387,12 @@ def editar_producto(producto_id):
         'activo': 'activo',
     }
 
+    # Construye dinámicamente el SET de la query con solo los campos recibidos
     for campo, columna in campo_map.items():
         if campo in data:
             valor = data[campo]
             if campo == 'activo':
-                valor = 1 if valor else 0
+                valor = 1 if valor else 0  # Normaliza booleano a 1/0 para MySQL
             campo_update.append(f"{columna} = %s")
             valores.append(valor)
 
@@ -368,12 +408,14 @@ def editar_producto(producto_id):
     mysql.connection.commit()
     cur.close()
 
+    # Devuelve el producto actualizado
     return detalle_producto(producto_id)
 
 
 @api_bp.route('/api/asesorias', methods=['GET'])
 @jwt_required()
 def listar_asesorias():
+    # Devuelve el historial de asesorías del usuario autenticado
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
@@ -390,6 +432,7 @@ def listar_asesorias():
         'id': a['id'],
         'superficie': a.get('superficie'),
         'uso': a.get('uso'),
+        # Convierte Decimal a float para JSON
         'area_m2': float(a['area_m2']) if isinstance(a.get('area_m2'), Decimal) else a.get('area_m2'),
         'litros_estimados': float(a['litros_estimados']) if isinstance(a.get('litros_estimados'), Decimal) else a.get('litros_estimados'),
         'created_at': a['created_at'].isoformat() if a.get('created_at') else None,
@@ -401,6 +444,7 @@ def listar_asesorias():
 @api_bp.route('/api/favoritos', methods=['GET'])
 @jwt_required()
 def listar_favoritos_api():
+    # Devuelve la lista de favoritos del usuario autenticado en formato JSON
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
@@ -429,6 +473,7 @@ def listar_favoritos_api():
 @api_bp.route('/api/favoritos/<int:producto_id>', methods=['DELETE'])
 @jwt_required()
 def eliminar_favorito_api(producto_id):
+    # Elimina un producto de los favoritos del usuario autenticado
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
@@ -441,11 +486,14 @@ def eliminar_favorito_api(producto_id):
 
 
 @api_bp.route('/api/productos/<int:producto_id>', methods=['DELETE'])
+@api_admin_required
 def eliminar_producto(producto_id):
+    # Elimina físicamente el producto y todos sus complementos asociados de la BD
     cur = mysql.connection.cursor()
+    # Primero borra los complementos para no violar la restricción de clave foránea
     cur.execute("DELETE FROM complementos WHERE producto_id = %s OR complemento_id = %s", (producto_id, producto_id))
     cur.execute("DELETE FROM productos WHERE id = %s", (producto_id,))
-    deleted = cur.rowcount
+    deleted = cur.rowcount  # 0 si el producto no existía
     mysql.connection.commit()
     cur.close()
 
@@ -454,8 +502,11 @@ def eliminar_producto(producto_id):
 
     return jsonify({'message': 'Producto eliminado.'}), 200
 
+
 @api_bp.route('/api/guardar-asesoria', methods=['POST'])
 def guardar_asesoria():
+    """Guarda el resultado de una asesoría en la BD.
+    Funciona tanto para usuarios logueados como para visitantes anónimos."""
     from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
     from app.routes import usuario_actual
 
@@ -469,7 +520,7 @@ def guardar_asesoria():
     if not clave:
         return jsonify({'error': 'Clave de producto requerida'}), 400
 
-    # Buscar el producto real en la BD por clave o por nombre
+    # Buscar el producto real en la BD por clave
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT id, nombre, descripcion_ia, imagen_url, rendimiento_min, "
@@ -495,7 +546,7 @@ def guardar_asesoria():
         cur.close()
         return jsonify({'error': 'Producto no encontrado en catálogo'}), 404
 
-    # Calcular litros si no vienen del frontend
+    # Si no vienen litros del frontend, los calcula: (área / rendimiento) + 15% de repaso
     if not litros and area_m2 and producto.get('rendimiento_min'):
         try:
             litros = round(float(area_m2) / float(producto['rendimiento_min']) * 1.15, 2)
@@ -506,14 +557,14 @@ def guardar_asesoria():
     usuario = usuario_actual()
     user_id = usuario['id'] if usuario else None
 
-    # Guardar asesoría en la BD
+    # Guarda la asesoría; user_id puede ser NULL para usuarios anónimos
     cur.execute(
         "INSERT INTO asesorias (usuario_id, superficie, uso, area_m2, litros_estimados, producto_recomendado_id) "
         "VALUES (%s, %s, %s, %s, %s, %s)",
         (user_id, superficie or None, uso or None, area_m2 or None, litros, producto['id'])
     )
     mysql.connection.commit()
-    asesoria_id = cur.lastrowid
+    asesoria_id = cur.lastrowid  # ID de la asesoría recién creada
     cur.close()
 
     return jsonify({'asesoria_id': asesoria_id}), 201

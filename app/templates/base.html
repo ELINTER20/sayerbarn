@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <script>if(localStorage.getItem('theme')==='dark'||(!localStorage.getItem('theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark');</script>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{% block title %}SayerBarn{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#00216e", "primary-fixed": "#dce1ff", "on-primary-fixed": "#001550",
+                        "surface-container-high": "#e7e8e9", "inverse-surface": "#2e3132",
+                        "surface-bright": "#f8f9fa", "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#c1c7d0", "secondary-container": "#98adfe",
+                        "tertiary-container": "#393f47", "on-secondary-fixed-variant": "#2b418c",
+                        "inverse-on-surface": "#f0f1f2", "surface-variant": "#e1e3e4",
+                        "surface-container-highest": "#e1e3e4", "on-tertiary-fixed": "#161c23",
+                        "primary-fixed-dim": "#b6c4ff", "on-error": "#ffffff",
+                        "error": "#ba1a1a", "error-container": "#ffdad6",
+                        "secondary-fixed": "#dce1ff", "on-tertiary-container": "#a5aab3",
+                        "outline": "#747684", "surface-container": "#edeeef",
+                        "on-primary-container": "#8ea6ff", "on-surface-variant": "#444653",
+                        "tertiary": "#232930", "primary-container": "#0033a0",
+                        "on-primary": "#ffffff", "background": "#f8f9fa",
+                        "surface-tint": "#3456c1", "surface-dim": "#d9dadb",
+                        "on-background": "#191c1d", "on-surface": "#191c1d",
+                        "outline-variant": "#c4c5d5", "on-tertiary-fixed-variant": "#41474f",
+                        "secondary": "#455aa5", "on-secondary-container": "#283e88",
+                        "on-error-container": "#93000a", "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#001550", "secondary-fixed-dim": "#b6c4ff",
+                        "inverse-primary": "#b6c4ff", "on-primary-fixed-variant": "#133ca8",
+                        "on-tertiary": "#ffffff", "surface-container-low": "#f3f4f5",
+                        "surface": "#f8f9fa", "tertiary-fixed": "#dee3ed"
+                    },
+                    "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                    "spacing": {
+                        "unit-xs": "4px", "unit-sm": "8px", "unit-md": "16px",
+                        "unit-lg": "24px", "unit-xl": "48px", "gutter": "24px",
+                        "margin-mobile": "16px", "margin-desktop": "40px", "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-xl": ["Hanken Grotesk"], "headline-lg": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"], "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Manrope"], "body-md": ["Manrope"],
+                        "label-md": ["Manrope"], "label-sm": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-xl": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .prism-stripe {
+            background: linear-gradient(90deg,
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%,
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk 4s linear infinite;
+        }
+        .prism-stripe-reverse {
+            background: linear-gradient(90deg,
+                #0033A0 0%, #E3000F 12.5%, #F37021 25%, #FFD100 37.5%,
+                #009A44 50%, #0033A0 62.5%, #E3000F 75%, #F37021 87.5%, #FFD100 100%);
+            background-size: 200% 100%;
+            animation: prism-walk-reverse 4s linear infinite;
+        }
+        @keyframes prism-walk { 0% { background-position: 0% 0; } 100% { background-position: -200% 0; } }
+        @keyframes prism-walk-reverse { 0% { background-position: -200% 0; } 100% { background-position: 0% 0; } }
+        .btn-lift { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .btn-lift:hover { transform: translateY(-4px); box-shadow: 0px 8px 24px rgba(0,31,107,0.25) !important; }
+        .btn-lift:active { transform: translateY(-2px); }
+        {% block extra_styles %}{% endblock %}
+        /* === MODO OSCURO === */
+        html.dark body{background-color:#0f172a;color:#e2e8f0}
+        html.dark .bg-background,html.dark .bg-surface{background-color:#0f172a}
+        html.dark .bg-surface-bright,html.dark .bg-surface-container-lowest,html.dark .bg-surface-container-low{background-color:#1e293b}
+        html.dark .bg-surface-container,html.dark .bg-surface-container-high,html.dark .bg-surface-container-highest,html.dark .bg-surface-variant,html.dark .bg-surface-dim{background-color:#293548}
+        html.dark .text-on-background,html.dark .text-on-surface{color:#e2e8f0}
+        html.dark .text-on-surface-variant{color:#94a3b8}
+        html.dark .text-primary{color:#60a5fa}
+        html.dark .text-primary-container{color:#93c5fd}
+        html.dark .text-primary-fixed-dim{color:#93c5fd}
+        html.dark .border-outline-variant{border-color:#334155}
+        html.dark .border-outline-variant\/30{border-color:rgba(51,65,85,0.4)}
+        html.dark .border-surface-container-highest{border-color:#334155}
+        html.dark .bg-primary-fixed{background-color:#1e3a5f}
+        html.dark .bg-\[#E8EDF7\]{background-color:#1e3a5f}
+        html.dark .text-\[#E8EDF7\]{color:#93c5fd}
+        html.dark .border-\[#E8EDF7\]{border-color:#334155}
+        html.dark .bg-primary-container{background-color:#1d4ed8}
+        html.dark .border-primary\/10{border-color:rgba(96,165,250,0.18)}
+        html.dark .shadow-sm{box-shadow:0 1px 3px rgba(0,0,0,0.5)}
+        html.dark .shadow-\[0px_4px_20px_rgba\(0\2c31\2c107\2c0\.05\)\]{box-shadow:0 4px 20px rgba(0,0,0,0.35)}
+        html.dark .hover\:bg-surface-container-high\/50:hover{background-color:rgba(41,53,72,0.7)}
+        html.dark .hover\:text-primary:hover{color:#60a5fa}
+        html.dark hr.border-surface-container-highest{border-color:#334155}
+        html.dark .bg-\[#F8F9FA\]{background-color:#1e293b}
+        html.dark .bg-secondary-fixed{background-color:#1e3a5f}
+        html.dark .text-on-secondary-fixed{color:#93c5fd}
+        html.dark .bg-primary\/10{background-color:rgba(96,165,250,0.15)}
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+
+    <!-- Navbar -->
+    <header class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
+        <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <!-- Logo -->
+            <a href="{{ url_for('main.index') }}" class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</a>
+            <!-- Navegación escritorio -->
+            <nav class="hidden md:flex space-x-gutter">
+                <a href="{{ url_for('main.index') }}"
+                   class="font-label-md text-label-md pb-1 transition-colors
+                          {% if request.endpoint == 'main.index' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
+                    Inicio
+                </a>
+                <a href="{{ url_for('main.asesoria') }}"
+                   class="font-label-md text-label-md pb-1 transition-colors
+                          {% if request.endpoint in ['main.asesoria', 'main.resultado_asesoria'] %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
+                    Asesoría
+                </a>
+                <a href="{{ url_for('main.catalogo') }}"
+                   class="font-label-md text-label-md pb-1 transition-colors
+                          {% if request.endpoint in ['main.catalogo', 'main.detalle_producto'] %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
+                    Catálogo
+                </a>
+            </nav>
+            <!-- Acciones escritorio -->
+            <div class="hidden md:flex items-center space-x-unit-md">
+                <button onclick="toggleTheme()" class="p-2 rounded-full text-primary transition-colors hover:bg-surface-container-high" title="Cambiar tema">
+                    <span class="theme-icon material-symbols-outlined text-[22px]">dark_mode</span>
+                </button>
+                {% if usuario %}
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
+                        <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </button>
+                    <!-- Dropdown usuario -->
+                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div class="p-4 border-b border-outline-variant">
+                            <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
+                        </div>
+                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
+                            <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
+                                <span class="material-symbols-outlined">logout</span>
+                                <span>Cerrar sesión</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{{ url_for('main.login') }}"
+                   class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200">
+                    Iniciar sesión
+                </a>
+                <a href="{{ url_for('main.registro') }}"
+                   class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity">
+                    Registrarse
+                </a>
+                {% endif %}
+            </div>
+            <!-- Menú móvil -->
+            <div class="md:hidden flex items-center space-x-1">
+                <button onclick="toggleTheme()" class="p-1 rounded-full text-primary transition-colors" title="Cambiar tema">
+                    <span class="theme-icon material-symbols-outlined text-[22px]">dark_mode</span>
+                </button>
+                <button class="text-primary p-1">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+                </button>
+            </div>
+        </div>
+        <div class="h-[2px] w-full prism-stripe"></div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-primary w-full py-unit-xl mt-auto border-t-4 border-primary-container">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div class="col-span-1 md:col-span-2 space-y-unit-sm">
+                <div class="font-headline-sm text-[20px] leading-[28px] font-bold text-on-primary">SayerBarn</div>
+                <p class="font-body-md text-body-md text-primary-fixed-dim/80">La Mejor Pintura</p>
+                <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
+            </div>
+            <div class="col-span-1 flex flex-col space-y-unit-sm">
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Contacto</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
+            </div>
+            <div class="col-span-1 flex flex-col space-y-unit-sm">
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Sucursales</a>
+            </div>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+    <script>
+        function toggleTheme() {
+            var isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons();
+        }
+        function updateThemeIcons() {
+            var isDark = document.documentElement.classList.contains('dark');
+            document.querySelectorAll('.theme-icon').forEach(function(el) {
+                el.textContent = isDark ? 'light_mode' : 'dark_mode';
+            });
+        }
+        updateThemeIcons();
+    </script>
+</body>
+</html>

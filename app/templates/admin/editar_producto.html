@@ -1,0 +1,129 @@
+{% extends 'base_admin.html' %}
+{% block title %}Admin - Editar Producto{% endblock %}
+{% block page_title %}Editar Producto{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto">
+    <div class="flex items-center mb-unit-lg gap-3">
+        <a class="text-outline hover:text-primary transition-colors flex items-center justify-center w-8 h-8 rounded-full hover:bg-surface-container"
+            href="{{ url_for('admin.productos') }}">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </a>
+        <h1 class="font-headline-lg text-headline-lg text-on-surface">Editar Producto</h1>
+    </div>
+
+    <div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] overflow-hidden">
+        <div class="h-1 w-full bg-gradient-to-r from-[#0033A0] via-[#455aa5] to-[#98adfe]"></div>
+        <form action="{{ url_for('admin.editar_producto', id=producto.id) }}" method="POST" class="p-gutter grid grid-cols-1 md:grid-cols-2 gap-gutter">
+
+            <!-- Columna izquierda -->
+            <div class="space-y-unit-lg flex flex-col">
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="nombre">Nombre del Producto</label>
+                    <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                        id="nombre" name="nombre" placeholder="Ej. Barniz Marino Premium" type="text"
+                        value="{{ producto.nombre or '' }}" />
+                </div>
+                <div class="space-y-unit-sm flex-grow flex flex-col">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="descripcion">Descripción</label>
+                    <textarea class="w-full flex-grow px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface resize-none"
+                        id="descripcion" name="descripcion" placeholder="Descripción detallada del producto..." rows="5">{{ producto.descripcion_ia or '' }}</textarea>
+                </div>
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Superficie</label>
+                    <div class="flex flex-wrap gap-2">
+                        <label class="inline-flex items-center bg-[#E8EDF7] px-3 py-1.5 rounded-full cursor-pointer hover:bg-primary-fixed-dim transition-colors">
+                            <input class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                type="checkbox" name="sup_madera" {% if producto.sup_madera %}checked{% endif %} />
+                            <span class="font-label-md text-label-md text-primary">Madera</span>
+                        </label>
+                        <label class="inline-flex items-center bg-[#E8EDF7] px-3 py-1.5 rounded-full cursor-pointer hover:bg-primary-fixed-dim transition-colors">
+                            <input class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                type="checkbox" name="sup_metal" {% if producto.sup_metal %}checked{% endif %} />
+                            <span class="font-label-md text-label-md text-primary">Metal</span>
+                        </label>
+                        <label class="inline-flex items-center bg-surface border border-outline-variant px-3 py-1.5 rounded-full cursor-pointer hover:bg-surface-container transition-colors">
+                            <input class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                type="checkbox" name="sup_concreto" {% if producto.sup_concreto %}checked{% endif %} />
+                            <span class="font-label-md text-label-md text-on-surface-variant">Concreto</span>
+                        </label>
+                        <label class="inline-flex items-center bg-surface border border-outline-variant px-3 py-1.5 rounded-full cursor-pointer hover:bg-surface-container transition-colors">
+                            <input class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
+                                type="checkbox" name="sup_otro" {% if producto.sup_otro %}checked{% endif %} />
+                            <span class="font-label-md text-label-md text-on-surface-variant">Otro</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-unit-md">
+                    <div class="space-y-unit-sm">
+                        <label class="block font-label-sm text-label-sm text-on-surface-variant" for="uso">Uso</label>
+                        <select class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface" id="uso" name="uso">
+                            <option value="">Sin especificar</option>
+                            <option value="interior" {% if producto.uso == 'interior' %}selected{% endif %}>Interior</option>
+                            <option value="exterior" {% if producto.uso == 'exterior' %}selected{% endif %}>Exterior</option>
+                            <option value="ambos" {% if producto.uso == 'ambos' %}selected{% endif %}>Ambos</option>
+                        </select>
+                    </div>
+                    <div class="space-y-unit-sm">
+                        <label class="block font-label-sm text-label-sm text-on-surface-variant" for="acabado">Tipo de acabado</label>
+                        <div class="relative">
+                            <select class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface appearance-none cursor-pointer"
+                                id="acabado" name="acabado">
+                                <option value="">Sin acabado</option>
+                                <option value="brillante" {% if producto.acabado == 'brillante' %}selected{% endif %}>Brillante</option>
+                                <option value="semi-mate" {% if producto.acabado == 'semi-mate' %}selected{% endif %}>Semi mate</option>
+                                <option value="mate" {% if producto.acabado == 'mate' %}selected{% endif %}>Mate</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna derecha -->
+            <div class="space-y-unit-lg">
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Imagen Principal</label>
+                    {% if producto.imagen_url %}
+                    <div class="rounded-xl overflow-hidden border border-outline-variant h-40 flex items-center justify-center bg-surface-container-low mb-2">
+                        <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="max-h-full max-w-full object-contain p-2" />
+                    </div>
+                    {% endif %}
+                    <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                        id="imagen_url" name="imagen_url" placeholder="URL de la imagen"
+                        type="text" value="{{ producto.imagen_url or '' }}" />
+                    <p class="font-label-sm text-label-sm text-outline">URL de imagen externa o ruta local.</p>
+                </div>
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="rendimiento">Rendimiento (m²/L)</label>
+                    <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                        id="rendimiento" name="rendimiento" placeholder="Ej. 12" type="number"
+                        value="{{ producto.rendimiento_min or '' }}" />
+                </div>
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="enlace">Enlace de compra (Mercado Libre)</label>
+                    <div class="relative">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">link</span>
+                        <input class="w-full pl-10 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                            id="enlace" name="enlace" placeholder="https://articulo.mercadolibre.com.mx/..."
+                            type="url" value="{{ producto.link_compra_ml or '' }}" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones (span ambas columnas) -->
+            <div class="col-span-1 md:col-span-2 pt-unit-md mt-unit-md border-t border-outline-variant flex justify-end space-x-4">
+                <a href="{{ url_for('admin.productos') }}"
+                   class="px-6 py-3 bg-white border-2 border-primary text-primary font-label-md text-label-md font-bold rounded-lg hover:bg-surface-container-low transition-colors flex items-center">
+                    Cancelar
+                </a>
+                <button class="px-6 py-3 bg-primary-container text-on-primary font-label-md text-label-md font-bold rounded-lg hover:bg-primary transition-colors flex items-center shadow-[0px_4px_10px_rgba(0,51,160,0.2)]"
+                    type="submit">
+                    <span class="material-symbols-outlined mr-2 text-[20px]">save</span>
+                    Guardar cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

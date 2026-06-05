@@ -1,0 +1,84 @@
+{% extends 'base_auth.html' %}
+{% block title %}SayerBarn - Crear cuenta{% endblock %}
+
+{% block body_class %}bg-surface-bright min-h-screen flex items-center justify-center p-margin-mobile md:p-margin-desktop relative overflow-hidden font-body-md text-on-surface{% endblock %}
+
+{% block content %}
+<!-- Degradado de fondo -->
+<div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-primary-fixed-dim/20 to-transparent pointer-events-none"></div>
+
+<main class="w-full max-w-[480px] bg-surface-container-lowest rounded-[1rem] shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-surface-container relative z-10 overflow-hidden">
+    <div class="h-1 w-full prism-stripe"></div>
+    <div class="p-unit-xl">
+        <div class="text-center mb-unit-lg">
+            <h1 class="font-headline-xl text-headline-xl text-primary mb-unit-xs">SayerBarn</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Expertos en color y protección</p>
+        </div>
+        <h2 class="font-headline-md text-headline-md text-on-surface mb-unit-lg text-center">Crea tu cuenta</h2>
+
+        <form action="{{ url_for('main.registro') }}" class="space-y-unit-md" method="POST">
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase" for="nombre">Nombre completo</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline-variant">person</span>
+                    </div>
+                    <input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                           id="nombre" name="nombre" placeholder="Tu nombre" required type="text" value="{{ nombre|default('') }}" />
+                </div>
+            </div>
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase" for="email">Correo electrónico</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline-variant">mail</span>
+                    </div>
+                    <input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                           id="email" name="email" placeholder="ejemplo@correo.com" required type="email" value="{{ email|default('') }}" />
+                </div>
+            </div>
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase" for="password">Contraseña</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline-variant">lock</span>
+                    </div>
+                    <input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                           id="password" name="password" placeholder="Mínimo 8 caracteres" required type="password" />
+                </div>
+            </div>
+            <div>
+                <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase" for="confirmPassword">Confirmar contraseña</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-outline-variant">lock</span>
+                    </div>
+                    <input class="block w-full pl-10 pr-3 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:ring-primary focus:border-primary font-body-md text-body-md text-on-surface placeholder-outline transition-colors"
+                           id="confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña" required type="password" />
+                </div>
+            </div>
+            {% if error %}
+            <div class="bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg">{{ error }}</div>
+            {% endif %}
+            <div class="pt-unit-sm">
+                <button class="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm font-label-md text-label-md font-bold text-on-primary bg-primary-container hover:bg-primary focus:outline-none focus:ring-2 focus:ring-primary transition-colors duration-200 btn-lift"
+                        type="submit">
+                    Crear cuenta
+                </button>
+            </div>
+        </form>
+
+        <div class="mt-unit-lg text-center">
+            <p class="font-body-md text-body-md text-on-surface-variant">
+                ¿Ya tienes cuenta?
+                <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="{{ url_for('main.login') }}">Inicia sesión</a>
+            </p>
+        </div>
+        <div class="mt-unit-md text-center">
+            <p class="font-label-sm text-label-sm text-outline font-normal">
+                Al crear una cuenta, aceptas nuestros <a class="underline hover:text-primary" href="#">Términos de servicio</a> y <a class="underline hover:text-primary" href="#">Política de privacidad</a>.
+            </p>
+        </div>
+    </div>
+</main>
+{% endblock %}
