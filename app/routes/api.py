@@ -2,6 +2,7 @@ from decimal import Decimal
 from functools import wraps
 
 from flask import Blueprint, jsonify, request, abort
+from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt_identity
 from app import mysql
 
 # Blueprint de la API REST: todas sus rutas empiezan con /api/

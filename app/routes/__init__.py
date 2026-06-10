@@ -438,31 +438,6 @@ def eliminar_favorito(producto_id):
     cur.close()
     return redirect(request.referrer or url_for('main.favoritos'))
 
-<<<<<<< HEAD
-@main.route('/mis-pedidos')
-@jwt_required()
-def mis_pedidos():
-
-    pedidos = [
-        {
-            "id": 1,
-            "producto": "Barniz Marino",
-            "cantidad": 2,
-            "fecha": "01/06/2026",
-            "estado": "Entregado",
-            "direccion": "Calle Juárez 100",
-            "telefono": "2221234567",
-            "ciudad": "Puebla",
-            "estado_republica": "Puebla"
-        }
-    ]
-
-    return render_template(
-        'usuarioregistrado-pedidos.html',
-        pedidos=pedidos,
-        usuario=usuario_actual()
-    )
-=======
 
 # ── Checkout y pedidos ────────────────────────────────────
 
@@ -616,4 +591,3 @@ def mis_pedidos():
     return render_template('usuarioregistrado-pedidos.html',
                            pedidos=pedidos,
                            usuario=usuario_actual())
->>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9
