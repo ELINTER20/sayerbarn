@@ -139,6 +139,8 @@ def catalogo():
     # Obtiene todos los productos activos junto con su categoría
     productos = []
     error = None
+    favoritos_ids = set()
+    usuario = usuario_actual()
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -154,7 +156,18 @@ def catalogo():
         cur.close()
     except Exception:
         error = 'El catálogo todavía no está disponible. Intenta de nuevo más tarde.'
-    return render_template('catalogo.html', productos=productos, usuario=usuario_actual(), error=error)
+    if usuario:
+        try:
+            cur2 = mysql.connection.cursor()
+            cur2.execute(
+                "SELECT producto_id FROM favoritos WHERE usuario_id = %s",
+                (usuario['id'],)
+            )
+            favoritos_ids = {row['producto_id'] for row in cur2.fetchall()}
+            cur2.close()
+        except Exception:
+            pass
+    return render_template('catalogo.html', productos=productos, usuario=usuario, error=error, favoritos_ids=favoritos_ids)
 
 
 # ── Rutas protegidas (requieren login) ───────────────────
