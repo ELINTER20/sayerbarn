@@ -22,6 +22,10 @@
                     </button>
                     <span class="ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría de producto</span>
                 </div>
+                <div id="producto-context-banner" class="hidden mb-unit-lg px-4 py-3 bg-primary/10 rounded-lg flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+                    <p class="font-body-md text-on-surface">Asesoría sobre: <strong id="producto-context-nombre" class="text-primary"></strong></p>
+                </div>
                 <div id="pasos-container"></div>
                 <div id="loading-indicator" class="hidden flex flex-col items-center justify-center py-unit-xl gap-unit-md">
                     <div class="flex gap-2">
@@ -249,7 +253,15 @@
 
     window.addEventListener('DOMContentLoaded', function() {
         $('input-libre').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); enviarLibre(); } });
-        arrancar();
+        const params = new URLSearchParams(window.location.search);
+        const productoNombre = params.get('producto_nombre');
+        if (productoNombre) {
+            $('producto-context-nombre').textContent = productoNombre;
+            $('producto-context-banner').classList.remove('hidden');
+            enviarRespuesta('Quiero información sobre este producto: ' + productoNombre);
+        } else {
+            arrancar();
+        }
     });
 </script>
 {% endblock %}

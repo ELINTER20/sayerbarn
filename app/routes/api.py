@@ -1,8 +1,8 @@
 from decimal import Decimal
 from functools import wraps
 
-from flask import Blueprint, jsonify, request, abort, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from flask import Blueprint, jsonify, request, abort
+from flask_jwt_extended import jwt_required, verify_jwt_in_request, get_jwt_identity
 from app import mysql
 
 # Blueprint de la API REST: todas sus rutas empiezan con /api/
@@ -273,68 +273,6 @@ def detalle_producto(producto_id):
     return jsonify(_serialize_product(producto)), 200
 
 
-@api_bp.route('/api/productos/<int:producto_id>/detalle', methods=['GET'])
-def detalle_producto_completo(producto_id):
-    # Devuelve datos completos del producto incluyendo superficies y sus complementos
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, "
-        "acabado, uso, rendimiento_min, link_compra_ml, activo, created_at, updated_at, "
-        "sup_madera, sup_metal, sup_concreto, sup_otro "
-        "FROM productos WHERE id = %s",
-        (producto_id,)
-    )
-    producto = cur.fetchone()
-
-    if not producto:
-        cur.close()
-        abort(404, description='Producto no encontrado')
-
-    # Obtiene los complementos asociados al producto (diluyentes, catalizadores, etc.)
-    cur.execute(
-        "SELECT p.id, p.nombre, p.imagen_url, c.tipo, c.proporcion "
-        "FROM complementos c "
-        "JOIN productos p ON c.complemento_id = p.id "
-        "WHERE c.producto_id = %s",
-        (producto_id,)
-    )
-    complementos = cur.fetchall()
-    cur.close()
-
-    return jsonify({
-        'id': producto['id'],
-        'clave': producto['clave'],
-        'nombre': producto['nombre'],
-        'descripcion': producto.get('descripcion_ia'),
-        'imagen_url': producto.get('imagen_url'),
-        'precio_referencia': float(producto['precio_referencia']) if isinstance(producto.get('precio_referencia'), Decimal) else producto.get('precio_referencia'),
-        'acabado': producto.get('acabado'),
-        'uso': producto.get('uso'),
-        'rendimiento_min': float(producto['rendimiento_min']) if isinstance(producto.get('rendimiento_min'), Decimal) else producto.get('rendimiento_min'),
-        'link_compra_ml': producto.get('link_compra_ml'),
-        'activo': bool(producto.get('activo')),
-        # Superficies compatibles como booleanos
-        'superficies': {
-            'madera': bool(producto.get('sup_madera')),
-            'metal': bool(producto.get('sup_metal')),
-            'concreto': bool(producto.get('sup_concreto')),
-            'otro': bool(producto.get('sup_otro')),
-        },
-        'complementos': [
-            {
-                'id': c['id'],
-                'nombre': c['nombre'],
-                'imagen_url': c.get('imagen_url'),
-                'tipo': c.get('tipo'),
-                'proporcion': c.get('proporcion'),
-            }
-            for c in complementos
-        ],
-        'created_at': producto['created_at'].isoformat() if producto.get('created_at') else None,
-        'updated_at': producto['updated_at'].isoformat() if producto.get('updated_at') else None,
-    }), 200
-
-
 @api_bp.route('/api/productos', methods=['POST'])
 @api_admin_required
 def crear_producto():
@@ -470,18 +408,38 @@ def listar_favoritos_api():
     } for p in productos]), 200
 
 
-@api_bp.route('/api/favoritos/<int:producto_id>', methods=['DELETE'])
+@api_bp.route('/api/favoritos/<int:producto_id>', methods=['POST'])
 @jwt_required()
-def eliminar_favorito_api(producto_id):
-    # Elimina un producto de los favoritos del usuario autenticado
+def agregar_favorito_api(producto_id):
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
-        "DELETE FROM favoritos WHERE usuario_id = %s AND producto_id = %s",
+        "INSERT IGNORE INTO favoritos (usuario_id, producto_id) VALUES (%s, %s)",
         (user_id, producto_id)
     )
     mysql.connection.commit()
     cur.close()
+    return jsonify({'ok': True}), 200
+
+
+@api_bp.route('/api/favoritos/<int:producto_id>', methods=['DELETE'])
+@jwt_required()
+def eliminar_favorito_api(producto_id):
+    user_id = get_jwt_identity()
+    cur = None
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "DELETE FROM favoritos WHERE usuario_id = %s AND producto_id = %s",
+            (user_id, producto_id)
+        )
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"[ERROR eliminar_favorito] {type(e).__name__}: {e}")
+        return jsonify({'error': 'Error al eliminar favorito'}), 500
+    finally:
+        if cur:
+            cur.close()
     return jsonify({'ok': True}), 200
 
 

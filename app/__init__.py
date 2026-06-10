@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_mysqldb import MySQL
