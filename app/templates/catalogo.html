@@ -142,6 +142,15 @@
                             <span class="px-2 py-1 rounded-md bg-primary-fixed text-on-primary-fixed font-label-sm text-[10px]">{{ producto.acabado | capitalize }}</span>
                             {% endif %}
                         </div>
+                        <div class="flex items-center gap-2 mb-3 flex-wrap">
+                            {% if not producto.activo %}
+                            <span class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px]">No disponible</span>
+                            {% elif producto.stock is not none and producto.stock <= 0 %}
+                            <span class="px-2 py-1 rounded-full bg-surface-bright text-on-surface-variant font-label-sm text-[10px]">Agotado</span>
+                            {% else %}
+                            <span class="px-2 py-1 rounded-full bg-primary-container text-on-primary font-label-sm text-[10px]">Disponible</span>
+                            {% endif %}
+                        </div>
                         <h3 class="font-headline-md text-on-surface text-lg mb-1 line-clamp-1">{{ producto.nombre }}</h3>
                         <p class="font-body-md text-body-md text-on-surface-variant text-sm mb-3 line-clamp-2 flex-grow">
                             {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}

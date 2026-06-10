@@ -32,6 +32,7 @@
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Nombre</th>
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Categoría</th>
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Uso</th>
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Stock</th>
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Estado</th>
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider text-right">Acciones</th>
                 </tr>
@@ -58,6 +59,7 @@
                         </span>
                     </td>
                     <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">{{ prod.uso | capitalize if prod.uso else '—' }}</td>
+                    <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">{{ prod.stock or 0 }}</td>
                     <td class="py-3 px-6">
                         {% if prod.activo %}
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800 border border-green-200">

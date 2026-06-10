@@ -81,7 +81,7 @@ def productos():
 
     cur = mysql.connection.cursor()
     cur.execute(
-        "SELECT p.id, p.clave, p.nombre, p.imagen_url, p.uso, p.acabado, p.activo, "
+        "SELECT p.id, p.clave, p.nombre, p.imagen_url, p.uso, p.acabado, p.stock, p.activo, "
         "c.nombre as categoria "
         "FROM productos p "
         "LEFT JOIN categorias c ON p.categoria_id = c.id "
@@ -118,6 +118,13 @@ def editar_producto(id):
         enlace = request.form.get('enlace', '').strip() or None
         uso = request.form.get('uso') or None
         imagen_url = request.form.get('imagen_url', '').strip() or None
+        stock = request.form.get('stock', '0').strip()
+        try:
+            stock = int(stock)
+            if stock < 0:
+                stock = 0
+        except ValueError:
+            stock = 0
         # Los checkboxes de superficie: 1 si están marcados, 0 si no
         sup_madera = 1 if request.form.get('sup_madera') else 0
         sup_metal = 1 if request.form.get('sup_metal') else 0
@@ -128,11 +135,11 @@ def editar_producto(id):
             UPDATE productos SET
                 nombre = %s, descripcion_ia = %s, acabado = %s,
                 rendimiento_min = %s, link_compra_ml = %s, uso = %s,
-                imagen_url = %s,
+                imagen_url = %s, stock = %s,
                 sup_madera = %s, sup_metal = %s, sup_concreto = %s, sup_otro = %s
             WHERE id = %s
         """, (nombre, descripcion, acabado, rendimiento, enlace, uso,
-              imagen_url, sup_madera, sup_metal, sup_concreto, sup_otro, id))
+              imagen_url, stock, sup_madera, sup_metal, sup_concreto, sup_otro, id))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('admin.productos'))

@@ -1,12 +1,60 @@
-from flask import Blueprint, render_template, request, redirect, url_for, make_response
+from flask import Blueprint, render_template, request, redirect, url_for, make_response, current_app
 from flask_jwt_extended import (
     create_access_token, jwt_required, get_jwt_identity,
     set_access_cookies, unset_jwt_cookies, verify_jwt_in_request
 )
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
+from email.message import EmailMessage
+import smtplib
+
 from app import mysql, bcrypt
 
 # Blueprint principal: agrupa todas las rutas públicas y de usuario
 main = Blueprint('main', __name__)
+
+
+def _get_serializer():
+    return URLSafeTimedSerializer(current_app.config['SECRET_KEY'], salt='password-reset-salt')
+
+
+def generate_password_reset_token(email):
+    return _get_serializer().dumps(email)
+
+
+def verify_password_reset_token(token, max_age=3600):
+    try:
+        return _get_serializer().loads(token, max_age=max_age)
+    except (SignatureExpired, BadSignature):
+        return None
+
+
+def send_password_reset_email(to_email, reset_link):
+    if not current_app.config['MAIL_SERVER'] or not current_app.config['MAIL_USERNAME'] or not current_app.config['MAIL_PASSWORD']:
+        return False
+
+    message = EmailMessage()
+    message['Subject'] = 'Recuperar contraseña - SayerBarn'
+    message['From'] = current_app.config['MAIL_DEFAULT_SENDER']
+    message['To'] = to_email
+    message.set_content(
+        f"Hola,\n\nHaz clic en el siguiente enlace para restablecer tu contraseña:\n\n{reset_link}\n\nEste enlace expirará en 1 hora. Si no solicitaste este cambio, ignora este mensaje.\n"
+    )
+
+    try:
+        if current_app.config['MAIL_USE_SSL']:
+            with smtplib.SMTP_SSL(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
+                server.login(current_app.config['MAIL_USERNAME'], current_app.config['MAIL_PASSWORD'])
+                server.send_message(message)
+        else:
+            with smtplib.SMTP(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
+                if current_app.config['MAIL_USE_TLS']:
+                    server.starttls()
+                server.login(current_app.config['MAIL_USERNAME'], current_app.config['MAIL_PASSWORD'])
+                server.send_message(message)
+        return True
+    except Exception as e:
+        print(f"[ERROR EMAIL] No se pudo enviar correo: {e}")
+        return False
 
 
 def usuario_actual():
@@ -130,6 +178,74 @@ def logout():
     response = make_response(redirect(url_for('main.login')))
     unset_jwt_cookies(response)
     return response
+
+@main.route('/recuperar-password', methods=['GET', 'POST'])
+def recuperar_password():
+    error = None
+    success = None
+    reset_link = None
+    email_sent = False
+
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        if not email:
+            error = 'Ingresa tu correo electrónico.'
+        else:
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "SELECT id FROM usuarios WHERE email = %s AND activo = 1",
+                (email,)
+            )
+            usuario = cur.fetchone()
+            cur.close()
+
+            if usuario:
+                reset_link = url_for('main.reset_password', token=generate_password_reset_token(email), _external=True)
+                email_sent = send_password_reset_email(email, reset_link)
+                if email_sent:
+                    success = 'Si ese correo existe, hemos enviado un enlace de recuperación.'
+                else:
+                    success = 'No se pudo enviar el correo. Usa el enlace directo de prueba a continuación.'
+            else:
+                success = 'Si ese correo existe, hemos enviado un enlace de recuperación.'
+
+    show_reset_link = bool(reset_link and (current_app.debug or not current_app.config['MAIL_SERVER'] or not email_sent))
+    return render_template(
+        'recuperar_password.html',
+        error=error,
+        success=success,
+        reset_link=reset_link if show_reset_link else None,
+        usuario=usuario_actual()
+    )
+
+
+@main.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    error = None
+    email = verify_password_reset_token(token)
+    if not email:
+        return render_template('recuperar_password.html', error='El enlace no es válido o expiró. Solicita uno nuevo.', usuario=usuario_actual())
+
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirmPassword', '')
+
+        if not password or not confirm_password:
+            error = 'Todos los campos son requeridos.'
+        elif password != confirm_password:
+            error = 'Las contraseñas no coinciden.'
+        else:
+            password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "UPDATE usuarios SET password_hash = %s WHERE email = %s AND activo = 1",
+                (password_hash, email)
+            )
+            mysql.connection.commit()
+            cur.close()
+            return render_template('auth/login.html', success='Tu contraseña ha sido actualizada. Ya puedes iniciar sesión.', email=email, usuario=usuario_actual())
+
+    return render_template('reset_password.html', token=token, error=error, usuario=usuario_actual())
 
 
 # ── Catálogo (público) ────────────────────────────────────
@@ -267,18 +383,18 @@ def detalle_producto(producto_id):
     cur.execute(
         "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
         "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, p.link_compra_ml, "
-        "p.ficha_tecnica_url, p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+        "p.ficha_tecnica_url, p.stock, p.activo, p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
         "c.nombre AS categoria "
         "FROM productos p "
         "LEFT JOIN categorias c ON p.categoria_id = c.id "
-        "WHERE p.id = %s AND p.activo = 1",
+        "WHERE p.id = %s",
         (producto_id,)
     )
     producto = cur.fetchone()
     if not producto:
         cur.close()
         from flask import abort
-        abort(404)  # Producto no encontrado o inactivo
+        abort(404)  # Producto no encontrado
     # Obtiene todos los complementos (diluyentes, catalizadores, etc.) del producto
     cur.execute(
         "SELECT p.nombre, p.imagen_url, c.tipo, c.proporcion "
@@ -308,3 +424,27 @@ def eliminar_favorito(producto_id):
     mysql.connection.commit()
     cur.close()
     return redirect(request.referrer or url_for('main.favoritos'))
+
+@main.route('/mis-pedidos')
+@jwt_required()
+def mis_pedidos():
+
+    pedidos = [
+        {
+            "id": 1,
+            "producto": "Barniz Marino",
+            "cantidad": 2,
+            "fecha": "01/06/2026",
+            "estado": "Entregado",
+            "direccion": "Calle Juárez 100",
+            "telefono": "2221234567",
+            "ciudad": "Puebla",
+            "estado_republica": "Puebla"
+        }
+    ]
+
+    return render_template(
+        'usuarioregistrado-pedidos.html',
+        pedidos=pedidos,
+        usuario=usuario_actual()
+    )

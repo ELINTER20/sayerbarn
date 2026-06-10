@@ -38,10 +38,13 @@
                     </div>
                 </div>
                 <div class="flex justify-end w-full mt-1 mb-2">
-                    <a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="#">¿Olvidaste tu contraseña?</a>
+                    <a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="{{ url_for('main.recuperar_password') }}">¿Olvidaste tu contraseña?</a>
                 </div>
                 {% if error %}
                 <div class="bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg">{{ error }}</div>
+                {% endif %}
+                {% if success %}
+                <div class="bg-emerald-100 text-emerald-900 font-body-md text-body-md px-4 py-3 rounded-lg">{{ success }}</div>
                 {% endif %}
                 <button class="w-full bg-primary-container text-on-primary font-label-md text-label-md font-bold py-4 rounded-DEFAULT hover:bg-primary transition-colors shadow-sm hover:shadow-md mt-2 flex justify-center items-center gap-2 btn-lift"
                         type="submit">

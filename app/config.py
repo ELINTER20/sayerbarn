@@ -37,3 +37,12 @@ class Config:
 
     # API key de OpenAI para el asistente de asesoría con IA
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+
+    # Configuración opcional de correo para recuperación de contraseña
+    MAIL_SERVER = os.getenv('MAIL_SERVER')
+    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'true').lower() in ('true', '1', 'yes')
+    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'false').lower() in ('true', '1', 'yes')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', f"no-reply@{os.getenv('MAIL_DEFAULT_DOMAIN', 'example.com')}")
