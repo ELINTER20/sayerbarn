@@ -101,6 +101,12 @@
                         value="{{ producto.rendimiento_min or '' }}" />
                 </div>
                 <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="stock">Stock disponible</label>
+                    <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                        id="stock" name="stock" placeholder="Ej. 10" type="number" min="0"
+                        value="{{ producto.stock or 0 }}" />
+                </div>
+                <div class="space-y-unit-sm">
                     <label class="block font-label-sm text-label-sm text-on-surface-variant" for="enlace">Enlace de compra (Mercado Libre)</label>
                     <div class="relative">
                         <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">link</span>

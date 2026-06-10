@@ -1,8 +1,7 @@
 from decimal import Decimal
 from functools import wraps
 
-from flask import Blueprint, jsonify, request, abort, current_app
-from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
+from flask import Blueprint, jsonify, request, abort
 from app import mysql
 
 # Blueprint de la API REST: todas sus rutas empiezan con /api/
@@ -271,68 +270,6 @@ def detalle_producto(producto_id):
         abort(404, description='Producto no encontrado')
 
     return jsonify(_serialize_product(producto)), 200
-
-
-@api_bp.route('/api/productos/<int:producto_id>/detalle', methods=['GET'])
-def detalle_producto_completo(producto_id):
-    # Devuelve datos completos del producto incluyendo superficies y sus complementos
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id, clave, nombre, descripcion_ia, imagen_url, precio_referencia, "
-        "acabado, uso, rendimiento_min, link_compra_ml, activo, created_at, updated_at, "
-        "sup_madera, sup_metal, sup_concreto, sup_otro "
-        "FROM productos WHERE id = %s",
-        (producto_id,)
-    )
-    producto = cur.fetchone()
-
-    if not producto:
-        cur.close()
-        abort(404, description='Producto no encontrado')
-
-    # Obtiene los complementos asociados al producto (diluyentes, catalizadores, etc.)
-    cur.execute(
-        "SELECT p.id, p.nombre, p.imagen_url, c.tipo, c.proporcion "
-        "FROM complementos c "
-        "JOIN productos p ON c.complemento_id = p.id "
-        "WHERE c.producto_id = %s",
-        (producto_id,)
-    )
-    complementos = cur.fetchall()
-    cur.close()
-
-    return jsonify({
-        'id': producto['id'],
-        'clave': producto['clave'],
-        'nombre': producto['nombre'],
-        'descripcion': producto.get('descripcion_ia'),
-        'imagen_url': producto.get('imagen_url'),
-        'precio_referencia': float(producto['precio_referencia']) if isinstance(producto.get('precio_referencia'), Decimal) else producto.get('precio_referencia'),
-        'acabado': producto.get('acabado'),
-        'uso': producto.get('uso'),
-        'rendimiento_min': float(producto['rendimiento_min']) if isinstance(producto.get('rendimiento_min'), Decimal) else producto.get('rendimiento_min'),
-        'link_compra_ml': producto.get('link_compra_ml'),
-        'activo': bool(producto.get('activo')),
-        # Superficies compatibles como booleanos
-        'superficies': {
-            'madera': bool(producto.get('sup_madera')),
-            'metal': bool(producto.get('sup_metal')),
-            'concreto': bool(producto.get('sup_concreto')),
-            'otro': bool(producto.get('sup_otro')),
-        },
-        'complementos': [
-            {
-                'id': c['id'],
-                'nombre': c['nombre'],
-                'imagen_url': c.get('imagen_url'),
-                'tipo': c.get('tipo'),
-                'proporcion': c.get('proporcion'),
-            }
-            for c in complementos
-        ],
-        'created_at': producto['created_at'].isoformat() if producto.get('created_at') else None,
-        'updated_at': producto['updated_at'].isoformat() if producto.get('updated_at') else None,
-    }), 200
 
 
 @api_bp.route('/api/productos', methods=['POST'])

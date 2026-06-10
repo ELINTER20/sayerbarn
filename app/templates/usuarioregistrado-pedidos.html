@@ -1,4 +1,90 @@
 {% extends 'base.html' %}
+<<<<<<< HEAD
+
+{% block title %}Mis Pedidos{% endblock %}
+
+{% block content %}
+
+<div class="container mx-auto p-6">
+
+    <h1 class="text-3xl font-bold mb-6">
+        Mis Pedidos
+    </h1>
+
+    {% if pedidos %}
+
+        {% for pedido in pedidos %}
+
+        <div class="border rounded-lg p-4 mb-4 shadow">
+
+            <div class="flex justify-between items-center">
+
+                <div>
+                    <h3 class="font-bold">
+                        {{ pedido.producto }}
+                    </h3>
+
+                    <p>Cantidad: {{ pedido.cantidad }}</p>
+
+                    <p>Fecha: {{ pedido.fecha }}</p>
+
+                    <p>Estado: {{ pedido.estado }}</p>
+                </div>
+
+                <button
+                    onclick="toggleDetalle('{{ pedido.id }}')"
+                    class="bg-blue-600 text-white px-4 py-2 rounded">
+
+                    Ver detalle
+
+                </button>
+
+            </div>
+
+            <div
+                id="detalle-{{ pedido.id }}"
+                class="hidden mt-4 border-t pt-4">
+
+                <p><strong>Dirección:</strong> {{ pedido.direccion }}</p>
+
+                <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+
+                <p><strong>Ciudad:</strong> {{ pedido.ciudad }}</p>
+
+                <p><strong>Estado:</strong> {{ pedido.estado_republica }}</p>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>No tienes pedidos registrados.</p>
+
+    {% endif %}
+
+</div>
+
+<script>
+
+function toggleDetalle(id){
+
+    let detalle = document.getElementById("detalle-" + id);
+
+    if(detalle.classList.contains("hidden")){
+        detalle.classList.remove("hidden");
+    }else{
+        detalle.classList.add("hidden");
+    }
+
+}
+
+</script>
+
+{% endblock %}
+=======
 {% block title %}SayerBarn - Mis pedidos{% endblock %}
 
 {% block content %}
@@ -100,3 +186,4 @@
     </div>
 </div>
 {% endblock %}
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9

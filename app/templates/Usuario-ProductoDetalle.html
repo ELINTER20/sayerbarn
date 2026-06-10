@@ -31,6 +31,18 @@
                     <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary mb-unit-md tracking-tight">
                         {{ producto.nombre }}
                     </h1>
+                    <div class="flex flex-wrap gap-2 mb-unit-md">
+                        {% if not producto.activo %}
+                        <span class="px-3 py-1 rounded-full bg-error-container text-on-error-container font-label-sm">Producto desactivado</span>
+                        {% elif producto.stock is not none and producto.stock <= 0 %}
+                        <span class="px-3 py-1 rounded-full bg-surface-bright text-on-surface-variant font-label-sm">Agotado</span>
+                        {% else %}
+                        <span class="px-3 py-1 rounded-full bg-primary-container text-on-primary font-label-sm">Disponible</span>
+                        {% endif %}
+                        {% if producto.stock is not none %}
+                        <span class="px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-sm">Stock: {{ producto.stock }}</span>
+                        {% endif %}
+                    </div>
                     <p class="font-body-md text-body-md text-on-surface-variant mb-unit-lg">
                         {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
                     </p>
@@ -70,6 +82,7 @@
                 </div>
                 <!-- Acciones -->
                 <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
+<<<<<<< HEAD
                     <button type="button"
                        data-id="{{ producto.id }}"
                        data-nombre="{{ producto.nombre }}"
@@ -80,6 +93,16 @@
                         <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
                         Agregar al carrito
                     </button>
+=======
+<<<<<<< HEAD
+                    {% if not producto.activo or (producto.stock is not none and producto.stock <= 0) %}
+                    <span class="w-full sm:w-auto bg-surface-container text-on-surface-variant font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                        Producto no disponible
+                    </span>
+                    {% elif producto.link_compra_ml %}
+=======
+>>>>>>> bb073801c8ab79b526b3d58be6b26e59a936b6dc
                     <!-- Compra directa en SayerBarn -->
                     <a href="{{ url_for('main.checkout', producto_id=producto.id) }}"
                        class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
@@ -87,11 +110,20 @@
                         Comprar aquí
                     </a>
                     {% if producto.link_compra_ml %}
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9
                     <a href="{{ producto.link_compra_ml }}" target="_blank" rel="noopener"
                        class="w-full sm:w-auto bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">storefront</span>
                         Ver en Mercado Libre
                     </a>
+<<<<<<< HEAD
+                    {% else %}
+                    <span class="w-full sm:w-auto bg-surface-container text-outline font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
+                        Enlace no disponible
+                    </span>
+=======
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9
                     {% endif %}
                     {% if producto.ficha_tecnica_url %}
                     <a href="{{ producto.ficha_tecnica_url }}" target="_blank" rel="noopener"
