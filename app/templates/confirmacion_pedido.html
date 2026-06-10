@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}SayerBarn - Pedido confirmado{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+    <div class="max-w-[600px] mx-auto flex flex-col items-center text-center gap-unit-lg">
+
+        <!-- Ícono de éxito -->
+        <div class="w-24 h-24 bg-primary-fixed rounded-full flex items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-primary text-[52px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        </div>
+
+        <!-- Título -->
+        <div>
+            <h1 class="font-headline-lg text-headline-lg text-primary mb-2">¡Pedido recibido!</h1>
+            <p class="font-body-lg text-body-lg text-on-surface-variant">
+                Tu pedido <strong class="text-on-surface font-semibold">#{{ pedido.id }}</strong> fue registrado exitosamente.
+                Un asesor de Sayer Dabet se pondrá en contacto contigo para coordinar la entrega.
+            </p>
+        </div>
+
+        <!-- Tarjeta resumen -->
+        <div class="w-full bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+            <!-- Producto -->
+            <div class="flex items-center gap-unit-md p-unit-md border-b border-outline-variant">
+                <div class="w-16 h-16 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center overflow-hidden">
+                    {% if pedido.imagen_url %}
+                    <img src="{{ pedido.imagen_url }}" alt="{{ pedido.nombre_producto }}" class="w-full h-full object-contain" />
+                    {% else %}
+                    <span class="material-symbols-outlined text-outline text-[32px]">water_drop</span>
+                    {% endif %}
+                </div>
+                <div class="flex-grow text-left">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Producto</p>
+                    <p class="font-label-md text-label-md text-on-surface">{{ pedido.nombre_producto }}</p>
+                    <p class="font-body-md text-body-md text-on-surface-variant">Cantidad: {{ pedido.cantidad }}</p>
+                </div>
+                {% if pedido.total %}
+                <div class="text-right">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total</p>
+                    <p class="font-headline-md text-headline-md text-primary">${{ "%.2f"|format(pedido.total) }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Datos del comprador -->
+            <div class="p-unit-md grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Nombre</p>
+                    <p class="font-body-md text-body-md text-on-surface">{{ pedido.nombre_comprador }}</p>
+                </div>
+                <div>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Teléfono</p>
+                    <p class="font-body-md text-body-md text-on-surface">{{ pedido.telefono or '—' }}</p>
+                </div>
+                <div class="sm:col-span-2">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Entrega en</p>
+                    <p class="font-body-md text-body-md text-on-surface">
+                        {{ pedido.direccion }}{% if pedido.ciudad %}, {{ pedido.ciudad }}{% endif %}{% if pedido.estado_mx %}, {{ pedido.estado_mx }}{% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="px-unit-md pb-unit-md">
+                <div class="bg-primary-fixed/30 border border-primary/10 rounded-lg px-4 py-3 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">pending</span>
+                    <span class="font-label-md text-label-md text-primary">Estado: Pendiente de confirmación</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="flex flex-col sm:flex-row gap-unit-md w-full justify-center">
+            {% if usuario %}
+            <a href="{{ url_for('main.mis_pedidos') }}"
+               class="bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">receipt_long</span>
+                Ver mis pedidos
+            </a>
+            {% endif %}
+            <a href="{{ url_for('main.catalogo') }}"
+               class="bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">storefront</span>
+                Seguir comprando
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

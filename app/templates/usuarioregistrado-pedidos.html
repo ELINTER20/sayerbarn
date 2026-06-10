@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}SayerBarn - Mis pedidos{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 mb-unit-lg">
+        <span class="font-label-md text-label-md text-on-surface-variant">Mi cuenta</span>
+        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
+        <span class="font-label-md text-label-md text-primary font-bold">Mis pedidos</span>
+    </nav>
+
+    <div class="flex items-center gap-3 mb-unit-xl">
+        <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[28px]">receipt_long</span>
+        </div>
+        <h1 class="font-headline-lg text-headline-lg text-primary">Mis pedidos</h1>
+    </div>
+
+    <!-- Lista de pedidos -->
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+        {% if pedidos %}
+            {% for p in pedidos %}
+            <div class="flex flex-col md:flex-row items-start md:items-center gap-unit-md p-unit-md
+                        {% if not loop.last %}border-b border-outline-variant{% endif %}
+                        hover:bg-surface-container-low transition-colors duration-200">
+
+                <!-- Imagen -->
+                <div class="shrink-0 w-16 h-16 bg-surface-container rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                    {% if p.imagen_url %}
+                    <img src="{{ p.imagen_url }}" alt="{{ p.nombre_producto }}" class="w-full h-full object-contain" />
+                    {% else %}
+                    <span class="material-symbols-outlined text-outline text-[32px]">water_drop</span>
+                    {% endif %}
+                </div>
+
+                <!-- Info producto -->
+                <div class="flex-grow min-w-0">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">
+                        Pedido #{{ p.id }} · {{ p.created_at.strftime('%d %b %Y') if p.created_at else '—' }}
+                    </p>
+                    <h3 class="font-label-md text-label-md text-on-surface truncate">{{ p.nombre_producto }}</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Cantidad: {{ p.cantidad }}</p>
+                </div>
+
+                <!-- Total -->
+                {% if p.total %}
+                <div class="shrink-0 text-right hidden md:block">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">Total</p>
+                    <p class="font-label-md text-label-md text-on-surface">${{ "%.2f"|format(p.total) }} MXN</p>
+                </div>
+                {% endif %}
+
+                <!-- Estado badge -->
+                <div class="shrink-0">
+                    {% set estado = p.estado_pedido %}
+                    {% if estado == 'entregado' %}
+                        <span class="inline-flex items-center gap-1 bg-[#E8F5E9] text-[#1B5E20] font-label-sm text-label-sm px-3 py-1.5 rounded-full">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            Entregado
+                        </span>
+                    {% elif estado == 'en_proceso' %}
+                        <span class="inline-flex items-center gap-1 bg-primary-fixed text-primary font-label-sm text-label-sm px-3 py-1.5 rounded-full">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+                            En proceso
+                        </span>
+                    {% elif estado == 'pagado' %}
+                        <span class="inline-flex items-center gap-1 bg-[#E3F2FD] text-[#0D47A1] font-label-sm text-label-sm px-3 py-1.5 rounded-full">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+                            Pagado
+                        </span>
+                    {% elif estado == 'cancelado' %}
+                        <span class="inline-flex items-center gap-1 bg-error-container text-on-error-container font-label-sm text-label-sm px-3 py-1.5 rounded-full">
+                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">cancel</span>
+                            Cancelado
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-3 py-1.5 rounded-full">
+                            <span class="material-symbols-outlined text-[14px]">pending</span>
+                            Pendiente
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <!-- Estado vacío -->
+            <div class="flex flex-col items-center justify-center py-16 gap-4 text-on-surface-variant">
+                <span class="material-symbols-outlined text-[56px]">receipt_long</span>
+                <p class="font-body-lg text-body-lg">No tienes pedidos registrados aún.</p>
+                <a href="{{ url_for('main.catalogo') }}"
+                   class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">storefront</span>
+                    Explorar catálogo
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
