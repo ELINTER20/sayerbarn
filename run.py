@@ -9,7 +9,10 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     # Activa el modo debug solo si FLASK_DEBUG=true en las variables de entorno
     debug = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
+<<<<<<< HEAD
     # Inicia el servidor escuchando en todas las IPs del equipo
+=======
+>>>>>>> e45934d4fcf1da487a225459c7471dcdebf5457e
     app.run(host='0.0.0.0', port=port, debug=debug)
 
     
