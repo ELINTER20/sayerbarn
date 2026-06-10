@@ -255,6 +255,8 @@ def catalogo():
     # Obtiene todos los productos activos junto con su categoría
     productos = []
     error = None
+    favoritos_ids = set()
+    usuario = usuario_actual()
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -270,7 +272,18 @@ def catalogo():
         cur.close()
     except Exception:
         error = 'El catálogo todavía no está disponible. Intenta de nuevo más tarde.'
-    return render_template('catalogo.html', productos=productos, usuario=usuario_actual(), error=error)
+    if usuario:
+        try:
+            cur2 = mysql.connection.cursor()
+            cur2.execute(
+                "SELECT producto_id FROM favoritos WHERE usuario_id = %s",
+                (usuario['id'],)
+            )
+            favoritos_ids = {row['producto_id'] for row in cur2.fetchall()}
+            cur2.close()
+        except Exception:
+            pass
+    return render_template('catalogo.html', productos=productos, usuario=usuario, error=error, favoritos_ids=favoritos_ids)
 
 
 # ── Rutas protegidas (requieren login) ───────────────────
@@ -425,6 +438,7 @@ def eliminar_favorito(producto_id):
     cur.close()
     return redirect(request.referrer or url_for('main.favoritos'))
 
+<<<<<<< HEAD
 @main.route('/mis-pedidos')
 @jwt_required()
 def mis_pedidos():
@@ -448,3 +462,158 @@ def mis_pedidos():
         pedidos=pedidos,
         usuario=usuario_actual()
     )
+=======
+
+# ── Checkout y pedidos ────────────────────────────────────
+
+# Lista de estados de la república mexicana para el formulario de checkout
+ESTADOS_MX = [
+    'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche',
+    'Chiapas', 'Chihuahua', 'Ciudad de México', 'Coahuila', 'Colima',
+    'Durango', 'Estado de México', 'Guanajuato', 'Guerrero', 'Hidalgo',
+    'Jalisco', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca',
+    'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa',
+    'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán',
+    'Zacatecas',
+]
+
+
+@main.route('/checkout/<int:producto_id>', methods=['GET', 'POST'])
+def checkout(producto_id):
+    """Formulario de compra directa para un producto.
+    GET:  muestra el formulario con los datos del producto.
+    POST: valida, guarda el pedido en BD y redirige a la confirmación."""
+
+    # Obtener el producto; si no existe o está inactivo devuelve 404
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT id, nombre, descripcion_ia, imagen_url, precio_referencia, uso "
+        "FROM productos WHERE id = %s AND activo = 1",
+        (producto_id,)
+    )
+    producto = cur.fetchone()
+    cur.close()
+
+    if not producto:
+        from flask import abort
+        abort(404)
+
+    usuario = usuario_actual()
+
+    if request.method == 'POST':
+        # Recoger y limpiar los datos del formulario
+        nombre_comprador = request.form.get('nombre_comprador', '').strip()
+        telefono         = request.form.get('telefono', '').strip()
+        direccion        = request.form.get('direccion', '').strip()
+        ciudad           = request.form.get('ciudad', '').strip()
+        estado_mx        = request.form.get('estado_mx', '').strip()
+        cantidad         = request.form.get('cantidad', 1, type=int)
+
+        # Guardar los valores para repoblar el formulario si hay error
+        form_data = {
+            'nombre_comprador': nombre_comprador,
+            'telefono': telefono,
+            'direccion': direccion,
+            'ciudad': ciudad,
+            'estado_mx': estado_mx,
+            'cantidad': cantidad,
+        }
+
+        # Validaciones básicas de campos obligatorios
+        if not nombre_comprador or not telefono or not direccion or not ciudad or not estado_mx:
+            return render_template('checkout.html',
+                                   producto=producto,
+                                   usuario=usuario,
+                                   estados_mx=ESTADOS_MX,
+                                   form=form_data,
+                                   error='Por favor completa todos los campos obligatorios.')
+
+        if cantidad < 1 or cantidad > 99:
+            cantidad = 1
+
+        # Calcular totales a partir del precio de referencia del producto
+        precio_unitario = float(producto['precio_referencia']) if producto.get('precio_referencia') else None
+        total = round(precio_unitario * cantidad, 2) if precio_unitario else None
+
+        # Insertar el pedido en la BD; usuario_id puede ser NULL si no hay sesión
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                INSERT INTO pedidos
+                  (usuario_id, producto_id, canal,
+                   nombre_comprador, telefono, direccion, ciudad, estado_mx,
+                   cantidad, precio_unitario, total, estado_pedido)
+                VALUES (%s, %s, 'directo', %s, %s, %s, %s, %s, %s, %s, %s, 'pendiente')
+            """, (
+                usuario['id'] if usuario else None,
+                producto_id,
+                nombre_comprador, telefono, direccion, ciudad, estado_mx,
+                cantidad, precio_unitario, total,
+            ))
+            mysql.connection.commit()
+            pedido_id = cur.lastrowid  # ID del pedido recién creado
+            cur.close()
+        except Exception as e:
+            print(f"[ERROR CHECKOUT] {type(e).__name__}: {e}")
+            return render_template('checkout.html',
+                                   producto=producto,
+                                   usuario=usuario,
+                                   estados_mx=ESTADOS_MX,
+                                   form=form_data,
+                                   error='Ocurrió un error al registrar tu pedido. Intenta de nuevo.')
+
+        # Redirigir a la página de confirmación con el ID del pedido recién creado
+        return redirect(url_for('main.confirmacion_pedido', pedido_id=pedido_id))
+
+    # GET: mostrar el formulario vacío
+    return render_template('checkout.html',
+                           producto=producto,
+                           usuario=usuario,
+                           estados_mx=ESTADOS_MX,
+                           form={})
+
+
+@main.route('/pedido/confirmacion/<int:pedido_id>')
+def confirmacion_pedido(pedido_id):
+    """Página de confirmación que se muestra tras guardar el pedido."""
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT pd.id, pd.nombre_comprador, pd.telefono, pd.direccion,
+               pd.ciudad, pd.estado_mx, pd.cantidad, pd.total, pd.estado_pedido,
+               pr.nombre AS nombre_producto, pr.imagen_url
+        FROM pedidos pd
+        JOIN productos pr ON pd.producto_id = pr.id
+        WHERE pd.id = %s
+    """, (pedido_id,))
+    pedido = cur.fetchone()
+    cur.close()
+
+    # Si el pedido no existe (alguien navegó a una URL inventada) redirige al catálogo
+    if not pedido:
+        return redirect(url_for('main.catalogo'))
+
+    return render_template('confirmacion_pedido.html',
+                           pedido=pedido,
+                           usuario=usuario_actual())
+
+
+@main.route('/mis-pedidos')
+@jwt_required()
+def mis_pedidos():
+    """Historial de pedidos del usuario autenticado, ordenado del más reciente al más antiguo."""
+    user_id = get_jwt_identity()
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT pd.id, pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
+               pr.nombre AS nombre_producto, pr.imagen_url
+        FROM pedidos pd
+        JOIN productos pr ON pd.producto_id = pr.id
+        WHERE pd.usuario_id = %s
+        ORDER BY pd.created_at DESC
+    """, (user_id,))
+    pedidos = cur.fetchall()
+    cur.close()
+    return render_template('usuarioregistrado-pedidos.html',
+                           pedidos=pedidos,
+                           usuario=usuario_actual())
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9

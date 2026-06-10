@@ -82,22 +82,35 @@
                 </div>
                 <!-- Acciones -->
                 <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
+<<<<<<< HEAD
                     {% if not producto.activo or (producto.stock is not none and producto.stock <= 0) %}
                     <span class="w-full sm:w-auto bg-surface-container text-on-surface-variant font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
                         Producto no disponible
                     </span>
                     {% elif producto.link_compra_ml %}
-                    <a href="{{ producto.link_compra_ml }}" target="_blank" rel="noopener"
+=======
+                    <!-- Compra directa en SayerBarn -->
+                    <a href="{{ url_for('main.checkout', producto_id=producto.id) }}"
                        class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
-                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
-                        Ir a comprar
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+                        Comprar aquí
                     </a>
+                    {% if producto.link_compra_ml %}
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9
+                    <a href="{{ producto.link_compra_ml }}" target="_blank" rel="noopener"
+                       class="w-full sm:w-auto bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">storefront</span>
+                        Ver en Mercado Libre
+                    </a>
+<<<<<<< HEAD
                     {% else %}
                     <span class="w-full sm:w-auto bg-surface-container text-outline font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
                         Enlace no disponible
                     </span>
+=======
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9
                     {% endif %}
                     {% if producto.ficha_tecnica_url %}
                     <a href="{{ producto.ficha_tecnica_url }}" target="_blank" rel="noopener"

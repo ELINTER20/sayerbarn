@@ -153,10 +153,27 @@
                         <span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">account_circle</span>
                     </button>
                     <!-- Dropdown usuario -->
-                    <div class="absolute right-0 mt-2 w-48 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div class="absolute right-0 mt-2 w-56 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div class="p-4 border-b border-outline-variant">
                             <p class="font-label-md text-label-md text-on-surface font-bold">{{ usuario.nombre }}</p>
                             <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
+                        </div>
+                        <div class="py-1">
+                            <a href="{{ url_for('main.mis_pedidos') }}"
+                               class="flex items-center gap-2 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md">
+                                <span class="material-symbols-outlined text-[18px] text-primary">receipt_long</span>
+                                Mis pedidos
+                            </a>
+                            <a href="{{ url_for('main.historial') }}"
+                               class="flex items-center gap-2 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md">
+                                <span class="material-symbols-outlined text-[18px] text-primary">history</span>
+                                Historial
+                            </a>
+                            <a href="{{ url_for('main.favoritos') }}"
+                               class="flex items-center gap-2 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md border-b border-outline-variant">
+                                <span class="material-symbols-outlined text-[18px] text-primary">favorite</span>
+                                Favoritos
+                            </a>
                         </div>
                         <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
                             <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">

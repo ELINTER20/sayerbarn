@@ -47,6 +47,10 @@ def dashboard():
     cur.execute("SELECT COUNT(*) as total FROM publicaciones_marketplace WHERE estado = 'publicado'")
     publicaciones_ml = cur.fetchone()['total']
 
+    # Cuenta pedidos pendientes de gestión (pendiente + pagado)
+    cur.execute("SELECT COUNT(*) as total FROM pedidos WHERE estado_pedido IN ('pendiente','pagado')")
+    pedidos_pendientes = cur.fetchone()['total']
+
     # Los 5 productos más recomendados por la IA en los últimos 7 días
     cur.execute("""
         SELECT p.nombre, COUNT(a.id) as recomendaciones
@@ -65,6 +69,7 @@ def dashboard():
         productos_activos=productos_activos,
         total_asesorias=total_asesorias,
         publicaciones_ml=publicaciones_ml,
+        pedidos_pendientes=pedidos_pendientes,
         top_productos=top_productos
     )
 
@@ -102,6 +107,89 @@ def productos():
         total=total,
         por_pagina=por_pagina
     )
+
+
+@admin_bp.route('/productos/nuevo', methods=['GET', 'POST'])
+@admin_required
+def agregar_producto():
+    """Formulario para crear un nuevo producto en el catálogo.
+    GET:  muestra el formulario vacío con la lista de categorías.
+    POST: valida los campos obligatorios e inserta el producto en la BD."""
+
+    # Cargar categorías para el selector del formulario
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT id, nombre FROM categorias ORDER BY nombre")
+    categorias = cur.fetchall()
+    cur.close()
+
+    if request.method == 'POST':
+        # Recoger todos los campos del formulario
+        clave       = request.form.get('clave', '').strip().upper()
+        nombre      = request.form.get('nombre', '').strip()
+        descripcion = request.form.get('descripcion', '').strip() or None
+        categoria_id= request.form.get('categoria_id', type=int)
+        uso         = request.form.get('uso') or None
+        acabado     = request.form.get('acabado') or None
+        imagen_url  = request.form.get('imagen_url', '').strip() or None
+        rendimiento = request.form.get('rendimiento', type=float) or None
+        precio      = request.form.get('precio', type=float) or None
+        enlace      = request.form.get('enlace', '').strip() or None
+        # Checkboxes de superficie: 1 si marcados, 0 si no
+        sup_madera  = 1 if request.form.get('sup_madera') else 0
+        sup_metal   = 1 if request.form.get('sup_metal') else 0
+        sup_concreto= 1 if request.form.get('sup_concreto') else 0
+        sup_otro    = 1 if request.form.get('sup_otro') else 0
+
+        # Guardar valores para repoblar el formulario si hay error
+        form_data = {
+            'clave': clave, 'nombre': nombre, 'descripcion': descripcion,
+            'categoria_id': str(categoria_id) if categoria_id else '',
+            'uso': uso, 'acabado': acabado, 'imagen_url': imagen_url,
+            'rendimiento': rendimiento, 'precio': precio, 'enlace': enlace,
+            'sup_madera': sup_madera, 'sup_metal': sup_metal,
+            'sup_concreto': sup_concreto, 'sup_otro': sup_otro,
+        }
+
+        # Validar campos obligatorios
+        if not clave or not nombre or not categoria_id:
+            return render_template('admin/agregar_producto.html',
+                                   categorias=categorias,
+                                   form=form_data,
+                                   error='Los campos Clave, Nombre y Categoría son obligatorios.')
+
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                INSERT INTO productos
+                  (clave, nombre, descripcion_ia, categoria_id,
+                   uso, acabado,
+                   sup_madera, sup_metal, sup_concreto, sup_otro,
+                   rendimiento_min, precio_referencia,
+                   imagen_url, link_compra_ml, activo)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1)
+            """, (clave, nombre, descripcion, categoria_id,
+                  uso, acabado,
+                  sup_madera, sup_metal, sup_concreto, sup_otro,
+                  rendimiento, precio,
+                  imagen_url, enlace))
+            mysql.connection.commit()
+            cur.close()
+        except Exception as e:
+            print(f"[ERROR AGREGAR PRODUCTO] {type(e).__name__}: {e}")
+            # Error 1062 = clave duplicada en MySQL
+            msg = 'Ya existe un producto con esa clave.' if (hasattr(e, 'args') and e.args and e.args[0] == 1062) \
+                  else f'Error al guardar el producto: {e}'
+            return render_template('admin/agregar_producto.html',
+                                   categorias=categorias,
+                                   form=form_data,
+                                   error=msg)
+
+        return redirect(url_for('admin.productos'))
+
+    # GET: formulario vacío
+    return render_template('admin/agregar_producto.html',
+                           categorias=categorias,
+                           form={})
 
 
 @admin_bp.route('/productos/<int:id>/editar', methods=['GET', 'POST'])
@@ -242,6 +330,69 @@ def eliminar_complemento(id):
 
 
 # ── Publicaciones Marketplace ─────────────────────────────
+
+@admin_bp.route('/pedidos')
+@admin_required
+def pedidos():
+    """Lista todos los pedidos con filtro opcional por estado.
+    Muestra canal, comprador, ubicación (alerta si no es Acapulco) y selector de estado."""
+    filtro_estado = request.args.get('estado', '').strip() or None
+
+    cur = mysql.connection.cursor()
+    if filtro_estado:
+        # Filtra por estado si se pasó el parámetro ?estado=
+        cur.execute("""
+            SELECT pd.id, pd.nombre_comprador, pd.telefono,
+                   pd.ciudad, pd.estado_mx, pd.canal,
+                   pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
+                   pr.nombre AS nombre_producto, pr.imagen_url
+            FROM pedidos pd
+            JOIN productos pr ON pd.producto_id = pr.id
+            WHERE pd.estado_pedido = %s
+            ORDER BY pd.created_at DESC
+        """, (filtro_estado,))
+    else:
+        # Sin filtro: todos los pedidos del más reciente al más antiguo
+        cur.execute("""
+            SELECT pd.id, pd.nombre_comprador, pd.telefono,
+                   pd.ciudad, pd.estado_mx, pd.canal,
+                   pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
+                   pr.nombre AS nombre_producto, pr.imagen_url
+            FROM pedidos pd
+            JOIN productos pr ON pd.producto_id = pr.id
+            ORDER BY pd.created_at DESC
+        """)
+    pedidos_lista = cur.fetchall()
+    cur.close()
+
+    return render_template('admin/pedidos.html',
+                           pedidos=pedidos_lista,
+                           filtro_estado=filtro_estado)
+
+
+@admin_bp.route('/pedidos/<int:pedido_id>/estado', methods=['POST'])
+@admin_required
+def cambiar_estado_pedido(pedido_id):
+    """Actualiza el estado de un pedido desde el panel admin.
+    Acepta solo los valores válidos del ENUM para evitar inserciones incorrectas."""
+    estados_validos = {'pendiente', 'pagado', 'en_proceso', 'entregado', 'cancelado'}
+    nuevo_estado = request.form.get('estado', '').strip()
+
+    if nuevo_estado in estados_validos:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "UPDATE pedidos SET estado_pedido = %s WHERE id = %s",
+            (nuevo_estado, pedido_id)
+        )
+        mysql.connection.commit()
+        cur.close()
+
+    # Conserva el filtro activo al volver a la lista
+    filtro = request.args.get('estado', '')
+    if filtro:
+        return redirect(url_for('admin.pedidos', estado=filtro))
+    return redirect(url_for('admin.pedidos'))
+
 
 @admin_bp.route('/publicar')
 @admin_required

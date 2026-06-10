@@ -324,4 +324,84 @@
     </footer>
 </body>
 
+<<<<<<< HEAD
 </html>
+=======
+{% block scripts %}
+<script>
+(function () {
+    function esc(str) {
+        return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderCard(p) {
+        var rend = (p.rendimiento_min && p.rendimiento_max)
+            ? 'Rendimiento: ' + p.rendimiento_min + '–' + p.rendimiento_max + ' m²/L'
+            : p.rendimiento_min ? 'Rendimiento: ' + p.rendimiento_min + ' m²/L' : '';
+        var imgTag = p.imagen_url
+            ? '<img alt="' + esc(p.nombre) + '" class="w-full h-full object-cover" src="' + esc(p.imagen_url) + '" />'
+            : '<span class="material-symbols-outlined text-on-surface-variant text-[48px]">inventory_2</span>';
+        var comprarBtn = p.link_compra_ml
+            ? '<a href="' + esc(p.link_compra_ml) + '" target="_blank" rel="noopener" class="w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary font-label-md text-label-md py-2 px-4 rounded-lg hover:opacity-90 transition-all cursor-pointer"><span class="material-symbols-outlined text-[18px]">shopping_cart</span>Comprar</a>'
+            : '<button disabled class="w-full flex items-center justify-center gap-2 bg-surface-container text-on-surface-variant font-label-md text-label-md py-2 px-4 rounded-lg opacity-50 cursor-not-allowed"><span class="material-symbols-outlined text-[18px]">shopping_cart</span>Comprar</button>';
+
+        return '<div data-fav-card class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-all relative overflow-hidden flex flex-col">'
+            + '<button onclick="window._eliminarFav(' + p.id + ', this)" title="Eliminar de favoritos" class="absolute top-3 right-3 z-10 bg-surface-container p-1.5 rounded-full text-primary hover:text-error transition-colors shadow-sm cursor-pointer">'
+            + '<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: \'FILL\' 1;">favorite</span></button>'
+            + '<div class="aspect-video bg-surface-container-low flex items-center justify-center">' + imgTag + '</div>'
+            + '<div class="p-unit-md flex flex-col flex-grow">'
+            + '<h3 class="font-headline-md text-headline-md text-primary mb-1">' + esc(p.nombre) + '</h3>'
+            + (p.descripcion ? '<p class="font-body-md text-body-md text-on-surface-variant mb-2 line-clamp-2">' + esc(p.descripcion) + '</p>' : '')
+            + (rend ? '<p class="text-primary font-bold text-label-md mb-unit-md">' + rend + '</p>' : '')
+            + '<div class="mt-auto flex flex-col gap-2">'
+            + '<a href="/producto/' + p.id + '" class="w-full flex items-center justify-center gap-2 border border-primary text-primary font-label-md text-label-md py-2 px-4 rounded-lg hover:bg-surface-container transition-colors cursor-pointer"><span class="material-symbols-outlined text-[18px]">description</span>Ficha técnica</a>'
+            + comprarBtn
+            + '</div></div></div>';
+    }
+
+    window._eliminarFav = async function (productoId, btn) {
+        btn.disabled = true;
+        try {
+            var res = await fetch('/api/favoritos/' + productoId, {
+                method: 'DELETE',
+                credentials: 'include'
+            });
+            if (res.ok) {
+                var card = btn.closest('[data-fav-card]');
+                if (card) card.remove();
+                var grid = document.getElementById('favoritos-grid');
+                if (grid && !grid.querySelector('[data-fav-card]')) {
+                    grid.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-16 gap-3 text-on-surface-variant"><span class="material-symbols-outlined text-[48px]">favorite_border</span><p class="font-body-lg text-body-lg">No tienes productos favoritos aún.</p></div>';
+                }
+            } else if (res.status === 401 || res.status === 422) {
+                window.location.href = '/login';
+            } else {
+                btn.disabled = false;
+            }
+        } catch (e) {
+            console.error('Error al eliminar favorito:', e);
+            btn.disabled = false;
+        }
+    };
+
+    async function cargar() {
+        var grid = document.getElementById('favoritos-grid');
+        try {
+            var res = await fetch('/api/favoritos');
+            if (!res.ok) throw new Error(res.status);
+            var data = await res.json();
+            if (!data.length) {
+                grid.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-16 gap-3 text-on-surface-variant"><span class="material-symbols-outlined text-[48px]">favorite_border</span><p class="font-body-lg text-body-lg">No tienes productos favoritos aún.</p></div>';
+                return;
+            }
+            grid.innerHTML = data.map(renderCard).join('');
+        } catch (e) {
+            grid.innerHTML = '<div class="col-span-full flex flex-col items-center justify-center py-16 gap-3 text-on-surface-variant"><span class="material-symbols-outlined text-[48px]">error_outline</span><p class="font-body-lg text-body-lg">Error al cargar los favoritos. Intenta de nuevo.</p></div>';
+        }
+    }
+
+    cargar();
+})();
+</script>
+{% endblock %}
+>>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9

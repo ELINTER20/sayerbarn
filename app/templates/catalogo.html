@@ -123,9 +123,27 @@
                     data-acabado="{{ producto.acabado | lower if producto.acabado else '' }}"
                     data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}">
                     <div class="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    {% if usuario %}
+                    <button type="button"
+                        onclick="toggleFav(this, {{ producto.id }}, {{ 'true' if producto.id in favoritos_ids else 'false' }})"
+                        class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors"
+                        title="{{ 'Quitar de favoritos' if producto.id in favoritos_ids else 'Agregar a favoritos' }}">
+                        {% if producto.id in favoritos_ids %}
+                        <span class="material-symbols-outlined text-[22px] text-error" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                        {% else %}
+                        <span class="material-symbols-outlined text-[22px] text-outline">favorite_border</span>
+                        {% endif %}
+                    </button>
+                    {% else %}
+                    <a href="{{ url_for('main.login') }}" class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors" title="Inicia sesión para guardar favoritos">
+                        <span class="material-symbols-outlined text-[22px] text-outline">favorite_border</span>
+                    </a>
+                    {% endif %}
                     <div class="p-6 flex justify-center items-center bg-surface-container-low/30 h-48">
                         {% if producto.imagen_url %}
-                        <img alt="{{ producto.nombre }}" class="max-h-full object-contain drop-shadow-sm" src="{{ producto.imagen_url }}" />
+                        <img alt="{{ producto.nombre }}" class="max-h-full object-contain drop-shadow-sm" src="{{ producto.imagen_url }}"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'" />
+                        <span class="material-symbols-outlined text-[64px] text-outline-variant" style="font-variation-settings: 'FILL' 1; display:none;">water_drop</span>
                         {% else %}
                         <span class="material-symbols-outlined text-[64px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
                         {% endif %}
@@ -185,6 +203,39 @@
 
 {% block scripts %}
 <script>
+    async function toggleFav(btn, productoId, esFavorito) {
+        btn.disabled = true;
+        var method = esFavorito ? 'DELETE' : 'POST';
+        try {
+            var res = await fetch('/api/favoritos/' + productoId, {
+                method: method,
+                credentials: 'include'
+            });
+            if (res.ok) {
+                var ahora = !esFavorito;
+                var icon = btn.querySelector('.material-symbols-outlined');
+                if (ahora) {
+                    icon.textContent = 'favorite';
+                    icon.style.color = '';
+                    icon.className = 'material-symbols-outlined text-[22px] text-error';
+                    icon.style.fontVariationSettings = "'FILL' 1";
+                    btn.title = 'Quitar de favoritos';
+                } else {
+                    icon.textContent = 'favorite_border';
+                    icon.className = 'material-symbols-outlined text-[22px] text-outline';
+                    icon.style.fontVariationSettings = "'FILL' 0";
+                    btn.title = 'Agregar a favoritos';
+                }
+                btn.onclick = function() { toggleFav(btn, productoId, ahora); };
+            } else if (res.status === 401 || res.status === 422) {
+                window.location.href = '/login';
+            }
+        } catch (e) {
+            console.error('Error al actualizar favorito:', e);
+        }
+        btn.disabled = false;
+    }
+
     const cards = Array.from(document.querySelectorAll('.product-card'));
     const checks = Array.from(document.querySelectorAll('.filter-check'));
     const buscador = document.getElementById('buscador');

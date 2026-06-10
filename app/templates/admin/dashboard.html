@@ -32,12 +32,16 @@
         <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Asesorías realizadas</span>
         <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ total_asesorias }}</span>
     </div>
-    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-tertiary-container flex flex-col justify-between h-32">
-        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Productos más vistos</span>
-        <span class="font-headline-md text-headline-md text-primary font-bold truncate">
-            {% if top_productos %}{{ top_productos[0].nombre }}{% else %}—{% endif %}
-        </span>
-    </div>
+    <a href="{{ url_for('admin.pedidos', estado='pendiente') }}"
+       class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-amber-400 flex flex-col justify-between h-32 hover:bg-surface-container-low transition-colors">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pedidos pendientes</span>
+        <div class="flex items-end justify-between">
+            <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ pedidos_pendientes }}</span>
+            {% if pedidos_pendientes > 0 %}
+            <span class="material-symbols-outlined text-amber-600 text-[24px]" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+            {% endif %}
+        </div>
+    </a>
     <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-outline flex flex-col justify-between h-32">
         <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Publicaciones M. Libre</span>
         <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ publicaciones_ml }}</span>

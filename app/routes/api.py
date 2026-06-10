@@ -407,18 +407,38 @@ def listar_favoritos_api():
     } for p in productos]), 200
 
 
-@api_bp.route('/api/favoritos/<int:producto_id>', methods=['DELETE'])
+@api_bp.route('/api/favoritos/<int:producto_id>', methods=['POST'])
 @jwt_required()
-def eliminar_favorito_api(producto_id):
-    # Elimina un producto de los favoritos del usuario autenticado
+def agregar_favorito_api(producto_id):
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
-        "DELETE FROM favoritos WHERE usuario_id = %s AND producto_id = %s",
+        "INSERT IGNORE INTO favoritos (usuario_id, producto_id) VALUES (%s, %s)",
         (user_id, producto_id)
     )
     mysql.connection.commit()
     cur.close()
+    return jsonify({'ok': True}), 200
+
+
+@api_bp.route('/api/favoritos/<int:producto_id>', methods=['DELETE'])
+@jwt_required()
+def eliminar_favorito_api(producto_id):
+    user_id = get_jwt_identity()
+    cur = None
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "DELETE FROM favoritos WHERE usuario_id = %s AND producto_id = %s",
+            (user_id, producto_id)
+        )
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"[ERROR eliminar_favorito] {type(e).__name__}: {e}")
+        return jsonify({'error': 'Error al eliminar favorito'}), 500
+    finally:
+        if cur:
+            cur.close()
     return jsonify({'ok': True}), 200
 
 
