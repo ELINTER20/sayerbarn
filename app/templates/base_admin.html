@@ -101,15 +101,21 @@
             </a>
             <a href="{{ url_for('admin.productos') }}"
                class="flex items-center gap-3 px-4 py-2 rounded-lg font-label-md text-label-md transition-colors
-                      {% if request.endpoint in ['admin.productos', 'admin.editar_producto', 'admin.eliminar_producto', 'admin.toggle_producto'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                      {% if request.endpoint in ['admin.productos', 'admin.editar_producto', 'admin.agregar_producto', 'admin.eliminar_producto', 'admin.toggle_producto'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
                 <span class="material-symbols-outlined">palette</span>
-                <span>Products</span>
+                <span>Productos</span>
             </a>
             <a href="{{ url_for('admin.complementos') }}"
                class="flex items-center gap-3 px-4 py-2 rounded-lg font-label-md text-label-md transition-colors
                       {% if request.endpoint in ['admin.complementos', 'admin.agregar_complemento', 'admin.eliminar_complemento'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
                 <span class="material-symbols-outlined">format_paint</span>
-                <span>Complements</span>
+                <span>Complementos</span>
+            </a>
+            <a href="{{ url_for('admin.pedidos') }}"
+               class="flex items-center gap-3 px-4 py-2 rounded-lg font-label-md text-label-md transition-colors
+                      {% if request.endpoint in ['admin.pedidos', 'admin.cambiar_estado_pedido'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' {% if request.endpoint in ['admin.pedidos','admin.cambiar_estado_pedido'] %}1{% else %}0{% endif %};">receipt_long</span>
+                <span>Pedidos</span>
             </a>
             <a href="{{ url_for('admin.publicar') }}"
                class="flex items-center gap-3 px-4 py-2 rounded-lg font-label-md text-label-md transition-colors
