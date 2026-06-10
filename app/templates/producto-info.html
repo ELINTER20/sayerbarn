@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% block title %}SayerBarn - {{ producto.nombre }}{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+
+    <div class="flex items-center gap-2 mb-unit-lg font-label-sm text-label-sm text-on-surface-variant">
+        <a href="{{ url_for('main.catalogo') }}" class="hover:text-primary transition-colors flex items-center gap-1">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            Volver al catálogo
+        </a>
+    </div>
+
+    <div class="max-w-[860px] mx-auto flex flex-col gap-unit-lg">
+
+        <!-- Tarjeta principal -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm border-t-4 border-primary overflow-hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
+
+                <!-- Imagen -->
+                <div class="flex items-center justify-center bg-surface-container-low/40 p-unit-lg min-h-[240px]">
+                    {% if producto.imagen_url %}
+                    <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}"
+                         class="max-h-64 max-w-full object-contain drop-shadow-lg"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'" />
+                    <span class="material-symbols-outlined text-[80px] text-outline-variant" style="font-variation-settings:'FILL' 1;display:none;">water_drop</span>
+                    {% else %}
+                    <span class="material-symbols-outlined text-[80px] text-outline-variant" style="font-variation-settings:'FILL' 1;">water_drop</span>
+                    {% endif %}
+                </div>
+
+                <!-- Datos principales -->
+                <div class="p-unit-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex gap-2 flex-wrap mb-unit-sm">
+                            {% if producto.categoria %}
+                            <span class="bg-primary/10 text-primary px-3 py-1 rounded-full font-label-sm text-label-sm">{{ producto.categoria }}</span>
+                            {% endif %}
+                            {% if producto.uso %}
+                            <span class="bg-surface-container-high text-on-surface-variant px-3 py-1 rounded-full font-label-sm text-label-sm">{{ producto.uso | capitalize }}</span>
+                            {% endif %}
+                            {% if producto.acabado %}
+                            <span class="bg-secondary-fixed text-on-secondary-fixed px-3 py-1 rounded-full font-label-sm text-label-sm">{{ producto.acabado | capitalize }}</span>
+                            {% endif %}
+                        </div>
+                        <h1 class="font-headline-lg text-on-surface mb-unit-sm">{{ producto.nombre }}</h1>
+                        {% if producto.clave %}
+                        <p class="font-label-sm text-label-sm text-outline mb-unit-md">Clave: {{ producto.clave }}</p>
+                        {% endif %}
+                        <p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                            {{ producto.descripcion_ia or 'Producto de alta calidad de la línea Sayer.' }}
+                        </p>
+                    </div>
+                    <div class="mt-unit-lg flex flex-col gap-2">
+                        {% if producto.link_compra_ml %}
+                        <a href="{{ producto.link_compra_ml }}" target="_blank" rel="noopener"
+                           class="flex items-center justify-center gap-2 w-full bg-primary text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
+                            <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                            Comprar en MercadoLibre
+                        </a>
+                        {% endif %}
+                        <a href="https://www.gruposayer.com" target="_blank" rel="noopener"
+                           class="flex items-center justify-center gap-2 w-full border border-primary text-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-primary/5 transition-colors">
+                            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                            Ver en Grupo Sayer
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ficha técnica -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-unit-lg">
+            <h2 class="font-headline-sm text-on-surface mb-unit-md flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">info</span>
+                Características técnicas
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                {% if producto.rendimiento_min %}
+                <div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-lg">
+                    <span class="material-symbols-outlined text-primary mt-0.5">format_paint</span>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Rendimiento</p>
+                        <p class="font-body-md text-on-surface">{{ producto.rendimiento_min }} m² por litro</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if producto.precio_referencia %}
+                <div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-lg">
+                    <span class="material-symbols-outlined text-primary mt-0.5">sell</span>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Precio referencia</p>
+                        <p class="font-body-md text-on-surface">${{ producto.precio_referencia }} MXN</p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if producto.sup_madera or producto.sup_metal or producto.sup_concreto or producto.sup_otro %}
+                <div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-lg">
+                    <span class="material-symbols-outlined text-primary mt-0.5">layers</span>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Superficies</p>
+                        <p class="font-body-md text-on-surface">
+                            {% set sups = [] %}
+                            {% if producto.sup_madera %}{% set _ = sups.append('Madera') %}{% endif %}
+                            {% if producto.sup_metal %}{% set _ = sups.append('Metal') %}{% endif %}
+                            {% if producto.sup_concreto %}{% set _ = sups.append('Concreto') %}{% endif %}
+                            {% if producto.sup_otro %}{% set _ = sups.append('Otros') %}{% endif %}
+                            {{ sups | join(', ') }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if producto.uso %}
+                <div class="flex items-start gap-3 p-4 bg-surface-container-low rounded-lg">
+                    <span class="material-symbols-outlined text-primary mt-0.5">home_work</span>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Uso</p>
+                        <p class="font-body-md text-on-surface">{{ producto.uso | capitalize }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- Complementos -->
+        {% if complementos %}
+        <div class="bg-surface-container-lowest rounded-xl shadow-sm p-unit-lg">
+            <h2 class="font-headline-sm text-on-surface mb-unit-md flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary">science</span>
+                Productos complementarios
+            </h2>
+            <div class="flex flex-col gap-3">
+                {% for comp in complementos %}
+                <div class="flex items-center gap-4 p-4 bg-surface-container-low rounded-lg">
+                    <div class="w-14 h-14 bg-surface-container rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                        {% if comp.imagen_url %}
+                        <img src="{{ comp.imagen_url }}" alt="{{ comp.nombre }}" class="w-full h-full object-contain p-1" />
+                        {% else %}
+                        <span class="material-symbols-outlined text-outline-variant text-[24px]">science</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p class="font-body-md text-on-surface font-semibold">{{ comp.nombre }}</p>
+                        {% if comp.tipo %}<p class="font-label-sm text-label-sm text-outline">{{ comp.tipo | capitalize }}</p>{% endif %}
+                        {% if comp.proporcion %}<p class="font-body-sm text-on-surface-variant">Proporción: {{ comp.proporcion }}</p>{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ficha técnica PDF -->
+        {% if producto.ficha_tecnica_url %}
+        <a href="{{ producto.ficha_tecnica_url }}" target="_blank" rel="noopener"
+           class="flex items-center justify-center gap-2 w-full border border-outline-variant text-on-surface-variant font-label-md text-label-md px-6 py-3 rounded-lg hover:bg-surface-container-low transition-colors">
+            <span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+            Descargar ficha técnica
+        </a>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

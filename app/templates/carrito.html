@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% block title %}SayerBarn - Carrito{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
+    <h1 class="font-headline-lg text-on-surface mb-unit-lg flex items-center gap-3">
+        <span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings:'FILL' 1;">shopping_cart</span>
+        Mi carrito
+    </h1>
+
+    <!-- Carrito vacío -->
+    <div id="carrito-vacio" class="hidden flex flex-col items-center justify-center py-unit-xl gap-unit-md text-center">
+        <span class="material-symbols-outlined text-[72px] text-outline-variant">shopping_cart</span>
+        <h2 class="font-headline-md text-on-surface">Tu carrito está vacío</h2>
+        <p class="font-body-md text-on-surface-variant">Agrega productos desde el catálogo para comenzar.</p>
+        <a href="{{ url_for('main.catalogo') }}"
+           class="mt-2 font-label-md text-label-md bg-primary text-on-primary px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
+            Ver catálogo
+        </a>
+    </div>
+
+    <!-- Contenido del carrito -->
+    <div id="carrito-contenido" class="hidden flex flex-col lg:flex-row gap-unit-lg">
+
+        <!-- Lista de productos -->
+        <div id="lista-carrito" class="flex-1 flex flex-col gap-4"></div>
+
+        <!-- Resumen -->
+        <div class="lg:w-80 flex flex-col gap-4">
+            <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant p-6 flex flex-col gap-4">
+                <h2 class="font-headline-sm text-on-surface">Resumen</h2>
+                <div class="flex flex-col gap-2" id="resumen-items"></div>
+                <hr class="border-outline-variant" />
+                <div class="flex justify-between items-center">
+                    <span class="font-label-lg text-on-surface">Total</span>
+                    <span id="total-general" class="font-headline-sm text-primary"></span>
+                </div>
+                <button id="btn-pago" onclick="procederAlPago()"
+                    class="w-full font-label-md text-label-md bg-primary text-on-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px]">payment</span>
+                    Proceder al pago
+                </button>
+                <a href="{{ url_for('main.catalogo') }}"
+                   class="w-full font-label-md text-label-md text-primary border border-primary/40 px-6 py-2.5 rounded-lg hover:bg-primary/5 transition-colors text-center">
+                    Seguir comprando
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function formatPrecio(n) {
+        return n > 0 ? '$' + parseFloat(n).toFixed(2) : 'Precio a consultar';
+    }
+
+    function crearImgContainer(imagen, nombre) {
+        var wrap = document.createElement('div');
+        wrap.className = 'w-20 h-20 flex-shrink-0 bg-surface-container-low rounded-lg overflow-hidden flex items-center justify-center';
+        var fallback = function() {
+            wrap.innerHTML = '<span class="material-symbols-outlined text-outline-variant text-[32px]" style="font-variation-settings:\'FILL\' 1;">water_drop</span>';
+        };
+        if (imagen) {
+            var img = document.createElement('img');
+            img.src = imagen;
+            img.alt = nombre;
+            img.className = 'w-full h-full object-contain p-1';
+            img.onerror = fallback;
+            wrap.appendChild(img);
+        } else {
+            fallback();
+        }
+        return wrap;
+    }
+
+    function renderCarrito() {
+        var carrito = obtenerCarrito();
+        var vacio = document.getElementById('carrito-vacio');
+        var contenido = document.getElementById('carrito-contenido');
+
+        if (carrito.length === 0) {
+            vacio.classList.remove('hidden');
+            contenido.classList.add('hidden');
+            return;
+        }
+        vacio.classList.add('hidden');
+        contenido.classList.remove('hidden');
+
+        var lista = document.getElementById('lista-carrito');
+        lista.innerHTML = '';
+        var total = 0;
+        var resumenHtml = '';
+
+        carrito.forEach(function(item) {
+            var subtotal = item.precio * item.cantidad;
+            total += subtotal;
+            resumenHtml += '<div class="flex justify-between text-sm"><span class="text-on-surface-variant truncate max-w-[160px]">' + escHtml(item.nombre) + ' x' + item.cantidad + '</span><span class="text-on-surface whitespace-nowrap">' + formatPrecio(subtotal) + '</span></div>';
+
+            var card = document.createElement('div');
+            card.className = 'bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant flex items-center gap-4 p-4';
+            card.appendChild(crearImgContainer(item.imagen, item.nombre));
+            var rest = document.createElement('div');
+            rest.style.display = 'contents';
+            rest.innerHTML =
+                '<div class="flex-1 min-w-0">' +
+                    '<h3 class="font-body-lg text-on-surface font-semibold truncate">' + escHtml(item.nombre) + '</h3>' +
+                    '<p class="font-body-sm text-on-surface-variant mt-0.5">' + formatPrecio(item.precio) + ' c/u</p>' +
+                    '<div class="flex items-center gap-3 mt-2">' +
+                        '<button onclick="cambiarCantidad(' + item.id + ', -1)" class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface font-bold">−</button>' +
+                        '<span class="font-body-md text-on-surface w-6 text-center">' + item.cantidad + '</span>' +
+                        '<button onclick="cambiarCantidad(' + item.id + ', 1)" class="w-8 h-8 rounded-full border border-outline-variant flex items-center justify-center hover:bg-surface-container-low transition-colors text-on-surface font-bold">+</button>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="flex flex-col items-end gap-3">' +
+                    '<p class="font-headline-sm text-primary">' + formatPrecio(subtotal) + '</p>' +
+                    '<button onclick="eliminarDelCarrito(' + item.id + '); renderCarrito();" class="p-1.5 rounded-full hover:bg-error-container/30 text-on-surface-variant hover:text-error transition-colors" title="Eliminar">' +
+                        '<span class="material-symbols-outlined text-[20px]">delete</span>' +
+                    '</button>' +
+                '</div>';
+            card.appendChild(rest);
+            lista.appendChild(card);
+        });
+
+        document.getElementById('resumen-items').innerHTML = resumenHtml;
+        document.getElementById('total-general').textContent = formatPrecio(total);
+    }
+
+    function cambiarCantidad(id, delta) {
+        var carrito = obtenerCarrito();
+        var idx = carrito.findIndex(function(i) { return i.id == id; });
+        if (idx < 0) return;
+        carrito[idx].cantidad += delta;
+        if (carrito[idx].cantidad <= 0) carrito.splice(idx, 1);
+        guardarCarrito(carrito);
+        renderCarrito();
+    }
+
+    function procederAlPago() {
+        var carrito = obtenerCarrito();
+        if (carrito.length === 0) return;
+        window.location.href = '/checkout/' + carrito[0].id;
+    }
+
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    document.addEventListener('DOMContentLoaded', renderCarrito);
+</script>
+{% endblock %}

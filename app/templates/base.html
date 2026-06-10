@@ -147,6 +147,10 @@
                 <button onclick="toggleTheme()" class="p-2 rounded-full text-primary transition-colors hover:bg-surface-container-high" title="Cambiar tema">
                     <span class="theme-icon material-symbols-outlined text-[22px]">dark_mode</span>
                 </button>
+                <a href="{{ url_for('main.carrito') }}" class="relative p-2 rounded-full text-primary hover:bg-surface-container-high transition-colors" title="Carrito">
+                    <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
+                    <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
+                </a>
                 {% if usuario %}
                 <div class="relative group">
                     <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
@@ -199,6 +203,10 @@
                 <button onclick="toggleTheme()" class="p-1 rounded-full text-primary transition-colors" title="Cambiar tema">
                     <span class="theme-icon material-symbols-outlined text-[22px]">dark_mode</span>
                 </button>
+                <a href="{{ url_for('main.carrito') }}" class="relative p-1 text-primary" title="Carrito">
+                    <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
+                    <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-error text-on-error text-[9px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
+                </a>
                 <button class="text-primary p-1">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
                 </button>
@@ -221,18 +229,178 @@
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
             </div>
             <div class="col-span-1 flex flex-col space-y-unit-sm">
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Contacto</a>
+                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Contacto</button>
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
             </div>
             <div class="col-span-1 flex flex-col space-y-unit-sm">
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Sucursales</a>
+                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Sucursales</button>
             </div>
         </div>
     </footer>
 
+    <!-- Modal de Contacto -->
+    <div id="contacto-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="cerrarContacto()"></div>
+        <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant overflow-hidden">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings:'FILL' 1;">store</span>
+                    <div>
+                        <h2 class="font-headline-sm text-on-surface">Sayer Dabet</h2>
+                        <p class="font-label-sm text-label-sm text-outline">Información de contacto</p>
+                    </div>
+                </div>
+                <button onclick="cerrarContacto()" class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="px-6 py-5 flex flex-col gap-5">
+
+                <!-- Teléfono -->
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-primary text-[20px]">call</span>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Teléfono</p>
+                        <a href="tel:+528001234567" class="font-body-lg text-on-surface hover:text-primary transition-colors">800 123 4567</a>
+                        <p class="font-body-sm text-on-surface-variant">Línea de atención a clientes</p>
+                    </div>
+                </div>
+
+                <hr class="border-outline-variant" />
+
+                <!-- Sucursales -->
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
+                    </div>
+                    <div class="flex flex-col gap-3 w-full">
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Sucursales</p>
+
+                        <div>
+                            <p class="font-body-md text-on-surface font-semibold">Sucursal Norte</p>
+                            <p class="font-body-sm text-on-surface-variant">Av. Industrial 1230, Col. Industrial, CDMX</p>
+                            <a href="https://maps.google.com/?q=Sayer+Dabet" target="_blank" rel="noopener"
+                               class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline mt-1">
+                                <span class="material-symbols-outlined text-[14px]">map</span>
+                                Ver en Google Maps
+                            </a>
+                        </div>
+
+                        <div>
+                            <p class="font-body-md text-on-surface font-semibold">Sucursal Sur</p>
+                            <p class="font-body-sm text-on-surface-variant">Calz. de Tlalpan 4850, Col. Toriello Guerra, CDMX</p>
+                            <a href="https://maps.google.com/?q=Sayer+Dabet" target="_blank" rel="noopener"
+                               class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline mt-1">
+                                <span class="material-symbols-outlined text-[14px]">map</span>
+                                Ver en Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-outline-variant" />
+
+                <!-- Horarios -->
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <span class="material-symbols-outlined text-primary text-[20px]">schedule</span>
+                    </div>
+                    <div>
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Horarios de atención</p>
+                        <div class="flex flex-col gap-1">
+                            <div class="flex justify-between gap-8">
+                                <span class="font-body-md text-on-surface">Lunes – Viernes</span>
+                                <span class="font-body-md text-on-surface-variant">8:00 – 18:00</span>
+                            </div>
+                            <div class="flex justify-between gap-8">
+                                <span class="font-body-md text-on-surface">Sábado</span>
+                                <span class="font-body-md text-on-surface-variant">9:00 – 14:00</span>
+                            </div>
+                            <div class="flex justify-between gap-8">
+                                <span class="font-body-md text-on-surface">Domingo</span>
+                                <span class="font-body-md text-on-surface-variant">Cerrado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer del modal -->
+            <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant">
+                <a href="mailto:contacto@sayerdabet.com"
+                   class="flex items-center justify-center gap-2 w-full font-label-md text-label-md text-primary border border-primary/40 px-4 py-2.5 rounded-lg hover:bg-primary/5 transition-colors">
+                    <span class="material-symbols-outlined text-[18px]">mail</span>
+                    contacto@sayerdabet.com
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast carrito -->
+    <div id="carrito-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-on-surface text-surface font-body-md text-body-md px-5 py-3 rounded-xl shadow-lg opacity-0 translate-y-2 transition-all duration-300 pointer-events-none whitespace-nowrap"></div>
+
     {% block scripts %}{% endblock %}
     <script>
+        // ── Carrito (localStorage) ──────────────────────────
+        function obtenerCarrito() {
+            try { return JSON.parse(localStorage.getItem('carrito') || '[]'); } catch(e) { return []; }
+        }
+        function guardarCarrito(carrito) {
+            localStorage.setItem('carrito', JSON.stringify(carrito));
+            actualizarContador();
+        }
+        function actualizarContador() {
+            var carrito = obtenerCarrito();
+            var total = carrito.reduce(function(s, i) { return s + i.cantidad; }, 0);
+            document.querySelectorAll('.carrito-contador').forEach(function(el) {
+                el.textContent = total;
+                el.classList.toggle('hidden', total === 0);
+            });
+        }
+        function agregarAlCarrito(id, nombre, precio, imagen) {
+            var carrito = obtenerCarrito();
+            var idx = carrito.findIndex(function(i) { return i.id == id; });
+            if (idx >= 0) { carrito[idx].cantidad++; }
+            else { carrito.push({ id: id, nombre: nombre, precio: parseFloat(precio) || 0, imagen: imagen, cantidad: 1 }); }
+            guardarCarrito(carrito);
+            var toast = document.getElementById('carrito-toast');
+            toast.textContent = '✓ "' + nombre + '" agregado al carrito';
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(function() {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2500);
+        }
+        function eliminarDelCarrito(id) {
+            guardarCarrito(obtenerCarrito().filter(function(i) { return i.id != id; }));
+        }
+        window.addEventListener('DOMContentLoaded', actualizarContador);
+        // ────────────────────────────────────────────────────
+
+        function abrirContacto() {
+            var m = document.getElementById('contacto-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarContacto() {
+            var m = document.getElementById('contacto-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarContacto(); });
+
         function toggleTheme() {
             var isDark = document.documentElement.classList.toggle('dark');
             localStorage.setItem('theme', isDark ? 'dark' : 'light');

@@ -70,6 +70,16 @@
                 </div>
                 <!-- Acciones -->
                 <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
+                    <button type="button"
+                       data-id="{{ producto.id }}"
+                       data-nombre="{{ producto.nombre }}"
+                       data-precio="{{ producto.precio_referencia or 0 }}"
+                       data-imagen="{{ producto.imagen_url or '' }}"
+                       onclick="agregarAlCarrito(this.dataset.id, this.dataset.nombre, this.dataset.precio, this.dataset.imagen)"
+                       class="w-full sm:w-auto bg-primary text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                        <span class="material-symbols-outlined text-[18px]">add_shopping_cart</span>
+                        Agregar al carrito
+                    </button>
                     <!-- Compra directa en SayerBarn -->
                     <a href="{{ url_for('main.checkout', producto_id=producto.id) }}"
                        class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
@@ -90,10 +100,10 @@
                         Ficha técnica
                     </a>
                     {% endif %}
-                    <a href="{{ url_for('main.asesoria') }}"
+                    <a href="{{ url_for('main.info_producto', producto_id=producto.id) }}"
                        class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline underline-offset-4 px-4 py-3 border-2 border-primary rounded-lg hover:bg-surface-container-high/50 transition-all">
-                        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-                        Solicitar asesoría
+                        <span class="material-symbols-outlined text-[18px]">info</span>
+                        Ver información
                     </a>
                 </div>
             </div>
@@ -132,6 +142,11 @@
                         <p class="font-body-md text-body-md text-on-surface-variant mt-1">Proporción: {{ comp.proporcion }}</p>
                         {% endif %}
                     </div>
+                    <a href="{{ url_for('main.checkout', producto_id=comp.id) }}"
+                       class="shrink-0 font-label-md text-label-md text-on-primary bg-primary px-5 py-2.5 rounded-lg hover:bg-primary/90 transition-colors shadow-sm flex items-center gap-2 whitespace-nowrap">
+                        <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
+                        Comprar
+                    </a>
                 </div>
                 {% endfor %}
             </div>
@@ -139,4 +154,142 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Modal Asesoría Rápida -->
+<div id="asesoria-modal" class="fixed inset-0 z-50 hidden items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="cerrarAsesoria()"></div>
+    <div class="relative w-full sm:max-w-lg bg-surface-container-lowest rounded-t-2xl sm:rounded-2xl shadow-xl flex flex-col" style="max-height:80vh;">
+        <div class="flex items-center gap-3 p-4 border-b border-surface-variant flex-shrink-0">
+            <div id="modal-img" class="w-12 h-12 bg-surface-container-low rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <span class="material-symbols-outlined text-outline-variant text-[28px]" style="font-variation-settings:'FILL' 1;">water_drop</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría rápida</p>
+                <h2 id="modal-nombre" class="font-headline-sm text-on-surface truncate"></h2>
+            </div>
+            <button onclick="cerrarAsesoria()" class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant flex-shrink-0">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div id="modal-mensajes" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:160px;"></div>
+        <div id="modal-input-area" class="hidden border-t border-surface-variant p-3 flex gap-2 flex-shrink-0">
+            <input id="modal-input" type="text" placeholder="Pregunta algo más..."
+                onkeydown="if(event.key==='Enter'){event.preventDefault();enviarModalLibre();}"
+                class="flex-grow bg-surface-container-low border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all placeholder:text-outline" />
+            <button onclick="enviarModalLibre()"
+                class="w-10 h-10 bg-primary text-on-primary rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors flex-shrink-0">
+                <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1;">send</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarAsesoria(); });
+
+    var modalHistorial = [];
+    var modalMensajes = [];
+    var modalCargando = false;
+
+    function escHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderModalMensajes(loading) {
+        var container = document.getElementById('modal-mensajes');
+        var html = '';
+        modalMensajes.forEach(function(m) {
+            if (m.role === 'user') {
+                html += '<div class="flex justify-end"><div class="bg-primary text-on-primary font-body-md text-body-md rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%]">' + escHtml(m.text) + '</div></div>';
+            } else {
+                html += '<div class="flex"><div class="bg-surface-container font-body-md text-body-md text-on-surface rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%] leading-relaxed">' + m.text.replace(/\n/g,'<br>') + '</div></div>';
+            }
+        });
+        if (loading) {
+            html += '<div class="flex"><div class="flex gap-1.5 px-4 py-3"><span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay:0s"></span><span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay:0.15s"></span><span class="w-2 h-2 rounded-full bg-primary animate-bounce" style="animation-delay:0.3s"></span></div></div>';
+        }
+        container.innerHTML = html;
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function abrirAsesoria(btn) {
+        modalHistorial = [];
+        modalMensajes = [];
+        modalCargando = false;
+        var nombre = btn.dataset.nombre;
+        var imagen = btn.dataset.imagen;
+        var imgEl = document.getElementById('modal-img');
+        imgEl.innerHTML = '<span class="material-symbols-outlined text-outline-variant text-[28px]" style="font-variation-settings:\'FILL\' 1;">water_drop</span>';
+        if (imagen) {
+            var img = document.createElement('img');
+            img.src = imagen;
+            img.className = 'w-full h-full object-contain p-1';
+            img.onerror = function() {
+                imgEl.innerHTML = '<span class="material-symbols-outlined text-outline-variant text-[28px]" style="font-variation-settings:\'FILL\' 1;">water_drop</span>';
+            };
+            imgEl.innerHTML = '';
+            imgEl.appendChild(img);
+        }
+        document.getElementById('modal-nombre').textContent = nombre;
+        var modal = document.getElementById('asesoria-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+        document.getElementById('modal-input-area').classList.add('hidden');
+        renderModalMensajes(true);
+        _enviarMensajeModal('Quiero información sobre este producto: ' + nombre, false);
+    }
+
+    function cerrarAsesoria() {
+        var modal = document.getElementById('asesoria-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    async function _enviarMensajeModal(mensaje, mostrarUsuario) {
+        if (modalCargando) return;
+        modalCargando = true;
+        if (mostrarUsuario) modalMensajes.push({ role: 'user', text: mensaje });
+        renderModalMensajes(true);
+        document.getElementById('modal-input-area').classList.add('hidden');
+        try {
+            var res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: mensaje, history: modalHistorial })
+            });
+            var data = await res.json();
+            var textoIA = '';
+            if (data.tipo === 'pregunta') {
+                textoIA = data.texto + (data.opciones ? '\n\n' + data.opciones.join(' · ') : '');
+            } else if (data.tipo === 'recomendacion') {
+                textoIA = 'Te recomiendo: ' + data.producto + '. ' + (data.mensaje || '');
+            } else if (data.tipo === 'sin_resultado') {
+                textoIA = data.mensaje || 'No encontré información para este caso.';
+            } else {
+                textoIA = data.mensaje || '';
+            }
+            modalHistorial.push({ role: 'user', content: mensaje });
+            modalHistorial.push({ role: 'assistant', content: textoIA });
+            modalMensajes.push({ role: 'assistant', text: textoIA });
+        } catch(e) {
+            modalMensajes.push({ role: 'assistant', text: 'No se pudo conectar. Intenta de nuevo.' });
+        }
+        renderModalMensajes(false);
+        document.getElementById('modal-input-area').classList.remove('hidden');
+        document.getElementById('modal-input').focus();
+        modalCargando = false;
+    }
+
+    function enviarModalLibre() {
+        var input = document.getElementById('modal-input');
+        var texto = input.value.trim();
+        if (!texto || modalCargando) return;
+        input.value = '';
+        _enviarMensajeModal(texto, true);
+    }
+</script>
 {% endblock %}
