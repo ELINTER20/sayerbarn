@@ -5,7 +5,7 @@ from app import create_app, mysql
 
 app = create_app()
 
-IMAGEN_URL = 'https://cdn.homedepot.com.mx/productos/725165/725165-m.jpg'
+IMAGEN_URL = 'https://cdn.homedepot.com.mx/productos/109627/109627-a2.jpg'
 
 with app.app_context():
     cur = mysql.connection.cursor()

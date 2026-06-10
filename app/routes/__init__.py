@@ -410,7 +410,7 @@ def detalle_producto(producto_id):
         abort(404)  # Producto no encontrado
     # Obtiene todos los complementos (diluyentes, catalizadores, etc.) del producto
     cur.execute(
-        "SELECT p.nombre, p.imagen_url, c.tipo, c.proporcion "
+        "SELECT p.id, p.nombre, p.imagen_url, p.link_compra_ml, c.tipo, c.proporcion "
         "FROM complementos c "
         "JOIN productos p ON c.complemento_id = p.id "
         "WHERE c.producto_id = %s",
@@ -422,6 +422,44 @@ def detalle_producto(producto_id):
                            producto=producto,
                            complementos=complementos,
                            usuario=usuario_actual())
+
+
+@main.route('/producto/<int:producto_id>/info')
+def info_producto(producto_id):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
+        "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, p.link_compra_ml, "
+        "p.ficha_tecnica_url, p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+        "c.nombre AS categoria "
+        "FROM productos p "
+        "LEFT JOIN categorias c ON p.categoria_id = c.id "
+        "WHERE p.id = %s AND p.activo = 1",
+        (producto_id,)
+    )
+    producto = cur.fetchone()
+    if not producto:
+        cur.close()
+        from flask import abort
+        abort(404)
+    cur.execute(
+        "SELECT p.id, p.nombre, p.imagen_url, p.link_compra_ml, c.tipo, c.proporcion "
+        "FROM complementos c "
+        "JOIN productos p ON c.complemento_id = p.id "
+        "WHERE c.producto_id = %s",
+        (producto_id,)
+    )
+    complementos = cur.fetchall()
+    cur.close()
+    return render_template('producto-info.html',
+                           producto=producto,
+                           complementos=complementos,
+                           usuario=usuario_actual())
+
+
+@main.route('/carrito')
+def carrito():
+    return render_template('carrito.html', usuario=usuario_actual())
 
 
 @main.route('/favoritos/eliminar/<int:producto_id>', methods=['POST'])
