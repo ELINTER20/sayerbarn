@@ -67,7 +67,9 @@ def login():
         # Verifica que el usuario exista y que la contraseña coincida con el hash guardado
         if usuario and bcrypt.check_password_hash(usuario['password_hash'], password):
             token = create_access_token(identity=str(usuario['id']))
-            response = make_response(redirect(url_for('main.index')))
+            # Los admins van al panel de administración; los demás a la landing
+            destino = url_for('admin.dashboard') if usuario['rol'] == 'admin' else url_for('main.index')
+            response = make_response(redirect(destino))
             # Guarda el token JWT en una cookie segura del navegador
             set_access_cookies(response, token)
             return response
