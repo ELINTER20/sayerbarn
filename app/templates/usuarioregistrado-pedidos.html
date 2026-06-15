@@ -1,178 +1,99 @@
 {% extends 'base.html' %}
-<<<<<<< HEAD
-
-{% block title %}Mis Pedidos{% endblock %}
-
-{% block content %}
-
-<div class="container mx-auto p-6">
-
-    <h1 class="text-3xl font-bold mb-6">
-        Mis Pedidos
-    </h1>
-
-    {% if pedidos %}
-
-        {% for pedido in pedidos %}
-
-        <div class="border rounded-lg p-4 mb-4 shadow">
-
-            <div class="flex justify-between items-center">
-
-                <div>
-                    <h3 class="font-bold">
-                        {{ pedido.producto }}
-                    </h3>
-
-                    <p>Cantidad: {{ pedido.cantidad }}</p>
-
-                    <p>Fecha: {{ pedido.fecha }}</p>
-
-                    <p>Estado: {{ pedido.estado }}</p>
-                </div>
-
-                <button
-                    onclick="toggleDetalle('{{ pedido.id }}')"
-                    class="bg-blue-600 text-white px-4 py-2 rounded">
-
-                    Ver detalle
-
-                </button>
-
-            </div>
-
-            <div
-                id="detalle-{{ pedido.id }}"
-                class="hidden mt-4 border-t pt-4">
-
-                <p><strong>Dirección:</strong> {{ pedido.direccion }}</p>
-
-                <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
-
-                <p><strong>Ciudad:</strong> {{ pedido.ciudad }}</p>
-
-                <p><strong>Estado:</strong> {{ pedido.estado_republica }}</p>
-
-            </div>
-
-        </div>
-
-        {% endfor %}
-
-    {% else %}
-
-        <p>No tienes pedidos registrados.</p>
-
-    {% endif %}
-
-</div>
-
-<script>
-
-function toggleDetalle(id){
-
-    let detalle = document.getElementById("detalle-" + id);
-
-    if(detalle.classList.contains("hidden")){
-        detalle.classList.remove("hidden");
-    }else{
-        detalle.classList.add("hidden");
-    }
-
-}
-
-</script>
-
-{% endblock %}
-=======
 {% block title %}SayerBarn - Mis pedidos{% endblock %}
 
 {% block content %}
 <div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
 
-    <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 mb-unit-lg">
-        <span class="font-label-md text-label-md text-on-surface-variant">Mi cuenta</span>
+        <a href="{{ url_for('main.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
         <span class="font-label-md text-label-md text-primary font-bold">Mis pedidos</span>
     </nav>
 
     <div class="flex items-center gap-3 mb-unit-xl">
         <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-[28px]">receipt_long</span>
+            <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">receipt_long</span>
         </div>
         <h1 class="font-headline-lg text-headline-lg text-primary">Mis pedidos</h1>
     </div>
 
-    <!-- Lista de pedidos -->
     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
-        {% if pedidos %}
-            {% for p in pedidos %}
-            <div class="flex flex-col md:flex-row items-start md:items-center gap-unit-md p-unit-md
-                        {% if not loop.last %}border-b border-outline-variant{% endif %}
-                        hover:bg-surface-container-low transition-colors duration-200">
-
-                <!-- Imagen -->
-                <div class="shrink-0 w-16 h-16 bg-surface-container rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
-                    {% if p.imagen_url %}
-                    <img src="{{ p.imagen_url }}" alt="{{ p.nombre_producto }}" class="w-full h-full object-contain" />
-                    {% else %}
-                    <span class="material-symbols-outlined text-outline text-[32px]">water_drop</span>
-                    {% endif %}
+        {% if ventas %}
+            {% for venta in ventas %}
+            <div class="{% if not loop.last %}border-b border-outline-variant{% endif %}">
+                <!-- Cabecera de la venta -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-unit-md hover:bg-surface-container-low transition-colors">
+                    <div>
+                        <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">
+                            Pedido · {{ venta.created_at.strftime('%d %b %Y %H:%M') if venta.created_at else '—' }}
+                        </p>
+                        <p class="font-label-md text-label-md text-on-surface">
+                            {% if venta.productos|length == 1 %}
+                                {{ venta.productos[0].nombre_producto }}
+                            {% else %}
+                                {{ venta.productos|length }} productos
+                            {% endif %}
+                        </p>
+                        {% if venta.ciudad %}
+                        <p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">
+                            {{ venta.ciudad }}{% if venta.estado_mx %}, {{ venta.estado_mx }}{% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center gap-3 shrink-0">
+                        {% if venta.total > 0 %}
+                        <span class="font-headline-sm text-headline-sm text-primary">${{ "%.2f"|format(venta.total) }} MXN</span>
+                        {% endif %}
+                        <!-- Badge estado -->
+                        {% set e = venta.estado_pedido %}
+                        {% if e == 'entregado' %}<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#E8F5E9] text-[#1B5E20]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;">check_circle</span>Entregado</span>
+                        {% elif e == 'en_proceso' %}<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-primary-fixed text-primary"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;">local_shipping</span>En proceso</span>
+                        {% elif e == 'pagado' %}<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#E3F2FD] text-[#0D47A1]"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;">payments</span>Pagado</span>
+                        {% elif e == 'cancelado' %}<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-error-container text-on-error-container"><span class="material-symbols-outlined text-[14px]" style="font-variation-settings:'FILL' 1;">cancel</span>Cancelado</span>
+                        {% else %}<span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[12px] font-semibold bg-surface-container text-on-surface-variant"><span class="material-symbols-outlined text-[14px]">pending</span>Pendiente</span>{% endif %}
+                        <!-- Toggle detalle -->
+                        <button onclick="toggleDetalle({{ loop.index }})"
+                                class="p-1.5 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors" title="Ver detalle">
+                            <span class="material-symbols-outlined text-[20px]" id="arrow-{{ loop.index }}">expand_more</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Info producto -->
-                <div class="flex-grow min-w-0">
-                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">
-                        Pedido #{{ p.id }} · {{ p.created_at.strftime('%d %b %Y') if p.created_at else '—' }}
-                    </p>
-                    <h3 class="font-label-md text-label-md text-on-surface truncate">{{ p.nombre_producto }}</h3>
-                    <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Cantidad: {{ p.cantidad }}</p>
-                </div>
-
-                <!-- Total -->
-                {% if p.total %}
-                <div class="shrink-0 text-right hidden md:block">
-                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">Total</p>
-                    <p class="font-label-md text-label-md text-on-surface">${{ "%.2f"|format(p.total) }} MXN</p>
-                </div>
-                {% endif %}
-
-                <!-- Estado badge -->
-                <div class="shrink-0">
-                    {% set estado = p.estado_pedido %}
-                    {% if estado == 'entregado' %}
-                        <span class="inline-flex items-center gap-1 bg-[#E8F5E9] text-[#1B5E20] font-label-sm text-label-sm px-3 py-1.5 rounded-full">
-                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                            Entregado
-                        </span>
-                    {% elif estado == 'en_proceso' %}
-                        <span class="inline-flex items-center gap-1 bg-primary-fixed text-primary font-label-sm text-label-sm px-3 py-1.5 rounded-full">
-                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
-                            En proceso
-                        </span>
-                    {% elif estado == 'pagado' %}
-                        <span class="inline-flex items-center gap-1 bg-[#E3F2FD] text-[#0D47A1] font-label-sm text-label-sm px-3 py-1.5 rounded-full">
-                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">payments</span>
-                            Pagado
-                        </span>
-                    {% elif estado == 'cancelado' %}
-                        <span class="inline-flex items-center gap-1 bg-error-container text-on-error-container font-label-sm text-label-sm px-3 py-1.5 rounded-full">
-                            <span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">cancel</span>
-                            Cancelado
-                        </span>
-                    {% else %}
-                        <span class="inline-flex items-center gap-1 bg-surface-container text-on-surface-variant font-label-sm text-label-sm px-3 py-1.5 rounded-full">
-                            <span class="material-symbols-outlined text-[14px]">pending</span>
-                            Pendiente
-                        </span>
-                    {% endif %}
+                <!-- Panel de detalle colapsable -->
+                <div id="detalle-{{ loop.index }}" class="hidden border-t border-outline-variant bg-surface-container px-unit-md py-unit-md">
+                    <div class="flex flex-col gap-2">
+                        {% for item in venta.productos %}
+                        <div class="flex items-center gap-3 py-2 px-3 bg-surface-container-lowest rounded-lg border border-outline-variant">
+                            <div class="w-10 h-10 shrink-0 bg-surface-container rounded-lg p-1 flex items-center justify-center overflow-hidden">
+                                {% if item.imagen_url %}
+                                <img src="{{ item.imagen_url }}" alt="{{ item.nombre_producto }}" class="w-full h-full object-contain" />
+                                {% else %}
+                                <span class="material-symbols-outlined text-outline text-[20px]">water_drop</span>
+                                {% endif %}
+                            </div>
+                            <span class="font-label-md text-label-md text-on-surface flex-1">{{ item.nombre_producto }}</span>
+                            <span class="font-body-md text-body-md text-on-surface-variant text-sm">×{{ item.cantidad }}</span>
+                            {% if item.total > 0 %}
+                            <span class="font-label-md text-label-md text-on-surface">${{ "%.2f"|format(item.total) }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                        {% if venta.direccion %}
+                        <div class="mt-2 px-3 py-2 bg-surface-container-lowest rounded-lg border border-outline-variant text-sm">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Entrega en</p>
+                            <p class="font-body-md text-body-md text-on-surface">
+                                {{ venta.direccion }}{% if venta.ciudad %}, {{ venta.ciudad }}{% endif %}{% if venta.estado_mx %}, {{ venta.estado_mx }}{% endif %}
+                            </p>
+                            {% if venta.telefono %}
+                            <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">Tel: {{ venta.telefono }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}
-
         {% else %}
-            <!-- Estado vacío -->
             <div class="flex flex-col items-center justify-center py-16 gap-4 text-on-surface-variant">
                 <span class="material-symbols-outlined text-[56px]">receipt_long</span>
                 <p class="font-body-lg text-body-lg">No tienes pedidos registrados aún.</p>
@@ -186,4 +107,15 @@ function toggleDetalle(id){
     </div>
 </div>
 {% endblock %}
->>>>>>> 52ab1244b6935011d7ac97b7a77b26fb45644ed9
+
+{% block scripts %}
+<script>
+function toggleDetalle(idx) {
+    var panel = document.getElementById('detalle-' + idx);
+    var arrow = document.getElementById('arrow-' + idx);
+    var open = !panel.classList.contains('hidden');
+    panel.classList.toggle('hidden', open);
+    if (arrow) arrow.textContent = open ? 'expand_more' : 'expand_less';
+}
+</script>
+{% endblock %}

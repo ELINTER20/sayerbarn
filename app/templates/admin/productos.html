@@ -59,7 +59,15 @@
                         </span>
                     </td>
                     <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">{{ prod.uso | capitalize if prod.uso else '—' }}</td>
-                    <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">{{ prod.stock or 0 }}</td>
+                    <td class="py-3 px-6">
+                        <div class="flex items-center gap-1.5">
+                            <input type="number" min="0"
+                                   value="{{ prod.stock }}"
+                                   data-id="{{ prod.id }}"
+                                   class="stock-input w-16 text-center border border-outline-variant rounded-lg px-2 py-1 font-body-md text-body-md text-on-surface bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                            <span class="stock-ok-{{ prod.id }} text-green-600 material-symbols-outlined text-[16px] hidden" style="font-variation-settings:'FILL' 1;">check_circle</span>
+                        </div>
+                    </td>
                     <td class="py-3 px-6">
                         {% if prod.activo %}
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800 border border-green-200">
@@ -80,11 +88,14 @@
                                 <span class="material-symbols-outlined text-[20px]">edit</span>
                             </a>
                             <form method="POST" action="{{ url_for('admin.toggle_producto', id=prod.id) }}" class="inline">
-                                <button class="p-1.5 text-on-surface-variant hover:text-outline rounded-md hover:bg-surface-variant transition-colors" title="{{ 'Desactivar' if prod.activo else 'Activar' }}">
-                                    <span class="material-symbols-outlined text-[20px]">{{ 'block' if prod.activo else 'check_circle' }}</span>
+                                <button class="p-1.5 rounded-md transition-colors
+                                    {% if prod.activo %}text-on-surface-variant hover:text-amber-700 hover:bg-amber-50{% else %}text-green-700 hover:bg-green-50{% endif %}"
+                                    title="{{ 'Desactivar' if prod.activo else 'Activar' }}">
+                                    <span class="material-symbols-outlined text-[20px]">{{ 'visibility_off' if prod.activo else 'visibility' }}</span>
                                 </button>
                             </form>
-                            <form method="POST" action="{{ url_for('admin.eliminar_producto', id=prod.id) }}" class="inline" onsubmit="return confirm('¿Eliminar este producto?')">
+                            <form method="POST" action="{{ url_for('admin.eliminar_producto', id=prod.id) }}" class="inline"
+                                  onsubmit="return confirm('¿Eliminar este producto? Si tiene pedidos asociados solo se desactivará para conservar el historial.')">
                                 <button class="p-1.5 text-on-surface-variant hover:text-error rounded-md hover:bg-error-container transition-colors" title="Eliminar">
                                     <span class="material-symbols-outlined text-[20px]">delete</span>
                                 </button>
@@ -127,4 +138,36 @@
         </div>
     </div>
 </div>
+
+{% block scripts %}
+<script>
+// Actualización de stock en tiempo real con debounce de 600ms
+(function () {
+    var timers = {};
+    document.querySelectorAll('.stock-input').forEach(function (input) {
+        input.addEventListener('input', function () {
+            var id = this.dataset.id;
+            clearTimeout(timers[id]);
+            var val = this.value;
+            var okEl = document.querySelector('.stock-ok-' + id);
+            timers[id] = setTimeout(function () {
+                fetch('/admin/productos/' + id + '/stock', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({stock: parseInt(val) || 0})
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.ok && okEl) {
+                        okEl.classList.remove('hidden');
+                        setTimeout(function () { okEl.classList.add('hidden'); }, 1500);
+                    }
+                })
+                .catch(function (e) { console.error('Stock update error', e); });
+            }, 600);
+        });
+    });
+})();
+</script>
+{% endblock %}
 {% endblock %}

@@ -67,26 +67,16 @@
                 <div>
                     <h3 class="font-label-md text-label-md text-on-surface mb-3">Tipo de producto</h3>
                     <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="tipo" value="sellador" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Sellador</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="tipo" value="barniz" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Barniz</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="tipo" value="laca" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Laca</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="tipo" value="poliuretano" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Poliuretano</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="tipo" value="aislante" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Aislante</span>
-                        </label>
+                        <a href="{{ url_for('main.catalogo') }}"
+                           class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if not categoria_filtro %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+                            Todos
+                        </a>
+                        {% for cat in categorias %}
+                        <a href="{{ url_for('main.catalogo', categoria=cat.id) }}"
+                           class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if categoria_filtro == cat.id %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
+                            {{ cat.nombre }}
+                        </a>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -163,10 +153,8 @@
                         <div class="flex items-center gap-2 mb-3 flex-wrap">
                             {% if not producto.activo %}
                             <span class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px]">No disponible</span>
-                            {% elif producto.stock is not none and producto.stock <= 0 %}
+                            {% elif producto.stock <= 0 %}
                             <span class="px-2 py-1 rounded-full bg-surface-bright text-on-surface-variant font-label-sm text-[10px]">Agotado</span>
-                            {% else %}
-                            <span class="px-2 py-1 rounded-full bg-primary-container text-on-primary font-label-sm text-[10px]">Disponible</span>
                             {% endif %}
                         </div>
                         <h3 class="font-headline-md text-on-surface text-lg mb-1 line-clamp-1">{{ producto.nombre }}</h3>
@@ -181,6 +169,7 @@
                                class="w-full font-label-md text-label-md text-on-primary bg-primary-container px-4 py-2 rounded-full hover:bg-primary-container/90 transition-colors shadow-sm text-center">
                                 Ver producto
                             </a>
+                            {% if producto.activo and producto.stock > 0 %}
                             <button type="button"
                                data-id="{{ producto.id }}"
                                data-nombre="{{ producto.nombre }}"
@@ -191,6 +180,13 @@
                                 <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
                                 Agregar al carrito
                             </button>
+                            {% else %}
+                            <button type="button" disabled
+                               class="w-full font-label-md text-label-md text-outline border border-outline-variant px-4 py-2 rounded-full flex items-center justify-center gap-1.5 cursor-not-allowed opacity-50">
+                                <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
+                                {% if not producto.activo %}No disponible{% else %}Agotado{% endif %}
+                            </button>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

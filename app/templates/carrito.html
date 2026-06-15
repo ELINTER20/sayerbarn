@@ -141,7 +141,22 @@
     function procederAlPago() {
         var carrito = obtenerCarrito();
         if (carrito.length === 0) return;
-        window.location.href = '/checkout/' + carrito[0].id;
+        {% if not usuario %}
+        // Usuario no logueado: redirigir al login
+        window.location.href = '{{ url_for("main.login") }}?next={{ url_for("main.carrito") | urlencode }}';
+        return;
+        {% endif %}
+        // Pasar todos los items como JSON al checkout
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("main.checkout") }}';
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'carrito_items';
+        input.value = JSON.stringify(carrito);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
     }
 
     function escHtml(str) {

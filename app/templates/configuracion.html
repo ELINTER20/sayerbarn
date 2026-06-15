@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}SayerBarn - Configuración{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
+
+    <nav class="flex items-center gap-2 mb-unit-lg">
+        <a href="{{ url_for('main.mi_cuenta') }}" class="font-label-md text-label-md text-primary hover:underline">Mi cuenta</a>
+        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
+        <span class="font-label-md text-label-md text-on-surface-variant">Configuración</span>
+    </nav>
+
+    <div class="flex items-center gap-3 mb-unit-xl">
+        <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[28px]">settings</span>
+        </div>
+        <h1 class="font-headline-lg text-headline-lg text-primary">Configuración de cuenta</h1>
+    </div>
+
+    {% if error %}
+    <div class="mb-unit-md bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        {{ error }}
+    </div>
+    {% endif %}
+    {% if exito %}
+    <div class="mb-unit-md bg-[#E8F5E9] text-[#1B5E20] font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1;">check_circle</span>
+        {{ exito }}
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter max-w-[900px]">
+
+        <!-- Datos personales -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+            <div class="h-1 w-full bg-gradient-to-r from-primary to-primary-container"></div>
+            <form method="POST" action="{{ url_for('main.configuracion') }}" class="p-unit-lg flex flex-col gap-unit-md">
+                <input type="hidden" name="accion" value="datos">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Datos personales</h2>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant" for="nombre">Nombre completo</label>
+                    <input type="text" id="nombre" name="nombre"
+                           value="{{ usuario.nombre }}" required maxlength="100"
+                           class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant" for="email">Correo electrónico</label>
+                    <input type="email" id="email" name="email"
+                           value="{{ usuario.email }}" required maxlength="150"
+                           class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant" for="confirm_datos">Confirma con tu contraseña <span class="text-error">*</span></label>
+                    <input type="password" id="confirm_datos" name="confirm_datos" required
+                           placeholder="Ingresa tu contraseña para confirmar"
+                           class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                </div>
+                <button type="submit"
+                        class="w-full bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-sm mt-2">
+                    Guardar cambios
+                </button>
+            </form>
+        </div>
+
+        <!-- Cambio de contraseña -->
+        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+            <div class="h-1 w-full bg-gradient-to-r from-primary to-primary-container"></div>
+            <form method="POST" action="{{ url_for('main.configuracion') }}" class="p-unit-lg flex flex-col gap-unit-md">
+                <input type="hidden" name="accion" value="password">
+                <h2 class="font-headline-md text-headline-md text-on-surface">Cambiar contraseña</h2>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant" for="password_actual">Contraseña actual</label>
+                    <input type="password" id="password_actual" name="password_actual" required
+                           class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant" for="password_nueva">Nueva contraseña</label>
+                    <input type="password" id="password_nueva" name="password_nueva" required minlength="8"
+                           class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                    <p class="font-label-sm text-label-sm text-outline">Mínimo 8 caracteres.</p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="font-label-sm text-label-sm text-on-surface-variant" for="password_confirma">Confirmar nueva contraseña</label>
+                    <input type="password" id="password_confirma" name="password_confirma" required minlength="8"
+                           class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                </div>
+                <button type="submit"
+                        class="w-full bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity shadow-sm mt-2">
+                    Actualizar contraseña
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

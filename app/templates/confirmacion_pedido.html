@@ -88,3 +88,18 @@
     </div>
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+// Limpiar el carrito del localStorage al confirmar el pedido exitosamente
+(function () {
+    try {
+        localStorage.removeItem('carrito');
+        document.querySelectorAll('.carrito-contador').forEach(function (el) {
+            el.textContent = '0';
+            el.classList.add('hidden');
+        });
+    } catch (e) { /* localStorage no disponible */ }
+})();
+</script>
+{% endblock %}

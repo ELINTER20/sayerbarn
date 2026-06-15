@@ -6,10 +6,10 @@
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 mb-unit-lg">
-        <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}"
+        <a href="{{ url_for('main.carrito') }}"
            class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1">
             <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-            Volver al producto
+            Volver al carrito
         </a>
     </nav>
 
@@ -22,7 +22,21 @@
                 <p class="font-body-md text-body-md text-on-surface-variant">Ingresa tus datos para que podamos coordinar la entrega.</p>
             </div>
 
-            <!-- Mensajes de error -->
+            {% if productos_sin_stock %}
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 font-body-md text-body-md px-4 py-3 rounded-lg flex items-start gap-2">
+                <span class="material-symbols-outlined text-[20px] mt-0.5">warning</span>
+                <div>
+                    <p class="font-semibold">Algunos productos se agotaron antes de que pudieras completar tu compra:</p>
+                    <ul class="list-disc ml-4 mt-1">
+                        {% for nombre in productos_sin_stock %}
+                        <li>{{ nombre }}</li>
+                        {% endfor %}
+                    </ul>
+                    <p class="mt-1">Se procesará el pedido sin esos productos.</p>
+                </div>
+            </div>
+            {% endif %}
+
             {% if error %}
             <div class="bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2">
                 <span class="material-symbols-outlined text-[20px]">error</span>
@@ -30,8 +44,11 @@
             </div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('main.checkout', producto_id=producto.id) }}"
+            <form method="POST" action="{{ url_for('main.checkout') }}"
                   class="bg-surface-container-lowest rounded-xl border border-outline-variant p-unit-lg flex flex-col gap-unit-md shadow-sm">
+
+                <!-- Campo oculto con los items del carrito -->
+                <input type="hidden" name="carrito_items" value="{{ form.carrito_items or '' }}" />
 
                 <!-- Nombre -->
                 <div class="flex flex-col gap-2">
@@ -40,8 +57,7 @@
                     </label>
                     <input type="text" id="nombre_comprador" name="nombre_comprador"
                            value="{{ form.nombre_comprador or '' }}"
-                           required maxlength="150"
-                           placeholder="Ej. Juan Pérez García"
+                           required maxlength="150" placeholder="Ej. Juan Pérez García"
                            class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors" />
                 </div>
 
@@ -52,8 +68,7 @@
                     </label>
                     <input type="tel" id="telefono" name="telefono"
                            value="{{ form.telefono or '' }}"
-                           required maxlength="20"
-                           placeholder="Ej. 744 123 4567"
+                           required maxlength="20" placeholder="Ej. 744 123 4567"
                            class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors" />
                 </div>
 
@@ -62,8 +77,7 @@
                     <label class="font-label-md text-label-md text-on-surface" for="direccion">
                         Dirección de entrega <span class="text-error">*</span>
                     </label>
-                    <textarea id="direccion" name="direccion"
-                              required rows="2"
+                    <textarea id="direccion" name="direccion" required rows="2"
                               placeholder="Calle, número, colonia"
                               class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors resize-none">{{ form.direccion or '' }}</textarea>
                 </div>
@@ -76,8 +90,7 @@
                         </label>
                         <input type="text" id="ciudad" name="ciudad"
                                value="{{ form.ciudad or '' }}"
-                               required maxlength="100"
-                               placeholder="Ej. Acapulco"
+                               required maxlength="100" placeholder="Ej. Acapulco"
                                class="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors" />
                     </div>
                     <div class="flex flex-col gap-2">
@@ -91,23 +104,6 @@
                             <option value="{{ estado }}" {% if form.estado_mx == estado %}selected{% endif %}>{{ estado }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-                </div>
-
-                <!-- Cantidad -->
-                <div class="flex flex-col gap-2">
-                    <label class="font-label-md text-label-md text-on-surface" for="cantidad">
-                        Cantidad
-                    </label>
-                    <div class="flex items-center gap-3">
-                        <button type="button" id="btn-menos"
-                                class="w-10 h-10 rounded-lg bg-surface-container border border-outline-variant text-on-surface font-bold text-lg flex items-center justify-center hover:bg-surface-container-high transition-colors">−</button>
-                        <input type="number" id="cantidad" name="cantidad"
-                               value="{{ form.cantidad or 1 }}" min="1" max="99" readonly
-                               class="w-16 text-center bg-surface border border-outline-variant rounded-lg px-2 py-3 font-body-md text-body-md text-on-surface focus:outline-none" />
-                        <button type="button" id="btn-mas"
-                                class="w-10 h-10 rounded-lg bg-surface-container border border-outline-variant text-on-surface font-bold text-lg flex items-center justify-center hover:bg-surface-container-high transition-colors">+</button>
-                        <span class="font-body-md text-body-md text-on-surface-variant">litros / unidades</span>
                     </div>
                 </div>
 
@@ -130,41 +126,44 @@
         <!-- ── Resumen del pedido ── -->
         <div class="lg:col-span-5">
             <div class="sticky top-8 bg-surface-container-lowest rounded-xl border border-outline-variant p-unit-lg shadow-sm flex flex-col gap-unit-md">
-                <h2 class="font-headline-md text-headline-md text-on-surface">Resumen</h2>
+                <h2 class="font-headline-md text-headline-md text-on-surface">Resumen del pedido</h2>
 
-                <!-- Producto -->
-                <div class="flex items-center gap-unit-md border-b border-outline-variant pb-unit-md">
-                    <div class="w-16 h-16 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center overflow-hidden">
-                        {% if producto.imagen_url %}
-                        <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="w-full h-full object-contain" />
-                        {% else %}
-                        <span class="material-symbols-outlined text-outline text-[32px]">water_drop</span>
+                <!-- Lista de todos los productos -->
+                <div class="flex flex-col gap-3 border-b border-outline-variant pb-unit-md">
+                    {% set total_pedido = namespace(val=0) %}
+                    {% for entry in productos_validos %}
+                    {% set p = entry.producto %}
+                    {% set item = entry.item %}
+                    {% set subtotal = (p.precio_referencia | float) * (item.cantidad | int) if p.precio_referencia else 0 %}
+                    {% set total_pedido.val = total_pedido.val + subtotal %}
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 shrink-0 bg-surface-container rounded-lg p-1.5 flex items-center justify-center overflow-hidden">
+                            {% if p.imagen_url %}
+                            <img src="{{ p.imagen_url }}" alt="{{ p.nombre }}" class="w-full h-full object-contain" />
+                            {% else %}
+                            <span class="material-symbols-outlined text-outline text-[24px]">water_drop</span>
+                            {% endif %}
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="font-label-md text-label-md text-on-surface truncate">{{ p.nombre }}</p>
+                            <p class="font-body-md text-body-md text-on-surface-variant text-sm">Cant: {{ item.cantidad }}</p>
+                        </div>
+                        {% if p.precio_referencia %}
+                        <span class="font-label-md text-label-md text-on-surface shrink-0">${{ "%.2f"|format(subtotal) }}</span>
                         {% endif %}
                     </div>
-                    <div class="flex-grow">
-                        <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{{ producto.uso or '' | capitalize }}</p>
-                        <p class="font-label-md text-label-md text-on-surface">{{ producto.nombre }}</p>
-                    </div>
+                    {% endfor %}
                 </div>
 
-                <!-- Precio -->
-                {% if producto.precio_referencia %}
-                <div class="flex justify-between items-center py-1">
-                    <span class="font-body-md text-body-md text-on-surface-variant">Precio unitario</span>
-                    <span class="font-label-md text-label-md text-on-surface" id="precio-unitario"
-                          data-precio="{{ producto.precio_referencia }}">${{ "%.2f"|format(producto.precio_referencia) }} MXN</span>
-                </div>
-                <div class="flex justify-between items-center py-1">
-                    <span class="font-body-md text-body-md text-on-surface-variant">Cantidad</span>
-                    <span class="font-label-md text-label-md text-on-surface" id="resumen-cantidad">1</span>
-                </div>
-                <div class="flex justify-between items-center py-3 border-t border-outline-variant mt-1">
+                <!-- Total -->
+                {% if total_pedido.val > 0 %}
+                <div class="flex justify-between items-center">
                     <span class="font-label-md text-label-md text-on-surface">Total estimado</span>
-                    <span class="font-headline-md text-headline-md text-primary" id="resumen-total">${{ "%.2f"|format(producto.precio_referencia) }} MXN</span>
+                    <span class="font-headline-md text-headline-md text-primary">${{ "%.2f"|format(total_pedido.val) }} MXN</span>
                 </div>
                 {% endif %}
 
-                <!-- Nota entrega fuera de Acapulco -->
+                <!-- Nota entrega -->
                 <div class="bg-surface-container rounded-lg px-3 py-3 flex items-start gap-2">
                     <span class="material-symbols-outlined text-outline text-[18px] mt-0.5">local_shipping</span>
                     <p class="font-label-sm text-label-sm text-on-surface-variant">
@@ -175,35 +174,4 @@
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-(function () {
-    var inputCantidad = document.getElementById('cantidad');
-    var resumenCantidad = document.getElementById('resumen-cantidad');
-    var resumenTotal = document.getElementById('resumen-total');
-    var precioEl = document.getElementById('precio-unitario');
-    var precio = precioEl ? parseFloat(precioEl.dataset.precio) : 0;
-
-    function actualizar() {
-        var q = parseInt(inputCantidad.value) || 1;
-        if (resumenCantidad) resumenCantidad.textContent = q;
-        if (resumenTotal && precio) {
-            resumenTotal.textContent = '$' + (precio * q).toFixed(2) + ' MXN';
-        }
-    }
-
-    document.getElementById('btn-menos').addEventListener('click', function () {
-        var v = parseInt(inputCantidad.value) || 1;
-        if (v > 1) { inputCantidad.value = v - 1; actualizar(); }
-    });
-    document.getElementById('btn-mas').addEventListener('click', function () {
-        var v = parseInt(inputCantidad.value) || 1;
-        if (v < 99) { inputCantidad.value = v + 1; actualizar(); }
-    });
-
-    actualizar();
-})();
-</script>
 {% endblock %}

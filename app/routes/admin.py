@@ -86,7 +86,8 @@ def productos():
 
     cur = mysql.connection.cursor()
     cur.execute(
-        "SELECT p.id, p.clave, p.nombre, p.imagen_url, p.uso, p.acabado, p.stock, p.activo, "
+        "SELECT p.id, p.clave, p.nombre, p.imagen_url, p.uso, p.acabado, p.activo, "
+        "COALESCE(p.stock, 0) AS stock, "
         "c.nombre as categoria "
         "FROM productos p "
         "LEFT JOIN categorias c ON p.categoria_id = c.id "
@@ -198,7 +199,6 @@ def editar_producto(id):
     cur = mysql.connection.cursor()
 
     if request.method == 'POST':
-        # Recoge los campos del formulario; campos vacíos se guardan como NULL
         nombre = request.form.get('nombre', '').strip()
         descripcion = request.form.get('descripcion', '').strip()
         acabado = request.form.get('acabado') or None
@@ -206,14 +206,6 @@ def editar_producto(id):
         enlace = request.form.get('enlace', '').strip() or None
         uso = request.form.get('uso') or None
         imagen_url = request.form.get('imagen_url', '').strip() or None
-        stock = request.form.get('stock', '0').strip()
-        try:
-            stock = int(stock)
-            if stock < 0:
-                stock = 0
-        except ValueError:
-            stock = 0
-        # Los checkboxes de superficie: 1 si están marcados, 0 si no
         sup_madera = 1 if request.form.get('sup_madera') else 0
         sup_metal = 1 if request.form.get('sup_metal') else 0
         sup_concreto = 1 if request.form.get('sup_concreto') else 0
@@ -223,11 +215,11 @@ def editar_producto(id):
             UPDATE productos SET
                 nombre = %s, descripcion_ia = %s, acabado = %s,
                 rendimiento_min = %s, link_compra_ml = %s, uso = %s,
-                imagen_url = %s, stock = %s,
+                imagen_url = %s,
                 sup_madera = %s, sup_metal = %s, sup_concreto = %s, sup_otro = %s
             WHERE id = %s
         """, (nombre, descripcion, acabado, rendimiento, enlace, uso,
-              imagen_url, stock, sup_madera, sup_metal, sup_concreto, sup_otro, id))
+              imagen_url, sup_madera, sup_metal, sup_concreto, sup_otro, id))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('admin.productos'))
@@ -254,14 +246,47 @@ def toggle_producto(id):
     return redirect(url_for('admin.productos'))
 
 
+@admin_bp.route('/productos/<int:id>/stock', methods=['POST'])
+@admin_required
+def actualizar_stock(id):
+    """Actualiza el stock de un producto. Acepta JSON o form-data.
+    Devuelve JSON para poder usarlo con fetch desde el template."""
+    from flask import jsonify as _jsonify
+    data = request.get_json(silent=True) or {}
+    nuevo_stock = data.get('stock') if data else request.form.get('stock', type=int)
+    try:
+        nuevo_stock = max(0, int(nuevo_stock))
+    except (TypeError, ValueError):
+        return _jsonify({'error': 'Valor inválido'}), 400
+
+    cur = mysql.connection.cursor()
+    cur.execute("UPDATE productos SET stock = %s WHERE id = %s", (nuevo_stock, id))
+    mysql.connection.commit()
+    cur.close()
+    return _jsonify({'ok': True, 'stock': nuevo_stock})
+
+
 @admin_bp.route('/productos/<int:id>/eliminar', methods=['POST'])
 @admin_required
 def eliminar_producto(id):
-    # Baja lógica: marca el producto como inactivo en vez de borrarlo físicamente
+    """Elimina físicamente el producto de la BD.
+    Si falla por FKs con pedidos existentes hace baja lógica (activo=0)
+    para no perder el historial de pedidos."""
     cur = mysql.connection.cursor()
-    cur.execute("UPDATE productos SET activo = 0 WHERE id = %s", (id,))
-    mysql.connection.commit()
-    cur.close()
+    try:
+        # Elimina relaciones directas sin historial crítico
+        cur.execute("DELETE FROM complementos WHERE producto_id = %s OR complemento_id = %s", (id, id))
+        cur.execute("DELETE FROM favoritos WHERE producto_id = %s", (id,))
+        cur.execute("DELETE FROM estadisticas_productos WHERE producto_id = %s", (id,))
+        cur.execute("DELETE FROM productos WHERE id = %s", (id,))
+        mysql.connection.commit()
+    except Exception:
+        # Producto referenciado en pedidos: solo desactiva para no perder historial
+        mysql.connection.rollback()
+        cur.execute("UPDATE productos SET activo = 0 WHERE id = %s", (id,))
+        mysql.connection.commit()
+    finally:
+        cur.close()
     return redirect(url_for('admin.productos'))
 
 
@@ -334,41 +359,271 @@ def eliminar_complemento(id):
 @admin_bp.route('/pedidos')
 @admin_required
 def pedidos():
-    """Lista todos los pedidos con filtro opcional por estado.
-    Muestra canal, comprador, ubicación (alerta si no es Acapulco) y selector de estado."""
-    filtro_estado = request.args.get('estado', '').strip() or None
+    """Lista pedidos agrupados por período y agrupa items del mismo comprador/fecha en una venta."""
+    filtro_estado  = request.args.get('estado', '').strip() or None
+    periodo        = request.args.get('periodo', 'hoy').strip()
+
+    fmt_map = {
+        'hoy':    "DATE(pd.created_at)",
+        'dia':    "DATE(pd.created_at)",
+        'semana': "DATE(pd.created_at - INTERVAL WEEKDAY(pd.created_at) DAY)",
+        'mes':    "DATE_FORMAT(pd.created_at, '%%Y-%%m-01')",
+    }
+    fecha_expr = fmt_map.get(periodo, fmt_map['dia'])
+
+    condiciones = ["1=1"]
+    params = []
+    if periodo == 'hoy':
+        condiciones.append("DATE(pd.created_at) = CURDATE()")
+    if filtro_estado:
+        condiciones.append("pd.estado_pedido = %s")
+        params.append(filtro_estado)
+    where = " AND ".join(condiciones)
 
     cur = mysql.connection.cursor()
-    if filtro_estado:
-        # Filtra por estado si se pasó el parámetro ?estado=
-        cur.execute("""
-            SELECT pd.id, pd.nombre_comprador, pd.telefono,
-                   pd.ciudad, pd.estado_mx, pd.canal,
-                   pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
-                   pr.nombre AS nombre_producto, pr.imagen_url
-            FROM pedidos pd
-            JOIN productos pr ON pd.producto_id = pr.id
-            WHERE pd.estado_pedido = %s
-            ORDER BY pd.created_at DESC
-        """, (filtro_estado,))
-    else:
-        # Sin filtro: todos los pedidos del más reciente al más antiguo
-        cur.execute("""
-            SELECT pd.id, pd.nombre_comprador, pd.telefono,
-                   pd.ciudad, pd.estado_mx, pd.canal,
-                   pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
-                   pr.nombre AS nombre_producto, pr.imagen_url
-            FROM pedidos pd
-            JOIN productos pr ON pd.producto_id = pr.id
-            ORDER BY pd.created_at DESC
-        """)
+    cur.execute(f"""
+        SELECT pd.id, pd.usuario_id, pd.nombre_comprador, pd.telefono,
+               pd.ciudad, pd.estado_mx, pd.canal,
+               pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
+               pr.nombre AS nombre_producto, pr.imagen_url,
+               {fecha_expr} AS periodo_fecha
+        FROM pedidos pd
+        JOIN productos pr ON pd.producto_id = pr.id
+        WHERE {where}
+        ORDER BY pd.created_at DESC
+    """, params if params else ())
     pedidos_lista = cur.fetchall()
+
+    # Agrupar por período y dentro de cada período agrupar ventas del mismo comprador
+    # Una "venta" = mismo nombre_comprador + misma fecha (DATE) + misma sesión
+    from collections import OrderedDict
+    grupos = OrderedDict()   # {periodo_fecha: [venta, ...]}
+    # Una venta = {key, comprador, items: [], total, estado, canal, created_at, id}
+
+    for p in pedidos_lista:
+        pkey = str(p['periodo_fecha']) if p['periodo_fecha'] else 'Sin fecha'
+        if pkey not in grupos:
+            grupos[pkey] = OrderedDict()
+
+        # Clave de venta: comprador + día exacto (para agrupar la misma sesión de compra)
+        fecha_dia = str(p['created_at'].date()) if p['created_at'] else 'nd'
+        # Agrupar items creados dentro de los mismos 10 minutos (misma sesión)
+        minuto_base = (p['created_at'].hour * 60 + p['created_at'].minute) // 10 if p['created_at'] else 0
+        venta_key = f"{p['nombre_comprador']}|{fecha_dia}|{minuto_base}|{p['usuario_id'] or 'anon'}"
+
+        if venta_key not in grupos[pkey]:
+            grupos[pkey][venta_key] = {
+                'id_principal': p['id'],
+                'nombre_comprador': p['nombre_comprador'],
+                'telefono': p['telefono'],
+                'ciudad': p['ciudad'],
+                'estado_mx': p['estado_mx'],
+                'canal': p['canal'],
+                'estado_pedido': p['estado_pedido'],
+                'created_at': p['created_at'],
+                'productos': [],
+                'total': 0.0,
+            }
+        venta = grupos[pkey][venta_key]
+        venta['productos'].append({
+            'id': p['id'],
+            'nombre_producto': p['nombre_producto'],
+            'imagen_url': p['imagen_url'],
+            'cantidad': p['cantidad'],
+            'total': float(p['total']) if p['total'] else 0.0,
+        })
+        venta['total'] += float(p['total']) if p['total'] else 0.0
+
+    # Convertir OrderedDict interno a listas para el template
+    grupos_lista = OrderedDict()
+    for pkey, ventas_dict in grupos.items():
+        grupos_lista[pkey] = list(ventas_dict.values())
+
+    # Stock bajo (≤5) para alerta en dashboard
+    cur.execute("""
+        SELECT id, nombre, COALESCE(stock,0) AS stock
+        FROM productos
+        WHERE activo = 1 AND COALESCE(stock,0) <= 5
+        ORDER BY stock ASC
+    """)
+    stock_bajo = cur.fetchall()
     cur.close()
 
     return render_template('admin/pedidos.html',
-                           pedidos=pedidos_lista,
-                           filtro_estado=filtro_estado)
+                           grupos=grupos_lista,
+                           filtro_estado=filtro_estado,
+                           periodo=periodo,
+                           stock_bajo=stock_bajo)
 
+
+@admin_bp.route('/pedidos/exportar-pdf')
+@admin_required
+def exportar_pedidos_pdf():
+    """Genera un PDF real con reportlab.
+    Si reportlab no está instalado, devuelve un aviso claro en lugar de un HTML."""
+    from flask import make_response
+
+    # Verificar que reportlab esté disponible antes de hacer cualquier query
+    try:
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib import colors
+        from reportlab.lib.units import cm
+        from reportlab.platypus import (SimpleDocTemplate, Table, TableStyle,
+                                        Paragraph, Spacer)
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    except ImportError:
+        # Instrucción clara para el desarrollador
+        msg = (
+            "reportlab no está instalado en este entorno.\n"
+            "Ejecuta: pip install reportlab\n"
+            "Luego reinicia Flask y vuelve a intentarlo."
+        )
+        response = make_response(msg, 500)
+        response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+        return response
+
+    from io import BytesIO
+    import datetime
+
+    filtro_estado = request.args.get('estado', '').strip() or None
+    periodo       = request.args.get('periodo', 'hoy').strip()
+
+    fmt_map = {
+        'hoy':    "DATE(pd.created_at)",
+        'dia':    "DATE(pd.created_at)",
+        'semana': "DATE(pd.created_at - INTERVAL WEEKDAY(pd.created_at) DAY)",
+        'mes':    "DATE_FORMAT(pd.created_at, '%%Y-%%m-01')",
+    }
+    fecha_expr = fmt_map.get(periodo, fmt_map['dia'])
+
+    condiciones = ["1=1"]
+    params = []
+    if periodo == 'hoy':
+        condiciones.append("DATE(pd.created_at) = CURDATE()")
+    if filtro_estado:
+        condiciones.append("pd.estado_pedido = %s")
+        params.append(filtro_estado)
+    where = " AND ".join(condiciones)
+
+    cur = mysql.connection.cursor()
+    cur.execute(f"""
+        SELECT pd.id, pd.nombre_comprador, pd.ciudad, pd.estado_mx,
+               pd.canal, pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
+               pr.nombre AS nombre_producto,
+               {fecha_expr} AS periodo_fecha
+        FROM pedidos pd
+        JOIN productos pr ON pd.producto_id = pr.id
+        WHERE {where}
+        ORDER BY pd.created_at DESC
+    """, params if params else ())
+    pedidos_lista = cur.fetchall()
+    cur.close()
+
+    # Agrupar por período
+    from collections import OrderedDict
+    grupos = OrderedDict()
+    for p in pedidos_lista:
+        key = str(p['periodo_fecha']) if p['periodo_fecha'] else 'Sin fecha'
+        if key not in grupos:
+            grupos[key] = []
+        grupos[key].append(p)
+
+    total_general = sum(float(p['total']) for p in pedidos_lista if p['total'])
+
+    # ── Construir el PDF con ReportLab ──────────────────────────────
+    buf = BytesIO()
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            leftMargin=1.5*cm, rightMargin=1.5*cm,
+                            topMargin=2*cm, bottomMargin=2*cm)
+    styles = getSampleStyleSheet()
+    azul   = colors.HexColor('#0033A0')
+    gris   = colors.HexColor('#E8EDF7')
+    blanco = colors.white
+
+    titulo_style = ParagraphStyle('titulo', fontSize=18, textColor=azul,
+                                  fontName='Helvetica-Bold', spaceAfter=4)
+    meta_style   = ParagraphStyle('meta', fontSize=9, textColor=colors.grey,
+                                  spaceAfter=16)
+    grupo_style  = ParagraphStyle('grupo', fontSize=11, textColor=azul,
+                                  fontName='Helvetica-Bold', spaceBefore=12, spaceAfter=4)
+
+    periodo_labels = {'hoy': 'Hoy', 'dia': 'Día', 'semana': 'Semana', 'mes': 'Mes'}
+    ahora = datetime.datetime.now().strftime('%d/%m/%Y %H:%M')
+
+    elementos = [
+        Paragraph('Reporte de Pedidos — SayerBarn', titulo_style),
+        Paragraph(
+            f'Período: {periodo_labels.get(periodo, periodo)}'
+            + (f' | Estado: {filtro_estado.capitalize()}' if filtro_estado else '')
+            + f' | Generado: {ahora}',
+            meta_style
+        ),
+    ]
+
+    col_w = [1.2*cm, 4.5*cm, 3.5*cm, 2.5*cm, 1.5*cm, 2.2*cm, 2.2*cm]
+    header = ['#', 'Producto', 'Comprador', 'Ciudad', 'Cant.', 'Total', 'Estado']
+
+    for fecha_key, pedidos in grupos.items():
+        subtotal = sum(float(p['total']) for p in pedidos if p['total'])
+
+        elementos.append(Paragraph(
+            f'{fecha_key}  —  {len(pedidos)} pedido{"s" if len(pedidos)!=1 else ""}  |  Subtotal: ${subtotal:,.2f} MXN',
+            grupo_style
+        ))
+
+        data = [header]
+        for p in pedidos:
+            data.append([
+                f'#{p["id"]}',
+                p['nombre_producto'][:30],
+                p['nombre_comprador'][:22],
+                f'{p["ciudad"] or "—"}',
+                str(p['cantidad']),
+                f'${float(p["total"]):,.2f}' if p['total'] else '—',
+                p['estado_pedido'].capitalize(),
+            ])
+
+        t = Table(data, colWidths=col_w, repeatRows=1)
+        t.setStyle(TableStyle([
+            ('BACKGROUND',   (0,0), (-1,0), azul),
+            ('TEXTCOLOR',    (0,0), (-1,0), blanco),
+            ('FONTNAME',     (0,0), (-1,0), 'Helvetica-Bold'),
+            ('FONTSIZE',     (0,0), (-1,-1), 8),
+            ('ROWBACKGROUNDS', (0,1), (-1,-1), [blanco, gris]),
+            ('GRID',         (0,0), (-1,-1), 0.25, colors.HexColor('#D0D7EE')),
+            ('VALIGN',       (0,0), (-1,-1), 'MIDDLE'),
+            ('TOPPADDING',   (0,0), (-1,-1), 4),
+            ('BOTTOMPADDING',(0,0), (-1,-1), 4),
+        ]))
+        elementos.append(t)
+        elementos.append(Spacer(1, 0.3*cm))
+
+    # Fila de total general — usar SPAN para evitar que el texto se encime
+    n_pedidos = len(pedidos_lista)
+    total_data = [['TOTAL GENERAL', '', '', '', '', f'${total_general:,.2f} MXN', f'{n_pedidos} pedido{"s" if n_pedidos != 1 else ""}']]
+    total_t = Table(total_data, colWidths=col_w)
+    total_t.setStyle(TableStyle([
+        ('BACKGROUND',   (0,0), (-1,-1), azul),
+        ('TEXTCOLOR',    (0,0), (-1,-1), blanco),
+        ('FONTNAME',     (0,0), (-1,-1), 'Helvetica-Bold'),
+        ('FONTSIZE',     (0,0), (-1,-1), 9),
+        ('TOPPADDING',   (0,0), (-1,-1), 7),
+        ('BOTTOMPADDING',(0,0), (-1,-1), 7),
+        # Fusionar columnas 0-4 para que "TOTAL GENERAL" tenga espacio
+        ('SPAN',         (0,0), (4,0)),
+        ('ALIGN',        (0,0), (4,0), 'RIGHT'),
+        ('ALIGN',        (5,0), (5,0), 'RIGHT'),
+        ('ALIGN',        (6,0), (6,0), 'CENTER'),
+    ]))
+    elementos.append(total_t)
+
+    doc.build(elementos)
+
+    pdf_bytes = buf.getvalue()
+    response = make_response(pdf_bytes)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = f'attachment; filename=pedidos_{periodo}.pdf'
+    return response
 
 @admin_bp.route('/pedidos/<int:pedido_id>/estado', methods=['POST'])
 @admin_required
@@ -397,7 +652,9 @@ def cambiar_estado_pedido(pedido_id):
 @admin_bp.route('/publicar')
 @admin_required
 def publicar():
-    # Muestra las últimas 50 publicaciones en marketplace con su estado
+    """Vista principal de publicaciones con formulario de nueva publicación."""
+    exito = request.args.get('exito')
+    error = request.args.get('error')
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT pm.id, pm.canal, pm.estado, pm.created_at,
@@ -408,5 +665,36 @@ def publicar():
         LIMIT 50
     """)
     publicaciones = cur.fetchall()
+    cur.execute("SELECT id, nombre, clave FROM productos WHERE activo = 1 ORDER BY nombre")
+    productos_activos = cur.fetchall()
     cur.close()
-    return render_template('admin/publicar.html', publicaciones=publicaciones)
+    return render_template('admin/publicar.html',
+                           publicaciones=publicaciones,
+                           productos_activos=productos_activos,
+                           exito=exito,
+                           error=error)
+
+
+@admin_bp.route('/publicar/nueva', methods=['POST'])
+@admin_required
+def crear_publicacion():
+    """Registra una nueva publicación en estado pendiente hasta integrar la API de ML."""
+    producto_id = request.form.get('producto_id', type=int)
+    canal = request.form.get('canal', 'mercadolibre').strip()
+
+    if not producto_id:
+        return redirect(url_for('admin.publicar', error='Debes seleccionar un producto.'))
+
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO publicaciones_marketplace (producto_id, canal, estado)
+            VALUES (%s, %s, 'pendiente')
+        """, (producto_id, canal))
+        mysql.connection.commit()
+        cur.close()
+    except Exception as e:
+        print(f"[ERROR PUBLICAR] {e}")
+        return redirect(url_for('admin.publicar', error='Error al registrar la publicación.'))
+
+    return redirect(url_for('admin.publicar', exito='1'))

@@ -88,7 +88,7 @@
     <!-- Sidebar de administración -->
     <aside class="bg-tertiary h-screen w-64 fixed left-0 top-0 shadow-md flex flex-col py-gutter px-unit-md z-50">
         <div class="mb-unit-xl px-4">
-            <h1 class="font-headline-md text-headline-md font-bold text-on-tertiary">ProPaint Admin</h1>
+            <h1 class="font-headline-md text-headline-md font-bold text-on-tertiary">SayerBarn Admin</h1>
             <p class="font-label-sm text-label-sm text-tertiary-fixed-dim mt-1">Expert Series</p>
         </div>
         <nav class="flex-1 flex flex-col gap-2">
@@ -125,13 +125,10 @@
             </a>
         </nav>
         <div class="mt-auto">
-            <button class="w-full bg-primary-container text-on-primary font-label-md text-label-md py-3 rounded-lg mb-6 hover:bg-surface-tint transition-colors shadow-sm">
-                Sync Inventory
-            </button>
             <form action="{{ url_for('main.logout') }}" method="POST">
                 <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container transition-colors rounded-lg">
                     <span class="material-symbols-outlined">logout</span>
-                    <span class="font-label-md text-label-md">Logout</span>
+                    <span class="font-label-md text-label-md">Cerrar sesión</span>
                 </button>
             </form>
         </div>
@@ -147,15 +144,10 @@
                     <button onclick="toggleTheme()" class="text-on-surface-variant hover:text-primary transition-colors opacity-80" title="Cambiar tema">
                         <span class="theme-icon material-symbols-outlined">dark_mode</span>
                     </button>
-                    <button class="text-on-surface-variant hover:text-primary transition-colors opacity-80">
-                        <span class="material-symbols-outlined">notifications</span>
-                    </button>
-                    <button class="text-on-surface-variant hover:text-primary transition-colors opacity-80">
-                        <span class="material-symbols-outlined">settings</span>
-                    </button>
                 </div>
-                <img alt="Avatar admin" class="w-8 h-8 rounded-full border border-outline-variant"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnJ40ncylE_0f4-RFpHP77riFjG-sUPwCmsWOijUZeZd7kyTNt3y3J2lEHFco5W5Uyl37nG9sv3TVyFaylMtBM1XhhtL6H3i3qdRKWuv45cc1QYNeOav1dyAf7GtHJXgpNs-F3T-xQVYPZCBSGz_zGyaW16DKoOATUAIYMAOtvJtHlTnZyYemikAbkvXVCvoWoqAnmLc1DVp57A-fflFyCJuCF45eUuqGWAUOzERx5UKXm7gnGSCfRdKuNkTr_yKZllO0DaoOswdw" />
+                <div class="w-8 h-8 rounded-full bg-primary-container border border-primary/20 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-primary text-[18px]">admin_panel_settings</span>
+                </div>
             </div>
         </header>
 

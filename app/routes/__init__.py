@@ -177,7 +177,7 @@ def registro():
 @main.route('/logout', methods=['POST'])
 def logout():
     # Elimina las cookies JWT del navegador para cerrar la sesión
-    response = make_response(redirect(url_for('main.login')))
+    response = make_response(redirect(url_for('main.index')))
     unset_jwt_cookies(response)
     return response
 
@@ -254,26 +254,56 @@ def reset_password(token):
 
 @main.route('/catalogo')
 def catalogo():
-    # Obtiene todos los productos activos junto con su categoría
     productos = []
     error = None
     favoritos_ids = set()
     usuario = usuario_actual()
+    # Filtro de categoría desde URL (?categoria=X)
+    categoria_filtro = request.args.get('categoria', type=int)
+
     try:
         cur = mysql.connection.cursor()
-        cur.execute(
-            "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
+        # Traer categorías para el selector del sidebar
+        cur.execute("SELECT id, nombre FROM categorias ORDER BY nombre")
+        categorias = cur.fetchall()
+
+        # Query de productos: todos (activos e inactivos), disponibles primero,
+        # luego agotados, luego desactivados. Dentro de cada grupo, ordenado por nombre.
+        campos = (
+            "p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
             "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, "
             "p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
-            "c.nombre AS categoria "
-            "FROM productos p "
-            "LEFT JOIN categorias c ON p.categoria_id = c.id "
-            "WHERE p.activo = 1 ORDER BY p.nombre"
+            "p.activo, COALESCE(p.stock, 0) AS stock, "
+            "p.categoria_id, c.nombre AS categoria "
         )
+        orden = (
+            "ORDER BY "
+            "  p.activo DESC, "               # activos primero
+            "  (COALESCE(p.stock,0) > 0) DESC, "  # con stock antes que agotados
+            "  p.nombre ASC"
+        )
+
+        if categoria_filtro:
+            cur.execute(
+                f"SELECT {campos}"
+                "FROM productos p "
+                "LEFT JOIN categorias c ON p.categoria_id = c.id "
+                f"WHERE p.categoria_id = %s {orden}",
+                (categoria_filtro,)
+            )
+        else:
+            cur.execute(
+                f"SELECT {campos}"
+                "FROM productos p "
+                "LEFT JOIN categorias c ON p.categoria_id = c.id "
+                + orden
+            )
         productos = cur.fetchall()
         cur.close()
     except Exception:
+        categorias = []
         error = 'El catálogo todavía no está disponible. Intenta de nuevo más tarde.'
+
     if usuario:
         try:
             cur2 = mysql.connection.cursor()
@@ -285,7 +315,14 @@ def catalogo():
             cur2.close()
         except Exception:
             pass
-    return render_template('catalogo.html', productos=productos, usuario=usuario, error=error, favoritos_ids=favoritos_ids)
+
+    return render_template('catalogo.html',
+                           productos=productos,
+                           categorias=categorias,
+                           categoria_filtro=categoria_filtro,
+                           usuario=usuario,
+                           error=error,
+                           favoritos_ids=favoritos_ids)
 
 
 # ── Rutas protegidas (requieren login) ───────────────────
@@ -297,7 +334,7 @@ def favoritos():
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
-        "SELECT p.id, p.nombre, p.imagen_url, p.precio_referencia, p.acabado "
+        "SELECT p.id, p.nombre, p.imagen_url, p.precio_referencia, p.acabado, p.activo "
         "FROM favoritos f "
         "JOIN productos p ON f.producto_id = p.id "
         "WHERE f.usuario_id = %s ORDER BY f.created_at DESC",
@@ -398,7 +435,8 @@ def detalle_producto(producto_id):
     cur.execute(
         "SELECT p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
         "p.precio_referencia, p.acabado, p.uso, p.rendimiento_min, p.link_compra_ml, "
-        "p.ficha_tecnica_url, p.stock, p.activo, p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+        "p.ficha_tecnica_url, p.activo, p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro, "
+        "COALESCE(p.stock, 0) AS stock, "
         "c.nombre AS categoria "
         "FROM productos p "
         "LEFT JOIN categorias c ON p.categoria_id = c.id "
@@ -412,7 +450,9 @@ def detalle_producto(producto_id):
         abort(404)  # Producto no encontrado
     # Obtiene todos los complementos (diluyentes, catalizadores, etc.) del producto
     cur.execute(
-        "SELECT p.id, p.nombre, p.imagen_url, p.link_compra_ml, c.tipo, c.proporcion "
+        "SELECT p.id, p.nombre, p.imagen_url, p.link_compra_ml, "
+        "p.activo, COALESCE(p.stock, 0) AS stock, "
+        "c.tipo, c.proporcion "
         "FROM complementos c "
         "JOIN productos p ON c.complemento_id = p.id "
         "WHERE c.producto_id = %s",
@@ -464,6 +504,85 @@ def carrito():
     return render_template('carrito.html', usuario=usuario_actual())
 
 
+@main.route('/mi-cuenta')
+@jwt_required()
+def mi_cuenta():
+    """Hub de la cuenta del usuario: links a pedidos, historial y favoritos."""
+    usuario = usuario_actual()
+    return render_template('mi-cuenta.html', usuario=usuario)
+
+
+@main.route('/mi-cuenta/configuracion', methods=['GET', 'POST'])
+@jwt_required()
+def configuracion():
+    """Permite al usuario cambiar su nombre, correo o contraseña."""
+    user_id = get_jwt_identity()
+    usuario = usuario_actual()
+    error = None
+    exito = None
+
+    if request.method == 'POST':
+        accion = request.form.get('accion', '')
+
+        if accion == 'datos':
+            nuevo_nombre = request.form.get('nombre', '').strip()
+            nuevo_email = request.form.get('email', '').strip().lower()
+            confirm_datos = request.form.get('confirm_datos', '')
+            if not nuevo_nombre or not nuevo_email or not confirm_datos:
+                error = 'El nombre, el correo y la contraseña de confirmación son obligatorios.'
+            else:
+                # Verificar contraseña antes de permitir cambios de datos personales
+                cur = mysql.connection.cursor()
+                cur.execute("SELECT password_hash FROM usuarios WHERE id=%s", (user_id,))
+                row = cur.fetchone()
+                cur.close()
+                if not row or not bcrypt.check_password_hash(row['password_hash'], confirm_datos):
+                    error = 'La contraseña no es correcta. Los datos no fueron modificados.'
+                else:
+                    try:
+                        cur = mysql.connection.cursor()
+                        cur.execute(
+                            "UPDATE usuarios SET nombre=%s, email=%s WHERE id=%s",
+                            (nuevo_nombre, nuevo_email, user_id)
+                        )
+                        mysql.connection.commit()
+                        cur.close()
+                        exito = 'Datos actualizados correctamente.'
+                        usuario = usuario_actual()
+                    except Exception as e:
+                        if hasattr(e, 'args') and e.args and e.args[0] == 1062:
+                            error = 'Ese correo ya está registrado por otra cuenta.'
+                        else:
+                            error = 'Error al actualizar los datos. Intenta de nuevo.'
+
+        elif accion == 'password':
+            actual = request.form.get('password_actual', '')
+            nueva = request.form.get('password_nueva', '')
+            confirma = request.form.get('password_confirma', '')
+            if not actual or not nueva or not confirma:
+                error = 'Completa todos los campos de contraseña.'
+            elif nueva != confirma:
+                error = 'La nueva contraseña y su confirmación no coinciden.'
+            elif len(nueva) < 8:
+                error = 'La nueva contraseña debe tener al menos 8 caracteres.'
+            else:
+                cur = mysql.connection.cursor()
+                cur.execute("SELECT password_hash FROM usuarios WHERE id=%s", (user_id,))
+                row = cur.fetchone()
+                cur.close()
+                if not row or not bcrypt.check_password_hash(row['password_hash'], actual):
+                    error = 'La contraseña actual no es correcta.'
+                else:
+                    nuevo_hash = bcrypt.generate_password_hash(nueva).decode('utf-8')
+                    cur = mysql.connection.cursor()
+                    cur.execute("UPDATE usuarios SET password_hash=%s WHERE id=%s", (nuevo_hash, user_id))
+                    mysql.connection.commit()
+                    cur.close()
+                    exito = 'Contraseña actualizada correctamente.'
+
+    return render_template('configuracion.html', usuario=usuario, error=error, exito=exito)
+
+
 @main.route('/favoritos/eliminar/<int:producto_id>', methods=['POST'])
 @jwt_required()
 def eliminar_favorito(producto_id):
@@ -493,99 +612,223 @@ ESTADOS_MX = [
 ]
 
 
+@main.route('/checkout', methods=['GET', 'POST'])
 @main.route('/checkout/<int:producto_id>', methods=['GET', 'POST'])
-def checkout(producto_id):
-    """Formulario de compra directa para un producto.
-    GET:  muestra el formulario con los datos del producto.
-    POST: valida, guarda el pedido en BD y redirige a la confirmación."""
-
-    # Obtener el producto; si no existe o está inactivo devuelve 404
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT id, nombre, descripcion_ia, imagen_url, precio_referencia, uso "
-        "FROM productos WHERE id = %s AND activo = 1",
-        (producto_id,)
-    )
-    producto = cur.fetchone()
-    cur.close()
-
-    if not producto:
-        from flask import abort
-        abort(404)
+def checkout(producto_id=None):
+    """Formulario de compra. Soporta:
+    - Un solo producto (desde botón "Comprar aquí")
+    - Múltiples productos del carrito (campo JSON 'carrito_items')"""
+    import json as _json
+    import re as _re
 
     usuario = usuario_actual()
 
+    # Usuarios no registrados no pueden hacer pedidos
+    if not usuario:
+        return redirect(url_for('main.login'))
+
+    # ── Leer items: carrito JSON o producto individual ────────────────
+    carrito_items = []   # [{id, nombre, precio, imagen, cantidad}, ...]
+
     if request.method == 'POST':
-        # Recoger y limpiar los datos del formulario
+        raw = request.form.get('carrito_items', '').strip()
+        if raw:
+            try:
+                carrito_items = _json.loads(raw)
+            except Exception:
+                carrito_items = []
+
+        # Si viene de producto individual sin JSON del carrito
+        if not carrito_items and producto_id:
+            cantidad = request.form.get('cantidad', 1, type=int)
+            carrito_items = [{'id': producto_id, 'cantidad': max(1, cantidad)}]
+
+    else:  # GET
+        raw = request.args.get('carrito_items', '').strip()
+        if raw:
+            try:
+                carrito_items = _json.loads(raw)
+            except Exception:
+                carrito_items = []
+        if not carrito_items and producto_id:
+            carrito_items = [{'id': producto_id, 'cantidad': 1}]
+
+    if not carrito_items:
+        return redirect(url_for('main.carrito'))
+
+    # ── Validar stock de todos los items antes de mostrar el formulario ──
+    cur = mysql.connection.cursor()
+    productos_validos = []
+    productos_sin_stock = []
+
+    for item in carrito_items:
+        pid = int(item.get('id', 0))
+        qty = int(item.get('cantidad', 1))
+        cur.execute(
+            "SELECT id, nombre, imagen_url, precio_referencia, uso, activo, "
+            "COALESCE(stock,0) AS stock "
+            "FROM productos WHERE id = %s",
+            (pid,)
+        )
+        p = cur.fetchone()
+        if not p or not p['activo']:
+            continue
+        if p['stock'] < qty:
+            # Si hay algo pero menos de lo pedido, ajustar o marcar sin stock
+            if p['stock'] > 0:
+                qty = p['stock']   # da lo que hay
+            else:
+                productos_sin_stock.append(p['nombre'])
+                continue
+        item['cantidad'] = qty
+        item['nombre']   = item.get('nombre') or p['nombre']
+        item['precio']   = float(p['precio_referencia']) if p.get('precio_referencia') else 0
+        item['imagen']   = item.get('imagen') or p.get('imagen_url') or ''
+        productos_validos.append({'producto': p, 'item': item})
+
+    cur.close()
+
+    if not productos_validos:
+        return redirect(url_for('main.carrito'))
+
+    # Producto "principal" para mostrar en el resumen (primer item)
+    producto_principal = productos_validos[0]['producto']
+
+    if request.method == 'POST':
         nombre_comprador = request.form.get('nombre_comprador', '').strip()
         telefono         = request.form.get('telefono', '').strip()
         direccion        = request.form.get('direccion', '').strip()
         ciudad           = request.form.get('ciudad', '').strip()
         estado_mx        = request.form.get('estado_mx', '').strip()
-        cantidad         = request.form.get('cantidad', 1, type=int)
 
-        # Guardar los valores para repoblar el formulario si hay error
         form_data = {
             'nombre_comprador': nombre_comprador,
             'telefono': telefono,
             'direccion': direccion,
             'ciudad': ciudad,
             'estado_mx': estado_mx,
-            'cantidad': cantidad,
+            'carrito_items': _json.dumps(carrito_items),
         }
 
-        # Validaciones básicas de campos obligatorios
         if not nombre_comprador or not telefono or not direccion or not ciudad or not estado_mx:
             return render_template('checkout.html',
-                                   producto=producto,
+                                   producto=producto_principal,
+                                   productos_validos=productos_validos,
+                                   productos_sin_stock=productos_sin_stock,
                                    usuario=usuario,
                                    estados_mx=ESTADOS_MX,
                                    form=form_data,
                                    error='Por favor completa todos los campos obligatorios.')
 
-        if cantidad < 1 or cantidad > 99:
-            cantidad = 1
+        # Validaciones de datos reales
+        import re as _re
+        if len(nombre_comprador) < 3 or not _re.search(r'[a-záéíóúñA-ZÁÉÍÓÚÑ]', nombre_comprador):
+            return render_template('checkout.html',
+                                   producto=producto_principal,
+                                   productos_validos=productos_validos,
+                                   productos_sin_stock=productos_sin_stock,
+                                   usuario=usuario,
+                                   estados_mx=ESTADOS_MX,
+                                   form=form_data,
+                                   error='El nombre debe tener al menos 3 caracteres y contener letras.')
+        if not _re.match(r'^[\d\s\+\-\(\)]{7,20}$', telefono):
+            return render_template('checkout.html',
+                                   producto=producto_principal,
+                                   productos_validos=productos_validos,
+                                   productos_sin_stock=productos_sin_stock,
+                                   usuario=usuario,
+                                   estados_mx=ESTADOS_MX,
+                                   form=form_data,
+                                   error='El teléfono debe contener entre 7 y 20 dígitos.')
+        if len(direccion) < 8:
+            return render_template('checkout.html',
+                                   producto=producto_principal,
+                                   productos_validos=productos_validos,
+                                   productos_sin_stock=productos_sin_stock,
+                                   usuario=usuario,
+                                   estados_mx=ESTADOS_MX,
+                                   form=form_data,
+                                   error='La dirección parece demasiado corta. Incluye calle, número y colonia.')
+        if len(ciudad) < 3:
+            return render_template('checkout.html',
+                                   producto=producto_principal,
+                                   productos_validos=productos_validos,
+                                   productos_sin_stock=productos_sin_stock,
+                                   usuario=usuario,
+                                   estados_mx=ESTADOS_MX,
+                                   form=form_data,
+                                   error='Ingresa el nombre completo de tu ciudad.')
 
-        # Calcular totales a partir del precio de referencia del producto
-        precio_unitario = float(producto['precio_referencia']) if producto.get('precio_referencia') else None
-        total = round(precio_unitario * cantidad, 2) if precio_unitario else None
-
-        # Insertar el pedido en la BD; usuario_id puede ser NULL si no hay sesión
+        # ── Insertar pedidos y descontar stock atómicamente ───────────
+        pedidos_ids = []
         try:
             cur = mysql.connection.cursor()
-            cur.execute("""
-                INSERT INTO pedidos
-                  (usuario_id, producto_id, canal,
-                   nombre_comprador, telefono, direccion, ciudad, estado_mx,
-                   cantidad, precio_unitario, total, estado_pedido)
-                VALUES (%s, %s, 'directo', %s, %s, %s, %s, %s, %s, %s, %s, 'pendiente')
-            """, (
-                usuario['id'] if usuario else None,
-                producto_id,
-                nombre_comprador, telefono, direccion, ciudad, estado_mx,
-                cantidad, precio_unitario, total,
-            ))
+            for entry in productos_validos:
+                p   = entry['producto']
+                qty = entry['item']['cantidad']
+                precio_unit = float(p['precio_referencia']) if p.get('precio_referencia') else None
+                total       = round(precio_unit * qty, 2) if precio_unit else None
+
+                # Verificar stock en el momento exacto de la compra (concurrencia)
+                cur.execute(
+                    "SELECT COALESCE(stock,0) AS stock FROM productos WHERE id = %s FOR UPDATE",
+                    (p['id'],)
+                )
+                stock_actual = cur.fetchone()['stock']
+                if stock_actual < qty:
+                    qty = stock_actual  # ajusta a lo disponible
+                if qty <= 0:
+                    continue  # otro usuario se adelantó, se omite este item
+
+                # Insertar el pedido
+                cur.execute("""
+                    INSERT INTO pedidos
+                      (usuario_id, producto_id, canal,
+                       nombre_comprador, telefono, direccion, ciudad, estado_mx,
+                       cantidad, precio_unitario, total, estado_pedido)
+                    VALUES (%s, %s, 'directo', %s, %s, %s, %s, %s, %s, %s, %s, 'pendiente')
+                """, (
+                    usuario['id'] if usuario else None,
+                    p['id'],
+                    nombre_comprador, telefono, direccion, ciudad, estado_mx,
+                    qty, precio_unit, total,
+                ))
+                pedido_id = cur.lastrowid
+                pedidos_ids.append(pedido_id)
+
+                # Descontar stock inmediatamente
+                cur.execute(
+                    "UPDATE productos SET stock = GREATEST(0, stock - %s) WHERE id = %s",
+                    (qty, p['id'])
+                )
+
             mysql.connection.commit()
-            pedido_id = cur.lastrowid  # ID del pedido recién creado
             cur.close()
         except Exception as e:
+            mysql.connection.rollback()
             print(f"[ERROR CHECKOUT] {type(e).__name__}: {e}")
             return render_template('checkout.html',
-                                   producto=producto,
+                                   producto=producto_principal,
+                                   productos_validos=productos_validos,
+                                   productos_sin_stock=productos_sin_stock,
                                    usuario=usuario,
                                    estados_mx=ESTADOS_MX,
                                    form=form_data,
                                    error='Ocurrió un error al registrar tu pedido. Intenta de nuevo.')
 
-        # Redirigir a la página de confirmación con el ID del pedido recién creado
-        return redirect(url_for('main.confirmacion_pedido', pedido_id=pedido_id))
+        if not pedidos_ids:
+            return redirect(url_for('main.carrito'))
 
-    # GET: mostrar el formulario vacío
+        return redirect(url_for('main.confirmacion_pedido', pedido_id=pedidos_ids[0]))
+
+    # GET
     return render_template('checkout.html',
-                           producto=producto,
+                           producto=producto_principal,
+                           productos_validos=productos_validos,
+                           productos_sin_stock=productos_sin_stock,
                            usuario=usuario,
                            estados_mx=ESTADOS_MX,
-                           form={})
+                           form={'carrito_items': _json.dumps(carrito_items)})
 
 
 @main.route('/pedido/confirmacion/<int:pedido_id>')
@@ -613,21 +856,54 @@ def confirmacion_pedido(pedido_id):
 
 
 @main.route('/mis-pedidos')
-@jwt_required()
 def mis_pedidos():
-    """Historial de pedidos del usuario autenticado, ordenado del más reciente al más antiguo."""
-    user_id = get_jwt_identity()
+    """Historial de pedidos del usuario, agrupando items de la misma compra."""
+    usuario = usuario_actual()
+    if not usuario:
+        return redirect(url_for('main.login'))
+    user_id = usuario['id']
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT pd.id, pd.cantidad, pd.total, pd.estado_pedido, pd.created_at,
+               pd.nombre_comprador, pd.telefono, pd.direccion, pd.ciudad, pd.estado_mx,
                pr.nombre AS nombre_producto, pr.imagen_url
         FROM pedidos pd
         JOIN productos pr ON pd.producto_id = pr.id
         WHERE pd.usuario_id = %s
         ORDER BY pd.created_at DESC
     """, (user_id,))
-    pedidos = cur.fetchall()
+    rows = cur.fetchall()
     cur.close()
+
+    # Agrupar items comprados en la misma sesión (mismo comprador, mismos 10 minutos)
+    from collections import OrderedDict
+    ventas = OrderedDict()
+    for p in rows:
+        minuto_base = (p['created_at'].hour * 60 + p['created_at'].minute) // 10 if p['created_at'] else 0
+        fecha_dia = str(p['created_at'].date()) if p['created_at'] else 'nd'
+        vkey = f"{fecha_dia}|{minuto_base}"
+        if vkey not in ventas:
+            ventas[vkey] = {
+                'id_principal': p['id'],
+                'estado_pedido': p['estado_pedido'],
+                'created_at': p['created_at'],
+                'nombre_comprador': p['nombre_comprador'],
+                'telefono': p['telefono'],
+                'direccion': p['direccion'],
+                'ciudad': p['ciudad'],
+                'estado_mx': p['estado_mx'],
+                'items': [],  # kept for compatibility
+                'productos': [],
+                'total': 0.0,
+            }
+        ventas[vkey]['productos'].append({
+            'nombre_producto': p['nombre_producto'],
+            'imagen_url': p['imagen_url'],
+            'cantidad': p['cantidad'],
+            'total': float(p['total']) if p['total'] else 0.0,
+        })
+        ventas[vkey]['total'] += float(p['total']) if p['total'] else 0.0
+
     return render_template('usuarioregistrado-pedidos.html',
-                           pedidos=pedidos,
-                           usuario=usuario_actual())
+                           ventas=list(ventas.values()),
+                           usuario=usuario)
