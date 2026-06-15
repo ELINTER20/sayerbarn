@@ -175,7 +175,8 @@
                                data-nombre="{{ producto.nombre }}"
                                data-precio="{{ producto.precio_referencia or 0 }}"
                                data-imagen="{{ producto.imagen_url or '' }}"
-                               onclick="agregarAlCarrito(this.dataset.id, this.dataset.nombre, this.dataset.precio, this.dataset.imagen)"
+                               data-stock="{{ producto.stock }}"
+                               onclick="agregarAlCarrito(this.dataset.id, this.dataset.nombre, this.dataset.precio, this.dataset.imagen, this.dataset.stock)"
                                class="w-full font-label-md text-label-md text-primary border border-primary/40 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5">
                                 <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
                                 Agregar al carrito

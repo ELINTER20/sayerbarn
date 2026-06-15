@@ -210,12 +210,14 @@
     input.addEventListener('input', function () {
         var url = input.value.trim();
         if (url) {
+            // Ocultar mientras carga — solo mostrar cuando la imagen responda OK
+            preview.classList.add('hidden');
             imgTag.src = url;
-            preview.classList.remove('hidden');
+            imgTag.onload  = function () { preview.classList.remove('hidden'); };
             imgTag.onerror = function () { preview.classList.add('hidden'); };
-            imgTag.onload = function () { preview.classList.remove('hidden'); };
         } else {
             preview.classList.add('hidden');
+            imgTag.src = '';
         }
     });
 

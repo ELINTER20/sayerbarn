@@ -358,7 +358,7 @@
                 el.classList.toggle('hidden', total === 0);
             });
         }
-        function agregarAlCarrito(id, nombre, precio, imagen) {
+        function agregarAlCarrito(id, nombre, precio, imagen, stock) {
             {% if not usuario %}
             // Usuario no logueado: mostrar aviso y redirigir al login
             var toast = document.getElementById('carrito-toast');
@@ -372,10 +372,30 @@
             }, 1800);
             return;
             {% endif %}
+            var stockMax = parseInt(stock) || 0;
+            if (stockMax <= 0) return; // sin stock, no agregar
             var carrito = obtenerCarrito();
             var idx = carrito.findIndex(function(i) { return i.id == id; });
-            if (idx >= 0) { carrito[idx].cantidad++; }
-            else { carrito.push({ id: id, nombre: nombre, precio: parseFloat(precio) || 0, imagen: imagen, cantidad: 1 }); }
+            if (idx >= 0) {
+                // Respetar el máximo de stock
+                if (carrito[idx].cantidad < stockMax) {
+                    carrito[idx].cantidad++;
+                    carrito[idx].stock = stockMax; // actualizar por si cambió
+                } else {
+                    // Ya está en el límite — mostrar aviso
+                    var toast = document.getElementById('carrito-toast');
+                    toast.textContent = '⚠ Solo hay ' + stockMax + ' unidad' + (stockMax !== 1 ? 'es' : '') + ' disponible' + (stockMax !== 1 ? 's' : '');
+                    toast.classList.remove('opacity-0', 'translate-y-2');
+                    toast.classList.add('opacity-100', 'translate-y-0');
+                    setTimeout(function() {
+                        toast.classList.remove('opacity-100', 'translate-y-0');
+                        toast.classList.add('opacity-0', 'translate-y-2');
+                    }, 2500);
+                    return;
+                }
+            } else {
+                carrito.push({ id: id, nombre: nombre, precio: parseFloat(precio) || 0, imagen: imagen, cantidad: 1, stock: stockMax });
+            }
             guardarCarrito(carrito);
             var toast = document.getElementById('carrito-toast');
             toast.textContent = '✓ "' + nombre + '" agregado al carrito';

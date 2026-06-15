@@ -62,7 +62,7 @@
                     <td class="py-3 px-6">
                         <div class="flex items-center gap-1.5">
                             <input type="number" min="0"
-                                   value="{{ prod.stock }}"
+                                   value="{{ prod.stock or 0 }}"
                                    data-id="{{ prod.id }}"
                                    class="stock-input w-16 text-center border border-outline-variant rounded-lg px-2 py-1 font-body-md text-body-md text-on-surface bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
                             <span class="stock-ok-{{ prod.id }} text-green-600 material-symbols-outlined text-[16px] hidden" style="font-variation-settings:'FILL' 1;">check_circle</span>
