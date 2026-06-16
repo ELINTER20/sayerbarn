@@ -123,20 +123,20 @@
     <header class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
         <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Logo -->
-            <a href="{{ url_for('main.index') }}" class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</a>
+            <a href="{{ url_for('public.index') }}" class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</a>
             <!-- Navegación escritorio -->
             <nav class="hidden md:flex space-x-gutter">
-                <a href="{{ url_for('main.index') }}"
+                <a href="{{ url_for('public.index') }}"
                    class="font-label-md text-label-md pb-1 transition-colors
                           {% if request.endpoint == 'main.index' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
                     Inicio
                 </a>
-                <a href="{{ url_for('main.asesoria') }}"
+                <a href="{{ url_for('public.asesoria') }}"
                    class="font-label-md text-label-md pb-1 transition-colors
                           {% if request.endpoint in ['main.asesoria', 'main.resultado_asesoria'] %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
                     Asesoría
                 </a>
-                <a href="{{ url_for('main.catalogo') }}"
+                <a href="{{ url_for('public.catalogo') }}"
                    class="font-label-md text-label-md pb-1 transition-colors
                           {% if request.endpoint in ['main.catalogo', 'main.detalle_producto'] %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
                     Catálogo
@@ -148,7 +148,7 @@
                     <span class="theme-icon material-symbols-outlined text-[22px]">dark_mode</span>
                 </button>
                 {% if usuario %}
-                <a href="{{ url_for('main.carrito') }}" class="relative p-2 rounded-full text-primary hover:bg-surface-container-high transition-colors" title="Carrito">
+                <a href="{{ url_for('public.carrito') }}" class="relative p-2 rounded-full text-primary hover:bg-surface-container-high transition-colors" title="Carrito">
                     <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
                 </a>
@@ -163,13 +163,13 @@
                             <p class="font-body-md text-body-md text-on-surface-variant text-sm">{{ usuario.email }}</p>
                         </div>
                         <div class="py-1">
-                            <a href="{{ url_for('main.mi_cuenta') }}"
+                            <a href="{{ url_for('usuario.mi_cuenta') }}"
                                class="flex items-center gap-2 px-4 py-3 text-on-surface hover:bg-surface-container-low transition-colors font-label-md text-label-md border-b border-outline-variant">
                                 <span class="material-symbols-outlined text-[18px] text-primary">manage_accounts</span>
                                 Mi cuenta
                             </a>
                         </div>
-                        <form method="POST" action="{{ url_for('main.logout') }}" class="w-full">
+                        <form method="POST" action="{{ url_for('auth.logout') }}" class="w-full">
                             <button type="submit" class="flex items-center space-x-2 px-4 py-3 text-error hover:bg-error-container/20 transition-colors font-label-md text-label-md w-full text-left">
                                 <span class="material-symbols-outlined">logout</span>
                                 <span>Cerrar sesión</span>
@@ -178,11 +178,11 @@
                     </div>
                 </div>
                 {% else %}
-                <a href="{{ url_for('main.login') }}"
+                <a href="{{ url_for('auth.login') }}"
                    class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200">
                     Iniciar sesión
                 </a>
-                <a href="{{ url_for('main.registro') }}"
+                <a href="{{ url_for('auth.registro') }}"
                    class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity">
                     Registrarse
                 </a>
@@ -194,7 +194,7 @@
                     <span class="theme-icon material-symbols-outlined text-[22px]">dark_mode</span>
                 </button>
                 {% if usuario %}
-                <a href="{{ url_for('main.carrito') }}" class="relative p-1 text-primary" title="Carrito">
+                <a href="{{ url_for('public.carrito') }}" class="relative p-1 text-primary" title="Carrito">
                     <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-error text-on-error text-[9px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
                 </a>
@@ -368,7 +368,7 @@
             setTimeout(function() {
                 toast.classList.remove('opacity-100', 'translate-y-0');
                 toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(function() { window.location.href = '{{ url_for("main.login") }}'; }, 300);
+                setTimeout(function() { window.location.href = '{{ url_for("auth.login") }}'; }, 300);
             }, 1800);
             return;
             {% endif %}

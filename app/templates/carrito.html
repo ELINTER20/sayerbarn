@@ -13,7 +13,7 @@
         <span class="material-symbols-outlined text-[72px] text-outline-variant">shopping_cart</span>
         <h2 class="font-headline-md text-on-surface">Tu carrito está vacío</h2>
         <p class="font-body-md text-on-surface-variant">Agrega productos desde el catálogo para comenzar.</p>
-        <a href="{{ url_for('main.catalogo') }}"
+        <a href="{{ url_for('public.catalogo') }}"
            class="mt-2 font-label-md text-label-md bg-primary text-on-primary px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
             Ver catálogo
         </a>
@@ -40,7 +40,7 @@
                     <span class="material-symbols-outlined text-[18px]">payment</span>
                     Proceder al pago
                 </button>
-                <a href="{{ url_for('main.catalogo') }}"
+                <a href="{{ url_for('public.catalogo') }}"
                    class="w-full font-label-md text-label-md text-primary border border-primary/40 px-6 py-2.5 rounded-lg hover:bg-primary/5 transition-colors text-center">
                     Seguir comprando
                 </a>
@@ -165,13 +165,13 @@
         if (carrito.length === 0) return;
         {% if not usuario %}
         // Usuario no logueado: redirigir al login
-        window.location.href = '{{ url_for("main.login") }}?next={{ url_for("main.carrito") | urlencode }}';
+        window.location.href = '{{ url_for("auth.login") }}?next={{ url_for("public.carrito") | urlencode }}';
         return;
         {% endif %}
         // Pasar todos los items como JSON al checkout
         var form = document.createElement('form');
         form.method = 'POST';
-        form.action = '{{ url_for("main.checkout") }}';
+        form.action = '{{ url_for("pedidos.checkout") }}';
         var input = document.createElement('input');
         input.type = 'hidden';
         input.name = 'carrito_items';

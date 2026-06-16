@@ -208,8 +208,14 @@
     function mostrarRecomendacionInline(data) {
         $('footer-actions').classList.add('hidden');
         $('progress-bar').style.width = '100%';
-        const complementoHTML = data.complemento
+        // Ignorar el string "null" que la IA puede devolver literalmente
+        const tieneComplemento = data.complemento && data.complemento !== 'null' && data.complemento !== 'ninguno';
+        const complementoHTML = tieneComplemento
             ? '<span class="bg-surface-container text-on-surface-variant font-label-md text-label-md px-4 py-2 rounded-full">+ ' + data.complemento + '</span>'
+            : '';
+        // Mostrar litros solo si es un numero valido
+        const litrosHTML = (data.litros && data.litros !== 'null')
+            ? '<span class="bg-primary/10 text-primary font-label-md text-label-md px-4 py-2 rounded-full">🧴 ' + data.litros + ' litros estimados</span>'
             : '';
         $('pasos-container').innerHTML =
             '<div class="flex flex-col gap-unit-md">' +
@@ -218,7 +224,7 @@
                 '<p class="font-label-sm text-label-sm text-outline mb-unit-xs">' + data.clave + '</p>' +
                 '<p class="font-body-lg text-body-lg text-on-surface-variant">' + data.mensaje + '</p>' +
                 '<div class="flex flex-wrap gap-unit-sm mt-unit-xs">' +
-                    '<span class="bg-primary/10 text-primary font-label-md text-label-md px-4 py-2 rounded-full">🧴 ' + data.litros + ' litros estimados</span>' +
+                    litrosHTML +
                     complementoHTML +
                 '</div>' +
                 '<button onclick="reiniciar()" class="mt-unit-md font-label-md text-label-md text-primary border border-primary/30 px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors w-fit">Nueva consulta</button>' +

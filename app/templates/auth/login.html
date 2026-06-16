@@ -15,7 +15,7 @@
                 <p class="font-body-md text-body-md text-on-surface-variant mt-2">Bienvenido de nuevo</p>
             </div>
             <!-- Formulario -->
-            <form action="{{ url_for('main.login') }}" method="POST" class="w-full flex flex-col gap-unit-md">
+            <form action="{{ url_for('auth.login') }}" method="POST" class="w-full flex flex-col gap-unit-md">
                 <div class="flex flex-col gap-unit-xs">
                     <label class="font-label-sm text-label-sm text-on-surface-variant" for="email">Correo electrónico</label>
                     <div class="relative">
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="flex justify-end w-full mt-1 mb-2">
-                    <a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="{{ url_for('main.recuperar_password') }}">¿Olvidaste tu contraseña?</a>
+                    <a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="{{ url_for('auth.recuperar_password') }}">¿Olvidaste tu contraseña?</a>
                 </div>
                 {% if error %}
                 <div class="bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg">{{ error }}</div>
@@ -60,7 +60,7 @@
             <div class="text-center w-full">
                 <p class="font-body-md text-body-md text-on-surface">
                     ¿No tienes cuenta?
-                    <a class="font-label-md text-label-md text-primary font-bold hover:underline" href="{{ url_for('main.registro') }}">Regístrate</a>
+                    <a class="font-label-md text-label-md text-primary font-bold hover:underline" href="{{ url_for('auth.registro') }}">Regístrate</a>
                 </p>
             </div>
         </div>

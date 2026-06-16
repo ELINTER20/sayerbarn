@@ -23,7 +23,7 @@ def admin_required(f):
                 abort(403)
         except Exception:
             # Si no hay sesión válida, redirige al login
-            return redirect(url_for('main.login'))
+            return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
     return decorated
 

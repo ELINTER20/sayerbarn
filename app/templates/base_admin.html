@@ -125,7 +125,7 @@
             </a>
         </nav>
         <div class="mt-auto">
-            <form action="{{ url_for('main.logout') }}" method="POST">
+            <form action="{{ url_for('auth.logout') }}" method="POST">
                 <button type="submit" class="w-full flex items-center gap-3 px-4 py-2 text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container transition-colors rounded-lg">
                     <span class="material-symbols-outlined">logout</span>
                     <span class="font-label-md text-label-md">Cerrar sesión</span>

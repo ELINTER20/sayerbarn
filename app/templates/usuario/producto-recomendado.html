@@ -66,7 +66,7 @@
                 </div>
                 <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
                     <!-- Compra directa en SayerBarn -->
-                    <a href="{{ url_for('main.checkout', producto_id=resultado.producto_id) }}"
+                    <a href="{{ url_for('pedidos.checkout', producto_id=resultado.producto_id) }}"
                        class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
                         Comprar aquí
@@ -85,7 +85,7 @@
                         Ficha técnica
                     </a>
                     {% endif %}
-                    <a href="{{ url_for('main.asesoria') }}"
+                    <a href="{{ url_for('public.asesoria') }}"
                        class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline underline-offset-4 px-4 py-3">
                         <span class="material-symbols-outlined">refresh</span>
                         Nueva asesoría
@@ -139,7 +139,7 @@
             <p class="font-body-md text-body-md text-on-surface-variant mb-unit-md max-w-md mx-auto">
                 Puedes ver esta y otras recomendaciones en tu historial de asesorías.
             </p>
-            <a href="{{ url_for('main.historial') }}"
+            <a href="{{ url_for('usuario.historial') }}"
                class="inline-flex font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
                 Ver mi historial
             </a>
@@ -149,8 +149,8 @@
                 Crea una cuenta o inicia sesión para tener a mano tus productos recomendados.
             </p>
             <div class="flex flex-wrap justify-center gap-unit-md">
-                <a href="{{ url_for('main.login') }}" class="font-label-md text-label-md bg-transparent text-primary hover:bg-surface-container-high/50 px-6 py-2.5 rounded-lg border border-primary/20 transition-all duration-200">Iniciar sesión</a>
-                <a href="{{ url_for('main.registro') }}" class="font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Registrarse</a>
+                <a href="{{ url_for('auth.login') }}" class="font-label-md text-label-md bg-transparent text-primary hover:bg-surface-container-high/50 px-6 py-2.5 rounded-lg border border-primary/20 transition-all duration-200">Iniciar sesión</a>
+                <a href="{{ url_for('auth.registro') }}" class="font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Registrarse</a>
             </div>
             {% endif %}
         </div>

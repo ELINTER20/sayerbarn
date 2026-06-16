@@ -6,7 +6,7 @@
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 mb-unit-lg">
-        <a href="{{ url_for('main.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
+        <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
         <span class="font-label-md text-label-md text-primary font-bold">Historial de asesorías</span>
     </nav>
@@ -91,7 +91,7 @@
             <div class="flex flex-col items-center justify-center py-16 gap-4 text-on-surface-variant">
                 <span class="material-symbols-outlined text-[56px]">history</span>
                 <p class="font-body-lg text-body-lg">No tienes asesorías registradas aún.</p>
-                <a href="{{ url_for('main.asesoria') }}"
+                <a href="{{ url_for('public.asesoria') }}"
                    class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
                     <span class="material-symbols-outlined text-[18px]">chat</span>
                     Iniciar asesoría

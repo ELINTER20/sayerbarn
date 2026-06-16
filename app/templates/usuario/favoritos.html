@@ -6,7 +6,7 @@
 
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 mb-unit-lg">
-        <a href="{{ url_for('main.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
+        <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
         <span class="font-label-md text-label-md text-primary font-bold">Favoritos</span>
     </nav>
@@ -30,7 +30,7 @@
                 <span class="material-symbols-outlined text-outline text-[56px]">water_drop</span>
                 {% endif %}
                 <!-- Botón eliminar favorito -->
-                <form method="POST" action="{{ url_for('main.eliminar_favorito', producto_id=prod.id) }}" class="absolute top-2 right-2">
+                <form method="POST" action="{{ url_for('usuario.eliminar_favorito', producto_id=prod.id) }}" class="absolute top-2 right-2">
                     <button type="submit" title="Quitar de favoritos"
                             class="w-8 h-8 rounded-full bg-surface/80 backdrop-blur-sm flex items-center justify-center hover:bg-error-container transition-colors">
                         <span class="material-symbols-outlined text-error text-[18px]" style="font-variation-settings:'FILL' 1;">favorite</span>
@@ -51,12 +51,12 @@
 
             <!-- Acciones -->
             <div class="px-4 pb-4 flex gap-2">
-                <a href="{{ url_for('main.detalle_producto', producto_id=prod.id) }}"
+                <a href="{{ url_for('public.detalle_producto', producto_id=prod.id) }}"
                    class="flex-1 py-2.5 text-center bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors text-sm">
                     Ver producto
                 </a>
                 {% if prod.activo %}
-                <a href="{{ url_for('main.checkout', producto_id=prod.id) }}"
+                <a href="{{ url_for('pedidos.checkout', producto_id=prod.id) }}"
                    class="flex-1 py-2.5 text-center bg-primary-container text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity text-sm">
                     Comprar
                 </a>
@@ -73,7 +73,7 @@
     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm flex flex-col items-center justify-center py-16 gap-4 text-on-surface-variant">
         <span class="material-symbols-outlined text-[56px]">favorite_border</span>
         <p class="font-body-lg text-body-lg">No tienes productos favoritos aún.</p>
-        <a href="{{ url_for('main.catalogo') }}"
+        <a href="{{ url_for('public.catalogo') }}"
            class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
             <span class="material-symbols-outlined text-[18px]">storefront</span>
             Explorar catálogo

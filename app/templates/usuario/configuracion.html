@@ -5,7 +5,7 @@
 <div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
 
     <nav class="flex items-center gap-2 mb-unit-lg">
-        <a href="{{ url_for('main.mi_cuenta') }}" class="font-label-md text-label-md text-primary hover:underline">Mi cuenta</a>
+        <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-label-md text-label-md text-primary hover:underline">Mi cuenta</a>
         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
         <span class="font-label-md text-label-md text-on-surface-variant">Configuración</span>
     </nav>
@@ -35,7 +35,7 @@
         <!-- Datos personales -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
             <div class="h-1 w-full bg-gradient-to-r from-primary to-primary-container"></div>
-            <form method="POST" action="{{ url_for('main.configuracion') }}" class="p-unit-lg flex flex-col gap-unit-md">
+            <form method="POST" action="{{ url_for('usuario.configuracion') }}" class="p-unit-lg flex flex-col gap-unit-md">
                 <input type="hidden" name="accion" value="datos">
                 <h2 class="font-headline-md text-headline-md text-on-surface">Datos personales</h2>
 
@@ -67,7 +67,7 @@
         <!-- Cambio de contraseña -->
         <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
             <div class="h-1 w-full bg-gradient-to-r from-primary to-primary-container"></div>
-            <form method="POST" action="{{ url_for('main.configuracion') }}" class="p-unit-lg flex flex-col gap-unit-md">
+            <form method="POST" action="{{ url_for('usuario.configuracion') }}" class="p-unit-lg flex flex-col gap-unit-md">
                 <input type="hidden" name="accion" value="password">
                 <h2 class="font-headline-md text-headline-md text-on-surface">Cambiar contraseña</h2>
 

@@ -67,12 +67,12 @@
                 <div>
                     <h3 class="font-label-md text-label-md text-on-surface mb-3">Tipo de producto</h3>
                     <div class="flex flex-col gap-2">
-                        <a href="{{ url_for('main.catalogo') }}"
+                        <a href="{{ url_for('public.catalogo') }}"
                            class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if not categoria_filtro %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
                             Todos
                         </a>
                         {% for cat in categorias %}
-                        <a href="{{ url_for('main.catalogo', categoria=cat.id) }}"
+                        <a href="{{ url_for('public.catalogo', categoria=cat.id) }}"
                            class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if categoria_filtro == cat.id %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
                             {{ cat.nombre }}
                         </a>
@@ -125,7 +125,7 @@
                         {% endif %}
                     </button>
                     {% else %}
-                    <a href="{{ url_for('main.login') }}" class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors" title="Inicia sesión para guardar favoritos">
+                    <a href="{{ url_for('auth.login') }}" class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors" title="Inicia sesión para guardar favoritos">
                         <span class="material-symbols-outlined text-[22px] text-outline">favorite_border</span>
                     </a>
                     {% endif %}
@@ -165,7 +165,7 @@
                         <p class="font-label-md text-label-md text-primary mb-3">Rendimiento: {{ producto.rendimiento_min }} m²/L</p>
                         {% endif %}
                         <div class="flex flex-col gap-2 mt-auto">
-                            <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}"
+                            <a href="{{ url_for('public.detalle_producto', producto_id=producto.id) }}"
                                class="w-full font-label-md text-label-md text-on-primary bg-primary-container px-4 py-2 rounded-full hover:bg-primary-container/90 transition-colors shadow-sm text-center">
                                 Ver producto
                             </a>
