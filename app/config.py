@@ -38,6 +38,14 @@ class Config:
     # API key de OpenAI para el asistente de asesoría con IA
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
+    # Mercado Pago — Checkout Pro
+    MP_PUBLIC_KEY   = os.getenv('MP_PUBLIC_KEY')   # Para el frontend (no se usa en Checkout Pro)
+    MP_ACCESS_TOKEN = os.getenv('MP_ACCESS_TOKEN') # Para crear preferencias desde el backend
+
+    # URL base pública — se usa para construir los links de retorno de MP
+    # En producción (Render) se lee del entorno; en local apunta a localhost
+    BASE_URL = os.getenv('BASE_URL', 'http://localhost:5000')
+
     # Configuración opcional de correo para recuperación de contraseña
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_PORT = int(os.getenv('MAIL_PORT', 587))

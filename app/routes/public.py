@@ -183,7 +183,7 @@ def info_producto(producto_id):
     complementos = cur.fetchall()
     cur.close()
     return render_template(
-        'producto-info.html',
+        'usuario/producto-info.html',
         producto=producto,
         complementos=complementos,
         usuario=usuario_actual()
