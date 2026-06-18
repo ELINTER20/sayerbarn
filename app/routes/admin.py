@@ -47,8 +47,8 @@ def dashboard():
     cur.execute("SELECT COUNT(*) as total FROM publicaciones_marketplace WHERE estado = 'publicado'")
     publicaciones_ml = cur.fetchone()['total']
 
-    # Cuenta pedidos pendientes de gestión (pendiente + pagado)
-    cur.execute("SELECT COUNT(*) as total FROM pedidos WHERE estado_pedido IN ('pendiente','pagado')")
+    # Cuenta pedidos que requieren gestión (solo confirmados con pago)
+    cur.execute("SELECT COUNT(*) as total FROM pedidos WHERE estado_pedido IN ('pagado','en_proceso')")
     pedidos_pendientes = cur.fetchone()['total']
 
     # Los 5 productos más recomendados por la IA en los últimos 7 días
@@ -371,13 +371,18 @@ def pedidos():
     }
     fecha_expr = fmt_map.get(periodo, fmt_map['dia'])
 
-    condiciones = ["1=1"]
+    # Por defecto solo mostramos pedidos con pago confirmado.
+    # El admin puede ver pendientes/cancelados usando el filtro de estado explícito.
+    condiciones = ["pd.estado_pedido NOT IN ('pendiente', 'cancelado')"]
     params = []
     if periodo == 'hoy':
         condiciones.append("DATE(pd.created_at) = CURDATE()")
     if filtro_estado:
-        condiciones.append("pd.estado_pedido = %s")
-        params.append(filtro_estado)
+        # Si el admin filtra explícitamente por un estado, lo respetamos sin restricción
+        condiciones = ["pd.estado_pedido = %s"]
+        params = [filtro_estado]
+        if periodo == 'hoy':
+            condiciones.append("DATE(pd.created_at) = CURDATE()")
     where = " AND ".join(condiciones)
 
     cur = mysql.connection.cursor()
@@ -496,13 +501,18 @@ def exportar_pedidos_pdf():
     }
     fecha_expr = fmt_map.get(periodo, fmt_map['dia'])
 
-    condiciones = ["1=1"]
+    # Por defecto solo mostramos pedidos con pago confirmado.
+    # El admin puede ver pendientes/cancelados usando el filtro de estado explícito.
+    condiciones = ["pd.estado_pedido NOT IN ('pendiente', 'cancelado')"]
     params = []
     if periodo == 'hoy':
         condiciones.append("DATE(pd.created_at) = CURDATE()")
     if filtro_estado:
-        condiciones.append("pd.estado_pedido = %s")
-        params.append(filtro_estado)
+        # Si el admin filtra explícitamente por un estado, lo respetamos sin restricción
+        condiciones = ["pd.estado_pedido = %s"]
+        params = [filtro_estado]
+        if periodo == 'hoy':
+            condiciones.append("DATE(pd.created_at) = CURDATE()")
     where = " AND ".join(condiciones)
 
     cur = mysql.connection.cursor()

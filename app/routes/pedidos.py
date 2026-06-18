@@ -350,18 +350,15 @@ def pago_pendiente():
 
 @pedidos_bp.route('/pago/fallido')
 def pago_fallido():
-    """MP redirige aquí cuando el pago fue rechazado o cancelado."""
+    """MP redirige aquí cuando el pago fue rechazado o cancelado.
+    Regresa al carrito con un aviso — el carrito sigue intacto en localStorage.
+    """
     external_reference = request.args.get('external_reference')
 
     if external_reference:
         _actualizar_estado_pedido(int(external_reference), 'cancelado')
 
-    return render_template(
-        'confirmacion_pedido.html',
-        pedido=_get_pedido(int(external_reference) if external_reference else None),
-        mensaje_mp='El pago no pudo procesarse. Puedes intentarlo de nuevo desde "Mis pedidos".',
-        usuario=usuario_actual()
-    )
+    return redirect(url_for('public.carrito', pago='fallido'))
 
 
 # ── Webhook de Mercado Pago ───────────────────────────────────

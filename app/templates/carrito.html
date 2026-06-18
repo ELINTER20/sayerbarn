@@ -8,6 +8,17 @@
         Mi carrito
     </h1>
 
+    <!-- Aviso de pago fallido (aparece cuando MP regresa con ?pago=fallido) -->
+    {% if request.args.get('pago') == 'fallido' %}
+    <div class="flex items-start gap-3 bg-error-container text-on-error-container rounded-xl px-5 py-4 mb-unit-md">
+        <span class="material-symbols-outlined text-[22px] mt-0.5 shrink-0">error</span>
+        <div>
+            <p class="font-label-lg text-label-lg font-medium">El pago no se pudo completar</p>
+            <p class="font-body-md text-body-md mt-0.5 opacity-80">Tu carrito sigue intacto. Puedes revisar tus datos de pago e intentarlo de nuevo.</p>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Carrito vacío -->
     <div id="carrito-vacio" class="hidden flex flex-col items-center justify-center py-unit-xl gap-unit-md text-center">
         <span class="material-symbols-outlined text-[72px] text-outline-variant">shopping_cart</span>
