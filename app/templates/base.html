@@ -84,7 +84,9 @@
         .btn-lift { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .btn-lift:hover { transform: translateY(-4px); box-shadow: 0px 8px 24px rgba(0,31,107,0.25) !important; }
         .btn-lift:active { transform: translateY(-2px); }
-        {% block extra_styles %}{% endblock %}
+    </style>
+    {% block extra_styles %}{% endblock %}
+    <style>
         /* === MODO OSCURO === */
         html.dark body{background-color:#0f172a;color:#e2e8f0}
         html.dark .bg-background,html.dark .bg-surface{background-color:#0f172a}
@@ -117,7 +119,9 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased"
+      data-usuario="{{ 'true' if usuario else 'false' }}"
+      data-login-url="{{ url_for('auth.login') }}">
 
     <!-- Navbar -->
     <header class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
@@ -234,15 +238,15 @@
     <!-- Modal de Contacto -->
     <div id="contacto-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="cerrarContacto()"></div>
-        <div class="relative w-full max-w-lg bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant overflow-hidden">
+        <div class="relative w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant overflow-hidden flex flex-col max-h-[90vh]">
 
             <!-- Header -->
-            <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-outline-variant flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <span class="material-symbols-outlined text-primary text-[24px]" style="font-variation-settings:'FILL' 1;">store</span>
                     <div>
-                        <h2 class="font-headline-sm text-on-surface">Sayer Dabet</h2>
-                        <p class="font-label-sm text-label-sm text-outline">Información de contacto</p>
+                        <h2 class="font-headline-md text-on-surface text-[20px] font-bold">Sayer Dabet</h2>
+                        <p class="font-label-sm text-label-sm text-outline">Sucursales e información de contacto</p>
                     </div>
                 </div>
                 <button onclick="cerrarContacto()" class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
@@ -250,89 +254,130 @@
                 </button>
             </div>
 
-            <!-- Contenido -->
-            <div class="px-6 py-5 flex flex-col gap-5">
+            <!-- Contenido scrolleable -->
+            <div class="px-6 py-5 flex flex-col gap-4 overflow-y-auto">
 
-                <!-- Teléfono -->
-                <div class="flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-primary text-[20px]">call</span>
-                    </div>
-                    <div>
-                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Teléfono</p>
-                        <a href="tel:+528001234567" class="font-body-lg text-on-surface hover:text-primary transition-colors">800 123 4567</a>
-                        <p class="font-body-sm text-on-surface-variant">Línea de atención a clientes</p>
-                    </div>
-                </div>
-
-                <hr class="border-outline-variant" />
-
-                <!-- Sucursales -->
-                <div class="flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-primary text-[20px]">location_on</span>
-                    </div>
-                    <div class="flex flex-col gap-3 w-full">
-                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Sucursales</p>
-
-                        <div>
-                            <p class="font-body-md text-on-surface font-semibold">Sucursal Norte</p>
-                            <p class="font-body-sm text-on-surface-variant">Av. Industrial 1230, Col. Industrial, CDMX</p>
-                            <a href="https://maps.google.com/?q=Sayer+Dabet" target="_blank" rel="noopener"
-                               class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline mt-1">
-                                <span class="material-symbols-outlined text-[14px]">map</span>
-                                Ver en Google Maps
-                            </a>
+                <!-- Horarios (aplica a todas las sucursales) -->
+                <div class="flex items-start gap-4 bg-surface-container-low rounded-lg p-4">
+                    <span class="material-symbols-outlined text-primary text-[22px] flex-shrink-0 mt-0.5">schedule</span>
+                    <div class="flex flex-col gap-1 w-full">
+                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Horarios de atención (todas las sucursales)</p>
+                        <div class="flex justify-between gap-8">
+                            <span class="font-body-md text-on-surface">Lunes – Viernes</span>
+                            <span class="font-body-md text-on-surface-variant">8:30 – 18:00</span>
                         </div>
-
-                        <div>
-                            <p class="font-body-md text-on-surface font-semibold">Sucursal Sur</p>
-                            <p class="font-body-sm text-on-surface-variant">Calz. de Tlalpan 4850, Col. Toriello Guerra, CDMX</p>
-                            <a href="https://maps.google.com/?q=Sayer+Dabet" target="_blank" rel="noopener"
-                               class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline mt-1">
-                                <span class="material-symbols-outlined text-[14px]">map</span>
-                                Ver en Google Maps
-                            </a>
+                        <div class="flex justify-between gap-8">
+                            <span class="font-body-md text-on-surface">Sábado</span>
+                            <span class="font-body-md text-on-surface-variant">8:30 – 15:00</span>
+                        </div>
+                        <div class="flex justify-between gap-8">
+                            <span class="font-body-md text-on-surface">Domingo</span>
+                            <span class="font-body-md text-on-surface-variant">Cerrado</span>
                         </div>
                     </div>
                 </div>
 
                 <hr class="border-outline-variant" />
 
-                <!-- Horarios -->
-                <div class="flex items-start gap-4">
-                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-primary text-[20px]">schedule</span>
+                <!-- Lista de sucursales -->
+                <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[18px]">location_on</span>
+                    Sucursales
+                </p>
+
+                <!-- SUC. CIMA -->
+                <div class="border border-outline-variant/50 rounded-lg p-4 flex flex-col gap-2">
+                    <p class="font-body-md text-on-surface font-bold">Suc. La Cima</p>
+                    <p class="font-body-sm text-on-surface-variant">La Cima 200, La Garita, 39620 Guerrero, Gro.</p>
+                    <div class="flex flex-wrap gap-3 mt-1">
+                        <a href="tel:+527202200916" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 720 220 0916
+                        </a>
+                        <a href="tel:+527445926545" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 592 6545
+                        </a>
+                        <a href="https://maps.app.goo.gl/tpX3hyWHDrYj1SzG7" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">map</span>Ver en Maps
+                        </a>
                     </div>
-                    <div>
-                        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Horarios de atención</p>
-                        <div class="flex flex-col gap-1">
-                            <div class="flex justify-between gap-8">
-                                <span class="font-body-md text-on-surface">Lunes – Viernes</span>
-                                <span class="font-body-md text-on-surface-variant">8:00 – 18:00</span>
-                            </div>
-                            <div class="flex justify-between gap-8">
-                                <span class="font-body-md text-on-surface">Sábado</span>
-                                <span class="font-body-md text-on-surface-variant">9:00 – 14:00</span>
-                            </div>
-                            <div class="flex justify-between gap-8">
-                                <span class="font-body-md text-on-surface">Domingo</span>
-                                <span class="font-body-md text-on-surface-variant">Cerrado</span>
-                            </div>
-                        </div>
+                </div>
+
+                <!-- SUC. ART27 -->
+                <div class="border border-outline-variant/50 rounded-lg p-4 flex flex-col gap-2">
+                    <p class="font-body-md text-on-surface font-bold">Suc. Artículo 27</p>
+                    <p class="font-body-sm text-on-surface-variant">Artículo 27 #3, Progreso, 39350 Acapulco de Juárez, Gro.</p>
+                    <div class="flex flex-wrap gap-3 mt-1">
+                        <a href="tel:+527299965629" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 729 996 5629
+                        </a>
+                        <a href="tel:+527444862840" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 486 2840
+                        </a>
+                        <a href="https://maps.google.com/?q=Sayer+Dabet+Articulo+27+Acapulco" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">map</span>Ver en Maps
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SUC. DIAMANTE -->
+                <div class="border border-outline-variant/50 rounded-lg p-4 flex flex-col gap-2">
+                    <p class="font-body-md text-on-surface font-bold">Suc. Diamante</p>
+                    <p class="font-body-sm text-on-surface-variant">Blvd. de las Naciones 75, La Poza, 39897 Acapulco de Juárez, Gro.</p>
+                    <div class="flex flex-wrap gap-3 mt-1">
+                        <a href="tel:+527444433357" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 744 443 3357
+                        </a>
+                        <a href="tel:+527449091941" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 909 1941
+                        </a>
+                        <a href="https://maps.google.com/?q=Sayer+Dabet+Diamante+Acapulco" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">map</span>Ver en Maps
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SUC. CALZADA -->
+                <div class="border border-outline-variant/50 rounded-lg p-4 flex flex-col gap-2">
+                    <p class="font-body-md text-on-surface font-bold">Suc. Calzada</p>
+                    <p class="font-body-sm text-on-surface-variant">Calz. Pie de la Cuesta S/N, Hab. Taxco, 39460 Acapulco de Juárez, Gro.</p>
+                    <div class="flex flex-wrap gap-3 mt-1">
+                        <a href="tel:+527445423204" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 744 542 3204
+                        </a>
+                        <a href="tel:+527444839321" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 483 9321
+                        </a>
+                        <a href="https://maps.google.com/?q=Sayer+Dabet+Calzada+Pie+de+la+Cuesta+Acapulco" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">map</span>Ver en Maps
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SUC. JARDIN -->
+                <div class="border border-outline-variant/50 rounded-lg p-4 flex flex-col gap-2">
+                    <p class="font-body-md text-on-surface font-bold">Suc. Jardín</p>
+                    <p class="font-body-sm text-on-surface-variant">Calz. Pie de la Cuesta S/N, Hab. Taxco, 39460 Acapulco de Juárez, Gro.</p>
+                    <div class="flex flex-wrap gap-3 mt-1">
+                        <a href="tel:+527441638527" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 744 163 8527
+                        </a>
+                        <a href="tel:+527444817260" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 481 7260
+                        </a>
+                        <a href="https://maps.google.com/?q=Sayer+Dabet+Jardin+Acapulco" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
+                            <span class="material-symbols-outlined text-[14px]">map</span>Ver en Maps
+                        </a>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Footer del modal -->
-            <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant">
-                <a href="mailto:contacto@sayerdabet.com"
-                   class="flex items-center justify-center gap-2 w-full font-label-md text-label-md text-primary border border-primary/40 px-4 py-2.5 rounded-lg hover:bg-primary/5 transition-colors">
-                    <span class="material-symbols-outlined text-[18px]">mail</span>
-                    contacto@sayerdabet.com
-                </a>
-            </div>
+
 
         </div>
     </div>
@@ -359,19 +404,22 @@
             });
         }
         function agregarAlCarrito(id, nombre, precio, imagen, stock) {
-            {% if not usuario %}
-            // Usuario no logueado: mostrar aviso y redirigir al login
-            var toast = document.getElementById('carrito-toast');
-            toast.textContent = 'Inicia sesión para agregar al carrito';
-            toast.classList.remove('opacity-0', 'translate-y-2');
-            toast.classList.add('opacity-100', 'translate-y-0');
-            setTimeout(function() {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(function() { window.location.href = '{{ url_for("auth.login") }}'; }, 300);
-            }, 1800);
-            return;
-            {% endif %}
+            var body = document.body;
+            var usuarioLogueado = body.dataset.usuario === 'true';
+            if (!usuarioLogueado) {
+                // Usuario no logueado: mostrar aviso y redirigir al login
+                var loginUrl = body.dataset.loginUrl;
+                var toast = document.getElementById('carrito-toast');
+                toast.textContent = 'Inicia sesión para agregar al carrito';
+                toast.classList.remove('opacity-0', 'translate-y-2');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                setTimeout(function() {
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(function() { window.location.href = loginUrl; }, 300);
+                }, 1800);
+                return;
+            }
             var stockMax = parseInt(stock) || 0;
             if (stockMax <= 0) return; // sin stock, no agregar
             var carrito = obtenerCarrito();
