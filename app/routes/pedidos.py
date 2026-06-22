@@ -17,6 +17,7 @@
 # ─────────────────────────────────────────────────────────────
 
 import json
+import requests
 import re
 import hmac
 import hashlib
@@ -143,6 +144,51 @@ def _actualizar_estado_pedido(pedido_id, nuevo_estado, mp_payment_id=None):
         print(f"[ERROR] _actualizar_estado_pedido: {e}")
     finally:
         cur.close()
+
+def _notificar_n8n(pedido_id):
+    """Dispara el webhook de n8n con los datos del pedido confirmado.
+
+    Se llama únicamente cuando el estado llega a 'pagado'.
+    Falla silenciosamente para no interrumpir el flujo del usuario.
+    """
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT pd.id, pd.nombre_comprador, pd.telefono,
+                   pd.ciudad, pd.estado_mx, pd.cantidad, pd.total,
+                   pr.nombre AS producto
+            FROM pedidos pd
+            JOIN productos pr ON pd.producto_id = pr.id
+            WHERE pd.id = %s
+        """, (pedido_id,))
+        pedido = cur.fetchone()
+        cur.close()
+
+        if not pedido:
+            return
+
+        payload = {
+            "pedido_id": str(pedido["id"]),
+            "nombre":    pedido["nombre_comprador"],
+            "telefono":  pedido["telefono"],
+            "producto":  pedido["producto"],
+            "cantidad":  str(pedido["cantidad"]),
+            "total":     str(pedido["total"]),
+            "ciudad":    pedido["ciudad"],
+            "estado":    pedido["estado_mx"],
+        }
+
+        n8n_url = current_app.config.get("N8N_WEBHOOK_URL")
+        if not n8n_url:
+            print("[N8N] N8N_WEBHOOK_URL no configurada, skip notificación")
+            return
+
+        resp = requests.post(n8n_url, json=payload, timeout=5)
+        print(f"[N8N] Notificación enviada → pedido={pedido_id} status={resp.status_code}")
+
+    except Exception as e:
+        # Nunca bloquear el flujo del usuario por un error de notificación
+        print(f"[N8N ERROR] _notificar_n8n pedido={pedido_id}: {e}")        
 
 
 # ── Checkout ──────────────────────────────────────────────────
@@ -312,18 +358,18 @@ def checkout(producto_id=None):
 
 @pedidos_bp.route('/pago/exitoso')
 def pago_exitoso():
-    """MP redirige aquí cuando el pago fue aprobado.
-
-    Actualiza el pedido a 'pagado' usando los parámetros que MP
-    manda en la URL (?payment_id=...&external_reference=...).
-    """
+    """MP redirige aquí cuando el pago fue aprobado."""
     payment_id         = request.args.get('payment_id')
-    external_reference = request.args.get('external_reference')  # nuestro pedido_id
+    external_reference = request.args.get('external_reference')
     estado_mp          = request.args.get('status', 'approved')
 
     if payment_id and external_reference:
         nuevo_estado = MP_ESTADO.get(estado_mp, 'pendiente')
         _actualizar_estado_pedido(int(external_reference), nuevo_estado, payment_id)
+
+        # Notificar a n8n solo si el pago quedó aprobado
+        if nuevo_estado == 'pagado':
+            _notificar_n8n(int(external_reference))
 
     pedido_id = int(external_reference) if external_reference else None
     return redirect(url_for('pedidos.confirmacion_pedido', pedido_id=pedido_id) if pedido_id
