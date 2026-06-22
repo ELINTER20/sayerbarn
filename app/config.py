@@ -46,6 +46,9 @@ class Config:
     # En producción (Render) se lee del entorno; en local apunta a localhost
     BASE_URL = os.getenv('BASE_URL', 'http://localhost:5000')
 
+    # URL del webhook de n8n para notificaciones de pedidos confirmados
+    N8N_WEBHOOK_URL = os.getenv('N8N_WEBHOOK_URL')
+
     # Configuración opcional de correo para recuperación de contraseña
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
