@@ -125,9 +125,9 @@
 
     <!-- Navbar -->
     <header class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
-        <div class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+        <div class="flex justify-between items-center h-32 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Logo -->
-            <a href="{{ url_for('public.index') }}" class="font-headline-md text-headline-md font-bold text-primary">SayerBarn</a>
+            <a href="{{ url_for('public.index') }}"><img src="{{ url_for('static', filename='img/logo_sayer.jpeg') }}" alt="Sayer Dabet" style="height: 80px; width: auto;" /></a>
             <!-- Navegación escritorio -->
             <nav class="hidden md:flex space-x-gutter">
                 <a href="{{ url_for('public.index') }}"
@@ -488,4 +488,4 @@
         updateThemeIcons();
     </script>
 </body>
-</html>
+</html> 
