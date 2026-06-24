@@ -190,6 +190,33 @@ def _notificar_n8n(pedido_id):
         # Nunca bloquear el flujo del usuario por un error de notificación
         print(f"[N8N ERROR] _notificar_n8n pedido={pedido_id}: {e}")        
 
+def _restaurar_stock(pedido_id):
+    """Devuelve el stock de un pedido cancelado o fallido.
+
+    Se llama cuando MP rechaza el pago para que el stock
+    no quede bloqueado indefinidamente.
+    """
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT producto_id, cantidad
+            FROM pedidos
+            WHERE id = %s AND estado_pedido = 'cancelado'
+        """, (pedido_id,))
+        pedido = cur.fetchone()
+
+        if pedido:
+            cur.execute(
+                "UPDATE productos SET stock = stock + %s WHERE id = %s",
+                (pedido['cantidad'], pedido['producto_id'])
+            )
+            mysql.connection.commit()
+            print(f"[STOCK] Restaurado stock pedido={pedido_id} producto={pedido['producto_id']} +{pedido['cantidad']}")
+
+        cur.close()
+    except Exception as e:
+        mysql.connection.rollback()
+        print(f"[STOCK ERROR] _restaurar_stock pedido={pedido_id}: {e}")
 
 # ── Checkout ──────────────────────────────────────────────────
 
@@ -398,11 +425,14 @@ def pago_pendiente():
 def pago_fallido():
     """MP redirige aquí cuando el pago fue rechazado o cancelado.
     Regresa al carrito con un aviso — el carrito sigue intacto en localStorage.
+    Restaura el stock de los productos del pedido cancelado.
     """
     external_reference = request.args.get('external_reference')
 
     if external_reference:
-        _actualizar_estado_pedido(int(external_reference), 'cancelado')
+        pedido_id = int(external_reference)
+        _actualizar_estado_pedido(pedido_id, 'cancelado')
+        _restaurar_stock(pedido_id)
 
     return redirect(url_for('public.carrito', pago='fallido'))
 
@@ -431,8 +461,9 @@ def webhook_mp():
 
                 if external_ref:
                     _actualizar_estado_pedido(int(external_ref), nuevo_estado, payment_id)
+                    if nuevo_estado == 'cancelado':
+                        _restaurar_stock(int(external_ref))
                     print(f"[WEBHOOK MP] pedido={external_ref} payment={payment_id} estado={nuevo_estado}")
-
     # Siempre 200 — aunque no procesemos el evento, no queremos que MP reintente
     return jsonify({'status': 'ok'}), 200
 
