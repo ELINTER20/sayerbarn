@@ -46,7 +46,7 @@ def crear_preferencia(pedido_id, items, datos_comprador, urls):
         # Datos del comprador (pre-rellena el formulario de MP)
         'payer': {
             'name':  datos_comprador.get('nombre', ''),
-            'email':'TESTUSER8740454914502184808',  # ← email del usuario COMPRADOR de prueba
+            'email':'TESTUSER7043662531805373395',  # ← email del usuario COMPRADOR de prueba
         },
 
         # URLs de retorno después del pago
