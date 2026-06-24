@@ -115,7 +115,7 @@
         html.dark .text-on-secondary-fixed{color:#93c5fd}
         html.dark .bg-primary\/10{background-color:rgba(96,165,250,0.15)}
     </style>
-    {% block extra_styles %}{% endblock %}
+    {% block extra_head %}{% endblock %}
 </head>
 
 <body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased"
@@ -151,21 +151,18 @@
             <!-- Acciones escritorio -->
             <div class="hidden md:flex items-center space-x-unit-md">
                 <button onclick="toggleTheme()" class="p-2 rounded-full text-primary transition-colors hover:bg-surface-container-high" title="Cambiar tema">
-                    <span class="theme-icon material-symbols-outlined text-[24px]"></span>dark_mode</span>
+                    <span class="theme-icon material-symbols-outlined text-[24px]"></span>
                 </button>
                 {% if usuario %}
                 <a href="{{ url_for('public.carrito') }}" class="relative p-2 rounded-full text-primary hover:bg-surface-container-high transition-colors" title="Carrito">
-                    <span class="material-symbols-outlined text-[24px]">
-                        shopping_cart
-                    </span>
+                    <span class="material-symbols-outlined text-[24px]">shopping_cart</span>
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-error text-on-error text-[10px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
                 </a>
                 <div class="relative group">
-                    <button class="flex items-center space-x-2 text-primary hover:text-primary-container transition-colors focus:outline-none">
+                    <button class="p-2 rounded-full text-primary hover:bg-surface-container-high transition-colors focus:outline-none">
                         <span class="material-symbols-outlined text-[24px]"
-                              style="font-variation-settings: 'FILL' 1;">
-                           account_circle
-                       </span>
+                              style="font-variation-settings: 'FILL' 1;">account_circle</span>
+                    </button>
                     <!-- Dropdown usuario -->
                     <div class="absolute right-0 mt-2 w-52 bg-surface-container-lowest border-2 border-primary/10 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                         <div class="p-4 border-b border-outline-variant">
@@ -189,11 +186,11 @@
                 </div>
                 {% else %}
                 <a href="{{ url_for('auth.login') }}"
-                   class="bg-surface-container-lowest text-primary border-2 border-primary px-8 py-3 rounded text-xl font-bold">
+                   class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200">
                     Iniciar sesión
                 </a>
                 <a href="{{ url_for('auth.registro') }}"
-                   class="bg-primary text-white px-8 py-3 rounded text-xl font-bold">
+                   class="bg-primary-container text-on-primary px-unit-lg py-unit-sm rounded font-label-md text-label-md hover:opacity-90 transition-opacity">
                     Registrarse
                 </a>
                 {% endif %}
