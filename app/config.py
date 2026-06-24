@@ -57,3 +57,6 @@ class Config:
     MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'true').lower() in ('true', '1', 'yes')
     MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'false').lower() in ('true', '1', 'yes')
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', f"no-reply@{os.getenv('MAIL_DEFAULT_DOMAIN', 'example.com')}")
+
+    # Mercado Libre — publicación de productos al marketplace
+    ML_ACCESS_TOKEN = os.getenv('ML_ACCESS_TOKEN')
