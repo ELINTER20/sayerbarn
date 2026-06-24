@@ -130,23 +130,22 @@
             <a href="{{ url_for('public.index') }}">
                 <img src="{{ url_for('static', filename='img/logo_sayer.jpeg') }}"
                      alt="Sayer Dabet"
-                     style="height: 120px; width: auto;">
+                     style="height: 100px; width: auto;" />
             </a>
             <!-- Navegación escritorio -->
             <nav class="hidden md:flex space-x-gutter">
                 <a href="{{ url_for('public.index') }}"
-                   class="font-bold text-2xl pb-1 transition-colors
-                          {% if request.endpoint == 'main.index' %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
+                   class="font-bold text-xl pb-1 transition-colors">
                     Inicio
                 </a>
+
                 <a href="{{ url_for('public.asesoria') }}"
-                   class="font-bold text-2xl pb-1 transition-colors
-                          {% if request.endpoint in ['main.asesoria', 'main.resultado_asesoria'] %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
+                   class="font-bold text-xl pb-1 transition-colors">
                     Asesoría
                 </a>
+
                 <a href="{{ url_for('public.catalogo') }}"
-                   class="font-bold text-2xl pb-1 transition-colors
-                          {% if request.endpoint in ['main.catalogo', 'main.detalle_producto'] %}text-primary border-b-2 border-primary{% else %}text-on-surface-variant hover:text-primary{% endif %}">
+                   class="font-bold text-xl pb-1 transition-colors">
                     Catálogo
                 </a>
             </nav>
@@ -187,11 +186,11 @@
                 </div>
                 {% else %}
                 <a href="{{ url_for('auth.login') }}"
-                   class="bg-surface-container-lowest text-primary border-2 border-primary px-10 py-4 rounded text-xl font-bold">
+                   class="bg-surface-container-lowest text-primary border-2 border-primary px-8 py-3 rounded text-xl font-bold">
                     Iniciar sesión
                 </a>
                 <a href="{{ url_for('auth.registro') }}"
-                   class="bg-surface-container-lowest text-primary border-2 border-primary px-10 py-4 rounded text-xl font-bold">
+                   class="bg-primary text-white px-8 py-3 rounded text-xl font-bold">
                     Registrarse
                 </a>
                 {% endif %}
