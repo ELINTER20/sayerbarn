@@ -12,4 +12,4 @@ if __name__ == '__main__':
     # Inicia el servidor escuchando en todas las IPs del equipo
     app.run(host='0.0.0.0', port=port, debug=debug)
 
-    
+
