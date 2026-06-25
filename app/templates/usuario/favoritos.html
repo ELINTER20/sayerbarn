@@ -1,84 +1,111 @@
-{% extends 'base.html' %}
-{% block title %}SayerBarn - Mis Favoritos{% endblock %}
+{% extends 'base_admin.html' %}
+{% block title %}Admin - Complementos{% endblock %}
+{% block page_title %}Gestión de Complementos{% endblock %}
 
 {% block content %}
-<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
-
-    <!-- Breadcrumb -->
-    <nav class="flex items-center gap-2 mb-unit-lg">
-        <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
-        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
-        <span class="font-label-md text-label-md text-primary font-bold">Favoritos</span>
-    </nav>
-
-    <div class="flex items-center gap-3 mb-unit-xl">
-        <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">favorite</span>
+<div class="grid grid-cols-12 gap-gutter">
+    <!-- Lista de complementos (columna izquierda) -->
+    <section class="col-span-12 lg:col-span-7 space-y-6">
+        <div class="flex justify-between items-end">
+            <div>
+                <h2 class="font-headline-md text-headline-md text-primary">Complementos</h2>
+                <p class="font-body-md text-body-md text-on-surface-variant">Diluyentes, catalizadores y aditivos asociados a productos.</p>
+            </div>
         </div>
-        <h1 class="font-headline-lg text-headline-lg text-primary">Mis favoritos</h1>
-    </div>
 
-    {% if productos %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
-        {% for prod in productos %}
-        <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col group hover:border-primary/30 transition-colors">
-            <!-- Imagen -->
-            <div class="relative w-full h-44 bg-surface-container flex items-center justify-center p-4 overflow-hidden">
-                {% if prod.imagen_url %}
-                <img src="{{ prod.imagen_url }}" alt="{{ prod.nombre }}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" />
-                {% else %}
-                <span class="material-symbols-outlined text-outline text-[56px]">water_drop</span>
-                {% endif %}
-                <!-- Botón eliminar favorito -->
-                <form method="POST" action="{{ url_for('usuario.eliminar_favorito', producto_id=prod.id) }}" class="absolute top-2 right-2">
-                    <button type="submit" title="Quitar de favoritos"
-                            class="w-8 h-8 rounded-full bg-surface/80 backdrop-blur-sm flex items-center justify-center hover:bg-error-container transition-colors">
-                        <span class="material-symbols-outlined text-error text-[18px]" style="font-variation-settings:'FILL' 1;">favorite</span>
+        <div class="space-y-3">
+            {% for comp in complementos %}
+            <div class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex items-center justify-between hover:border-primary/40 transition-colors">
+                <div class="flex gap-4 items-start">
+                    <div class="p-3 bg-surface-container-low rounded-lg text-primary">
+                        <span class="material-symbols-outlined">science</span>
+                    </div>
+                    <div>
+                        <h3 class="font-label-md text-label-md text-on-surface">{{ comp.complemento_nombre }}</h3>
+                        <p class="font-body-md text-label-md text-on-surface-variant flex items-center gap-1 mt-0.5">
+                            <span class="material-symbols-outlined text-[14px]">link</span>
+                            Asociado a: {{ comp.producto_nombre }}
+                        </p>
+                        <div class="flex gap-2 mt-3">
+                            {% if comp.proporcion %}
+                            <span class="px-2.5 py-0.5 bg-orange-100 text-orange-700 rounded-full font-label-sm text-[11px] font-bold">{{ comp.proporcion }}</span>
+                            {% endif %}
+                            <span class="px-2.5 py-0.5 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full font-label-sm text-[11px] font-bold uppercase">{{ comp.tipo }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <form method="POST" action="{{ url_for('admin.eliminar_complemento', id=comp.id) }}" onsubmit="return confirm('¿Eliminar este complemento?')">
+                        <button class="p-2 text-outline hover:text-error hover:bg-error-container/30 rounded-lg transition-colors">
+                            <span class="material-symbols-outlined">delete</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-12 text-on-surface-variant font-body-md text-body-md">
+                No hay complementos registrados.
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Formulario agregar complemento (columna derecha) -->
+    <aside class="col-span-12 lg:col-span-5">
+        <div class="bg-white rounded-2xl border border-outline-variant card-shadow overflow-hidden sticky top-24">
+            <div class="bg-surface-container p-6 border-b border-outline-variant">
+                <h3 class="font-headline-md text-headline-md text-primary">Agregar complemento</h3>
+                <p class="font-body-md text-label-md text-on-surface-variant">Crea una nueva asociación producto-complemento.</p>
+            </div>
+            <form class="p-6 space-y-5" method="POST" action="{{ url_for('admin.agregar_complemento') }}">
+                <div class="space-y-1.5">
+                    <label class="font-label-md text-label-md text-on-surface-variant px-1">Producto principal</label>
+                    <select name="producto_id" class="w-full px-4 py-2.5 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none bg-white" required>
+                        <option value="">Selecciona un producto</option>
+                        {% for p in productos %}
+                        <option value="{{ p.id }}">{{ p.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="font-label-md text-label-md text-on-surface-variant px-1">Complemento</label>
+                    <select name="complemento_id" class="w-full px-4 py-2.5 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none bg-white" required>
+                        <option value="">Selecciona el complemento</option>
+                        {% for p in productos %}
+                        <option value="{{ p.id }}">{{ p.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="font-label-md text-label-md text-on-surface-variant px-1">Tipo</label>
+                    <input name="tipo" type="text" required list="tipos-complemento"
+                        placeholder="Ej: diluyente, catalizador..."
+                        class="w-full px-4 py-2.5 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-white" />
+                    <datalist id="tipos-complemento">
+                        <option value="diluyente">
+                        <option value="catalizador">
+                        <option value="aditivo">
+                        <option value="retardador">
+                        <option value="sellador">
+                        <option value="fondo">
+                    </datalist>
+                </div>
+                <div class="space-y-1.5">
+                    <label class="font-label-md text-label-md text-on-surface-variant px-1">Proporción de uso</label>
+                    <input class="w-full px-4 py-2.5 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                        name="proporcion" placeholder="Ej: 30% o 1:3" type="text" />
+                </div>
+                <div class="pt-4 space-y-3">
+                    <button class="w-full bg-primary-container text-on-primary font-bold py-3 rounded-lg shadow-md hover:bg-primary transition-all flex items-center justify-center gap-2" type="submit">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar
                     </button>
-                </form>
-            </div>
-
-            <!-- Info -->
-            <div class="p-4 flex flex-col gap-2 flex-grow">
-                {% if prod.acabado %}
-                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">{{ prod.acabado | capitalize }}</span>
-                {% endif %}
-                <h3 class="font-label-md text-label-md text-on-surface font-semibold">{{ prod.nombre }}</h3>
-                {% if prod.precio_referencia %}
-                <p class="font-body-md text-body-md text-primary font-semibold">${{ "%.2f"|format(prod.precio_referencia) }} MXN</p>
-                {% endif %}
-            </div>
-
-            <!-- Acciones -->
-            <div class="px-4 pb-4 flex gap-2">
-                <a href="{{ url_for('public.detalle_producto', producto_id=prod.id) }}"
-                   class="flex-1 py-2.5 text-center bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors text-sm">
-                    Ver producto
-                </a>
-                {% if prod.activo %}
-                <a href="{{ url_for('pedidos.checkout', producto_id=prod.id) }}"
-                   class="flex-1 py-2.5 text-center bg-primary-container text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity text-sm">
-                    Comprar
-                </a>
-                {% else %}
-                <span class="flex-1 py-2.5 text-center bg-surface-container border border-outline-variant text-outline font-label-md text-label-md rounded-lg opacity-50 cursor-not-allowed text-sm">
-                    No disponible
-                </span>
-                {% endif %}
-            </div>
+                    <a href="{{ url_for('admin.complementos') }}" class="block w-full text-center text-primary font-bold py-2 hover:underline text-body-md">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
         </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm flex flex-col items-center justify-center py-16 gap-4 text-on-surface-variant">
-        <span class="material-symbols-outlined text-[56px]">favorite_border</span>
-        <p class="font-body-lg text-body-lg">No tienes productos favoritos aún.</p>
-        <a href="{{ url_for('public.catalogo') }}"
-           class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
-            <span class="material-symbols-outlined text-[18px]">storefront</span>
-            Explorar catálogo
-        </a>
-    </div>
-    {% endif %}
+    </aside>
 </div>
 {% endblock %}

@@ -60,31 +60,87 @@
                             <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>Sin resultado
                         </span>
                         {% endif %}
+                        {% if a.producto_id %}
                         <button onclick="toggleDetalle({{ a.id }})"
                                 class="px-4 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all text-sm whitespace-nowrap">
                             Ver detalle
                         </button>
+                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Panel de detalle colapsable -->
-                <div id="detalle-{{ a.id }}" class="hidden border-t border-outline-variant bg-surface-container px-unit-md py-unit-md">
-                    {% if a.conversacion_json %}
-                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-3">Conversación</p>
-                    <div class="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
-                        {% for msg in a.conversacion_json %}
-                        <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
-                            <div class="max-w-[80%] px-4 py-2.5 rounded-xl font-body-md text-body-md text-sm
-                                {% if msg.role == 'user' %}bg-primary text-on-primary rounded-br-sm{% else %}bg-surface border border-outline-variant text-on-surface rounded-bl-sm{% endif %}">
-                                {{ msg.content }}
+                <!-- Panel de detalle colapsable — muestra el producto recomendado -->
+                {% if a.producto_id %}
+                <div id="detalle-{{ a.id }}" class="hidden border-t border-outline-variant bg-surface-container-low px-unit-md py-unit-md">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start">
+                        <!-- Imagen grande -->
+                        {% if a.imagen_url %}
+                        <div class="w-24 h-24 shrink-0 bg-surface-container-lowest rounded-xl border border-outline-variant p-2 flex items-center justify-center">
+                            <img src="{{ a.imagen_url }}" alt="{{ a.producto_nombre }}" class="w-full h-full object-contain" />
+                        </div>
+                        {% endif %}
+                        <!-- Info producto -->
+                        <div class="flex-grow">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Producto recomendado</p>
+                            <h4 class="font-headline-md text-headline-md text-primary mb-2">{{ a.producto_nombre }}</h4>
+                            <div class="flex flex-wrap gap-4 text-sm text-on-surface-variant mb-3">
+                                {% if a.rendimiento_min %}
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">format_paint</span>
+                                    Rendimiento: {{ a.rendimiento_min }} m²/L
+                                </span>
+                                {% endif %}
+                                {% if a.litros_estimados %}
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">water_drop</span>
+                                    ~{{ a.litros_estimados }} L para tu proyecto
+                                </span>
+                                {% endif %}
+                                {% if a.precio_referencia %}
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">sell</span>
+                                    ${{ "%.2f"|format(a.precio_referencia) }} MXN
+                                </span>
+                                {% endif %}
+                            </div>
+                            <!-- Botones de acción -->
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{{ url_for('public.detalle_producto', producto_id=a.producto_id) }}"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">info</span>
+                                    Ver ficha
+                                </a>
+                                {% if a.stock and a.stock > 0 and a.activo %}
+                                <a href="{{ url_for('pedidos.checkout', producto_id=a.producto_id) }}"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-container text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
+                                    Comprar ahora
+                                </a>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-50 border border-amber-200 text-amber-700 font-label-md text-label-md rounded-lg text-sm cursor-not-allowed opacity-70">
+                                    <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
+                                    Agotado
+                                </span>
+                                {% endif %}
+                                {% if a.link_compra_ml %}
+                                <a href="{{ a.link_compra_ml }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-container-lowest border border-primary/30 text-primary font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">storefront</span>
+                                    Ver en ML
+                                </a>
+                                {% endif %}
+                                {% if a.ficha_tecnica_url %}
+                                <a href="{{ a.ficha_tecnica_url }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                                    Ficha técnica
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endfor %}
                     </div>
-                    {% else %}
-                    <p class="font-body-md text-body-md text-on-surface-variant text-sm">No hay detalle de conversación disponible para esta asesoría.</p>
-                    {% endif %}
                 </div>
+                {% endif %}
             </div>
             {% endfor %}
         {% else %}

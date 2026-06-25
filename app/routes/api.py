@@ -467,7 +467,7 @@ def guardar_asesoria():
     """Guarda el resultado de una asesoría en la BD.
     Funciona tanto para usuarios logueados como para visitantes anónimos."""
     from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-    from app.routes import usuario_actual
+    from app.helpers.auth_utils import usuario_actual
 
     data = request.get_json(silent=True) or {}
     clave       = (data.get('clave') or '').strip()

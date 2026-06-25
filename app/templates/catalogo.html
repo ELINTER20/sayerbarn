@@ -69,15 +69,11 @@
                 <div>
                     <h3 class="font-label-md text-label-md text-on-surface mb-3">Tipo de producto</h3>
                     <div class="flex flex-col gap-2">
-                        <a href="{{ url_for('public.catalogo') }}"
-                           class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if not categoria_filtro %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
-                            Todos
-                        </a>
                         {% for cat in categorias %}
-                        <a href="{{ url_for('public.catalogo', categoria=cat.id) }}"
-                           class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if categoria_filtro == cat.id %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
-                            {{ cat.nombre }}
-                        </a>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="filter-check rounded border-outline" data-group="categoria" value="{{ cat.nombre | lower }}" />
+                            <span class="font-body-md text-body-md text-on-surface-variant">{{ cat.nombre }}</span>
+                        </label>
                         {% endfor %}
                     </div>
                 </div>
@@ -113,7 +109,8 @@
                     data-superficie="{% if producto.sup_madera %}madera {% endif %}{% if producto.sup_metal %}metal {% endif %}{% if producto.sup_concreto %}concreto {% endif %}{% if producto.sup_otro %}otro{% endif %}"
                     data-uso="{{ producto.uso | lower if producto.uso else '' }}"
                     data-acabado="{{ producto.acabado | lower if producto.acabado else '' }}"
-                    data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}">
+                    data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}"
+                    data-categoria="{{ producto.categoria | lower if producto.categoria else '' }}">
                     <div class="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     {% if usuario %}
                     <button type="button"
@@ -312,6 +309,9 @@
             }
             if (show && filters.tipo) {
                 if (!filters.tipo.some(v => card.dataset.tipo.includes(v))) show = false;
+            }
+            if (show && filters.categoria) {
+                if (!filters.categoria.some(v => card.dataset.categoria.includes(v))) show = false;
             }
             card.classList.toggle('card-hidden', !show);
             if (show) visible++;

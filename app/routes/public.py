@@ -43,13 +43,12 @@ def index():
 
 @public_bp.route('/catalogo')
 def catalogo():
-    """Lista de productos con filtro opcional por categoría."""
+    """Lista de productos. El filtrado por categoría, superficie, uso y acabado es JS client-side."""
     productos       = []
     categorias      = []
     error           = None
     favoritos_ids   = set()
     usuario         = usuario_actual()
-    categoria_filtro = request.args.get('categoria', type=int)
 
     try:
         cur = mysql.connection.cursor()
@@ -69,22 +68,12 @@ def catalogo():
             "  (COALESCE(p.stock,0) > 0) DESC, "
             "  p.nombre ASC"
         )
-
-        if categoria_filtro:
-            cur.execute(
-                f"SELECT {campos}"
-                "FROM productos p "
-                "LEFT JOIN categorias c ON p.categoria_id = c.id "
-                f"WHERE p.categoria_id = %s {orden}",
-                (categoria_filtro,)
-            )
-        else:
-            cur.execute(
-                f"SELECT {campos}"
-                "FROM productos p "
-                "LEFT JOIN categorias c ON p.categoria_id = c.id "
-                + orden
-            )
+        cur.execute(
+            f"SELECT {campos}"
+            "FROM productos p "
+            "LEFT JOIN categorias c ON p.categoria_id = c.id "
+            + orden
+        )
         productos = cur.fetchall()
         cur.close()
     except Exception:
@@ -106,7 +95,7 @@ def catalogo():
         'catalogo.html',
         productos=productos,
         categorias=categorias,
-        categoria_filtro=categoria_filtro,
+        categoria_filtro=None,
         usuario=usuario,
         error=error,
         favoritos_ids=favoritos_ids

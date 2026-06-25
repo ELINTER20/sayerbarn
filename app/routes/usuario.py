@@ -87,7 +87,9 @@ def historial():
     cur = mysql.connection.cursor()
     cur.execute(
         "SELECT a.id, a.superficie, a.uso, a.area_m2, a.litros_estimados, "
-        "a.resultado, a.created_at, p.nombre AS producto_nombre, p.imagen_url "
+        "a.resultado, a.created_at, p.id AS producto_id, p.nombre AS producto_nombre, "
+        "p.imagen_url, p.precio_referencia, p.acabado, p.link_compra_ml, "
+        "p.ficha_tecnica_url, p.rendimiento_min, COALESCE(p.stock, 0) AS stock, p.activo "
         "FROM asesorias a "
         "LEFT JOIN productos p ON a.producto_recomendado_id = p.id "
         "WHERE a.usuario_id = %s ORDER BY a.created_at DESC",
