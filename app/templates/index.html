@@ -94,7 +94,7 @@
                     {{ producto.descripcion_ia[:90] ~ '…' if producto.descripcion_ia and producto.descripcion_ia | length > 90 else producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
                 </p>
                 <div class="pt-unit-md border-t border-outline-variant/30">
-                    <a href="{{ url_for('public.detalle_producto', producto_id=producto.id) }}"
+                    <a href="{{ url_for('public.detalle_producto', producto_id=prod.id) }}?from=inicio"
                        class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift flex items-center justify-center space-x-2">
                         <span>Ver producto</span>
                     </a>

@@ -100,6 +100,15 @@ def productos():
     cur.execute("SELECT COUNT(*) as total FROM productos")
     total = cur.fetchone()['total']
     cur.close()
+    
+    # Stock bajo para alerta
+    cur.execute("""
+        SELECT id, nombre, COALESCE(stock,0) AS stock
+        FROM productos
+        WHERE activo = 1 AND COALESCE(stock,0) <= 5
+        ORDER BY stock ASC
+    """)
+    stock_bajo = cur.fetchall()
 
     return render_template(
         'admin/productos.html',
