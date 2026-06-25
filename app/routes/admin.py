@@ -99,8 +99,7 @@ def productos():
     # Cuenta el total para calcular cuántas páginas hay
     cur.execute("SELECT COUNT(*) as total FROM productos")
     total = cur.fetchone()['total']
-    cur.close()
-    
+
     # Stock bajo para alerta
     cur.execute("""
         SELECT id, nombre, COALESCE(stock,0) AS stock
@@ -109,11 +108,13 @@ def productos():
         ORDER BY stock ASC
     """)
     stock_bajo = cur.fetchall()
+    cur.close()
 
     return render_template(
         'admin/productos.html',
         productos=productos_lista,
         pagina=pagina,
+        stock_bajo=stock_bajo,
         total=total,
         por_pagina=por_pagina
     )

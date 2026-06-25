@@ -10,6 +10,30 @@
 {% endblock %}
 
 {% block content %}
+{% if stock_bajo %}
+<div class="mb-unit-md flex items-start gap-3 bg-surface-container-lowest border border-amber-200 rounded-xl px-5 py-4 shadow-sm">
+    <span class="material-symbols-outlined text-amber-500 text-[22px] mt-0.5 shrink-0" style="font-variation-settings:'FILL' 1;">inventory_2</span>
+    <div class="flex-1 min-w-0">
+        <p class="font-label-md text-label-md text-on-surface mb-2">
+            <span class="font-semibold">Stock bajo</span>
+            <span class="ml-2 text-on-surface-variant font-normal">— {{ stock_bajo|length }} producto{{ 's' if stock_bajo|length != 1 }} requieren reposición</span>
+        </p>
+        <div class="flex flex-wrap gap-2">
+            {% for prod in stock_bajo %}
+            <a href="{{ url_for('admin.editar_producto', id=prod.id) }}"
+               class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold border transition-colors hover:opacity-80
+                {% if prod.stock == 0 %}bg-error-container text-on-error-container border-error/20
+                {% elif prod.stock <= 2 %}bg-orange-100 text-orange-800 border-orange-200
+                {% else %}bg-amber-100 text-amber-800 border-amber-200{% endif %}">
+                {% if prod.stock == 0 %}<span class="material-symbols-outlined text-[13px]">block</span>
+                {% else %}<span class="material-symbols-outlined text-[13px]">warning</span>{% endif %}
+                {{ prod.nombre }} · {{ prod.stock }} ud.
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
 <div class="flex flex-col md:flex-row md:items-center justify-between mb-unit-xl gap-4">
     <div>
         <h1 class="font-headline-lg text-headline-lg font-bold text-on-surface">Gestión de Productos</h1>
