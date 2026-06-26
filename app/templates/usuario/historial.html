@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}SayerBarn - Historial de asesorías{% endblock %}
+{% block title %}SayerBarn - Mis recomendaciones{% endblock %}
 
 {% block content %}
 <div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
@@ -8,14 +8,17 @@
     <nav class="flex items-center gap-2 mb-unit-lg">
         <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
-        <span class="font-label-md text-label-md text-primary font-bold">Historial de asesorías</span>
+        <span class="font-label-md text-label-md text-primary font-bold">Mis recomendaciones</span>
     </nav>
 
     <div class="flex items-center gap-3 mb-unit-xl">
         <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-[28px]">history</span>
+            <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">recommend</span>
         </div>
-        <h1 class="font-headline-lg text-headline-lg text-primary">Historial de asesorías</h1>
+        <div>
+            <h1 class="font-headline-lg text-headline-lg text-primary">Mis recomendaciones</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Productos que la IA seleccionó para tus proyectos anteriores.</p>
+        </div>
     </div>
 
     <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">

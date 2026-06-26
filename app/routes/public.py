@@ -46,6 +46,8 @@ def catalogo():
     """Lista de productos. El filtrado por categoría, superficie, uso y acabado es JS client-side."""
     productos       = []
     categorias      = []
+    acabados        = []
+    usos            = []
     error           = None
     favoritos_ids   = set()
     usuario         = usuario_actual()
@@ -54,6 +56,13 @@ def catalogo():
         cur = mysql.connection.cursor()
         cur.execute("SELECT id, nombre FROM categorias ORDER BY nombre")
         categorias = cur.fetchall()
+
+        # Acabados y usos únicos que realmente existen en BD
+        cur.execute("SELECT DISTINCT acabado FROM productos WHERE activo=1 AND acabado IS NOT NULL AND acabado != '' ORDER BY acabado")
+        acabados = [r['acabado'] for r in cur.fetchall()]
+
+        cur.execute("SELECT DISTINCT uso FROM productos WHERE activo=1 AND uso IS NOT NULL AND uso != '' ORDER BY uso")
+        usos = [r['uso'] for r in cur.fetchall()]
 
         campos = (
             "p.id, p.clave, p.nombre, p.descripcion_ia, p.imagen_url, "
@@ -95,6 +104,8 @@ def catalogo():
         'catalogo.html',
         productos=productos,
         categorias=categorias,
+        acabados=acabados,
+        usos=usos,
         categoria_filtro=None,
         usuario=usuario,
         error=error,
@@ -194,7 +205,8 @@ def resultado_asesoria(asesoria_id):
     cur.execute(
         "SELECT a.superficie, a.uso, a.area_m2, a.litros_estimados, "
         "p.id AS producto_id, p.nombre, p.descripcion_ia, p.imagen_url, "
-        "p.rendimiento_min, p.link_compra_ml, p.acabado, p.ficha_tecnica_url "
+        "p.rendimiento_min, p.link_compra_ml, p.acabado, p.ficha_tecnica_url, "
+        "p.precio_referencia, COALESCE(p.stock, 0) AS stock, p.activo "
         "FROM asesorias a "
         "JOIN productos p ON a.producto_recomendado_id = p.id "
         "WHERE a.id = %s",
@@ -207,7 +219,9 @@ def resultado_asesoria(asesoria_id):
         return redirect(url_for('public.asesoria'))
 
     cur.execute(
-        "SELECT p.nombre, p.imagen_url FROM complementos c "
+        "SELECT p.id, p.nombre, p.imagen_url, p.precio_referencia, "
+        "COALESCE(p.stock, 0) AS stock, c.tipo "
+        "FROM complementos c "
         "JOIN productos p ON c.complemento_id = p.id "
         "WHERE c.producto_id = %s LIMIT 1",
         (resultado['producto_id'],)
