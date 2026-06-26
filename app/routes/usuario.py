@@ -30,7 +30,8 @@ def favoritos():
     user_id = get_jwt_identity()
     cur = mysql.connection.cursor()
     cur.execute(
-        "SELECT p.id, p.nombre, p.imagen_url, p.precio_referencia, p.acabado, p.activo "
+        "SELECT p.id, p.nombre, p.imagen_url, p.precio_referencia, p.acabado, p.activo, "
+        "COALESCE(p.stock, 0) AS stock "
         "FROM favoritos f "
         "JOIN productos p ON f.producto_id = p.id "
         "WHERE f.usuario_id = %s ORDER BY f.created_at DESC",
