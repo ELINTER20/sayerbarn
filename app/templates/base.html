@@ -203,10 +203,25 @@
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-error text-on-error text-[9px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
                 </a>
                 {% endif %}
-                <button class="text-primary p-1">
+                <button onclick="toggleMenu()" class="text-primary p-1">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
                 </button>
             </div>
+        </div>
+        <!-- Menú móvil desplegable -->
+        <div id="mobile-menu" class="hidden md:hidden bg-surface-container-lowest border-t border-outline-variant px-margin-mobile py-unit-md flex flex-col gap-unit-md">
+            <a href="{{ url_for('public.index') }}" class="font-bold text-xl text-primary py-2">Inicio</a>
+            <a href="{{ url_for('public.asesoria') }}" class="font-bold text-xl text-on-surface py-2">Asesoría</a>
+            <a href="{{ url_for('public.catalogo') }}" class="font-bold text-xl text-on-surface py-2">Catálogo</a>
+            {% if usuario %}
+            <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-bold text-xl text-on-surface py-2">Mi cuenta</a>
+            <form method="POST" action="{{ url_for('auth.logout') }}">
+                 <button type="submit" class="font-bold text-xl text-error py-2">Cerrar sesión</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="font-bold text-xl text-primary py-2">Iniciar sesión</a>
+            <a href="{{ url_for('auth.registro') }}" class="font-bold text-xl text-primary py-2">Registrarse</a>
+            {% endif %}
         </div>
         <div class="h-[2px] w-full prism-stripe"></div>
     </header>
@@ -472,9 +487,12 @@
             m.classList.remove('flex');
             document.body.style.overflow = '';
         }
-        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarContacto(); });
+       document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarContacto(); });
 
-        
+        function toggleMenu() {
+            var menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
     </script>
 </body>
 </html>
