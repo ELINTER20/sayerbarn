@@ -71,8 +71,9 @@
                                 id="acabado" name="acabado">
                                 <option value="">Sin acabado</option>
                                 <option value="brillante" {% if producto.acabado == 'brillante' %}selected{% endif %}>Brillante</option>
-                                <option value="semi-mate" {% if producto.acabado == 'semi-mate' %}selected{% endif %}>Semi mate</option>
+                                <option value="semimate" {% if producto.acabado == 'semimate' %}selected{% endif %}>Semi mate</option>
                                 <option value="mate" {% if producto.acabado == 'mate' %}selected{% endif %}>Mate</option>
+                                <option value="ninguno" {% if producto.acabado == 'ninguno' %}selected{% endif %}>Ninguno (fondos)</option>
                             </select>
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
                         </div>
