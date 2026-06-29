@@ -202,14 +202,31 @@
     $cpInput().classList.add('hidden');
     addUserBubble('Mi CP es ' + cp);
 
-    var pfx = cp.substring(0, 2);
-    var coincidentes = TIENDAS.filter(function (t) {
+    var cpNum = parseInt(cp);
+    var pfx   = cp.substring(0, 2);
+
+    var mismoEstado = TIENDAS.filter(function (t) {
       return t.cp.substring(0, 2) === pfx;
     });
-    var lista  = coincidentes.length > 0 ? coincidentes : TIENDAS;
-    var titulo = coincidentes.length > 0
-      ? 'Encontré la sucursal más cercana a tu área:'
-      : 'No tenemos sucursal en tu estado. Aquí están todas nuestras sucursales:';
+
+    var lista, titulo;
+
+    if (mismoEstado.length === 0) {
+      lista  = TIENDAS;
+      titulo = 'No tenemos sucursal en tu estado. Aquí están todas:';
+    } else {
+      var minDist = Infinity;
+      mismoEstado.forEach(function (t) {
+        var d = Math.abs(parseInt(t.cp) - cpNum);
+        if (d < minDist) minDist = d;
+      });
+      lista = mismoEstado.filter(function (t) {
+        return Math.abs(parseInt(t.cp) - cpNum) === minDist;
+      });
+      titulo = lista.length === 1
+        ? 'Sucursal más cercana a tu código postal:'
+        : 'Sucursales más cercanas a tu código postal:';
+    }
 
     var inner =
       '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface">' + titulo + '</div>';
