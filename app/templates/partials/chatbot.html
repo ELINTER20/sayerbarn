@@ -1,0 +1,274 @@
+<!-- ── Chatbot de navegación flotante ─────────────────────────── -->
+<div id="chatbot-wrap">
+
+  <!-- Botón flotante -->
+  <button onclick="_chatbot.toggle()" title="Asistente de navegación"
+    class="fixed bottom-6 right-6 z-[200] w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center btn-lift">
+    <span id="chatbot-icon" class="material-symbols-outlined text-[26px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
+  </button>
+
+  <!-- Ventana del chat -->
+  <div id="chatbot-window"
+    class="hidden fixed bottom-24 right-6 z-[200] w-80 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
+    style="max-height:480px">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 bg-primary flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
+        <span class="font-label-md text-label-md text-on-primary">Asistente SayerBarn</span>
+      </div>
+      <button onclick="_chatbot.toggle()" class="text-on-primary/70 hover:text-on-primary transition-colors p-1 rounded">
+        <span class="material-symbols-outlined text-[20px]">close</span>
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    <div id="chatbot-msgs" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:180px"></div>
+
+    <!-- Input de código postal (oculto por defecto) -->
+    <div id="chatbot-cp-input" class="hidden flex-shrink-0 px-4 pb-4 pt-1 border-t border-outline-variant bg-surface-container-lowest">
+      <div class="flex gap-2">
+        <input id="chatbot-cp-field" type="text" inputmode="numeric" maxlength="5"
+          placeholder="Código postal (5 dígitos)"
+          class="flex-1 border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors">
+        <button onclick="_chatbot.buscarTienda()"
+          class="bg-primary text-on-primary px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity flex-shrink-0">
+          Buscar
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var abierto = false;
+  var TIENDAS = [];
+
+  fetch('/api/tiendas')
+    .then(function (r) { return r.json(); })
+    .then(function (d) { TIENDAS = d; })
+    .catch(function () {});
+
+  var URLS = {
+    catalogo:  "{{ url_for('main.catalogo') }}",
+    asesoria:  "{{ url_for('main.asesoria') }}",
+    carrito:   "{{ url_for('main.carrito') }}",
+    pedidos:   "{{ url_for('main.mis_pedidos') }}",
+    favoritos: "{{ url_for('main.favoritos') }}",
+    contacto:  "{{ url_for('main.contacto') }}",
+  };
+
+  var FLUJOS = {
+    inicio: {
+      bot: '¡Hola! Soy el asistente de navegación de SayerBarn. ¿En qué te ayudo hoy?',
+      opciones: [
+        { texto: 'Navegar la página',       sig: 'navegacion' },
+        { texto: 'Encontrar tienda cercana', sig: 'tienda_cp'  },
+        { texto: 'Hacer una devolución',     sig: 'devolucion' },
+      ]
+    },
+    navegacion: {
+      bot: '¿A qué sección quieres ir?',
+      opciones: [
+        { texto: 'Ver el catálogo',   url: URLS.catalogo  },
+        { texto: 'Asesoría con IA',   url: URLS.asesoria  },
+        { texto: 'Mi carrito',        url: URLS.carrito   },
+        { texto: 'Mis pedidos',       url: URLS.pedidos   },
+        { texto: 'Mis favoritos',     url: URLS.favoritos },
+        { texto: '← Menú principal',  sig: 'inicio'       },
+      ]
+    },
+    tienda_cp: {
+      bot: 'Escribe tu código postal de 5 dígitos y te digo qué sucursal te queda más cerca.',
+      tipo: 'input_cp'
+    },
+    devolucion: {
+      bot: 'Para gestionar una devolución necesitas tu número de pedido. ¿Lo tienes a la mano?',
+      opciones: [
+        { texto: 'Sí, lo tengo',          sig: 'dev_con_num'  },
+        { texto: 'No, necesito buscarlo',  sig: 'dev_sin_num'  },
+        { texto: '← Menú principal',       sig: 'inicio'       },
+      ]
+    },
+    dev_con_num: {
+      bot: 'Contáctanos con tu número de pedido:\n📞 800 123 4567\n✉ contacto@sayerdabet.com\n\nTe respondemos en menos de 24 horas hábiles.',
+      opciones: [
+        { texto: '🏠 Volver al inicio', sig: 'inicio' },
+      ]
+    },
+    dev_sin_num: {
+      bot: 'Puedes encontrar tu número de pedido en la sección "Mis Pedidos".',
+      opciones: [
+        { texto: 'Ir a Mis Pedidos',    url: URLS.pedidos },
+        { texto: '← Menú principal',    sig: 'inicio'     },
+      ]
+    },
+  };
+
+  /* ── Helpers DOM ──────────────────────────────────────── */
+  function $msgs()    { return document.getElementById('chatbot-msgs'); }
+  function $cpInput() { return document.getElementById('chatbot-cp-input'); }
+  function scrollDown() { var m = $msgs(); if (m) m.scrollTop = m.scrollHeight; }
+
+  function addBotBubble(innerHtml, wide) {
+    var m = $msgs();
+    var wrap = document.createElement('div');
+    wrap.className = 'flex gap-2 items-start';
+    var maxW = wide ? 'max-w-[230px]' : 'max-w-[210px]';
+    wrap.innerHTML =
+      '<span class="material-symbols-outlined text-primary text-[18px] mt-1 flex-shrink-0" style="font-variation-settings:\'FILL\' 1;">smart_toy</span>' +
+      '<div class="' + maxW + ' space-y-1.5">' + innerHtml + '</div>';
+    m.appendChild(wrap);
+    scrollDown();
+  }
+
+  function addUserBubble(texto) {
+    var m = $msgs();
+    var el = document.createElement('div');
+    el.className = 'flex justify-end';
+    el.innerHTML =
+      '<div class="bg-primary text-on-primary rounded-lg px-3 py-2 text-sm max-w-[210px] leading-snug">' +
+      texto + '</div>';
+    m.appendChild(el);
+    scrollDown();
+  }
+
+  /* ── Máquina de estados ───────────────────────────────── */
+  function irA(estado) {
+    var flujo = FLUJOS[estado];
+    if (!flujo) return;
+
+    $cpInput().classList.add('hidden');
+
+    var texto = (flujo.bot || '').replace(/\n/g, '<br>');
+    addBotBubble(
+      '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface leading-snug">' + texto + '</div>',
+      false
+    );
+
+    if (flujo.tipo === 'input_cp') {
+      $cpInput().classList.remove('hidden');
+      document.getElementById('chatbot-cp-field').value = '';
+      setTimeout(function () { document.getElementById('chatbot-cp-field').focus(); }, 60);
+      return;
+    }
+
+    if (!flujo.opciones || !flujo.opciones.length) return;
+
+    var grupo = document.createElement('div');
+    grupo.className = 'flex flex-col gap-1';
+
+    flujo.opciones.forEach(function (op) {
+      (function (opcion) {
+        var btn = document.createElement('button');
+        btn.className =
+          'text-left text-xs px-3 py-1.5 rounded-lg border border-primary/40 text-primary ' +
+          'hover:bg-primary/10 transition-colors w-full';
+        btn.textContent = opcion.texto;
+        btn.addEventListener('click', function () {
+          grupo.querySelectorAll('button').forEach(function (b) {
+            b.disabled = true;
+            b.classList.add('opacity-40', 'cursor-default');
+          });
+          if (opcion.url) {
+            window.location.href = opcion.url;
+          } else if (opcion.sig) {
+            addUserBubble(opcion.texto);
+            setTimeout(function () { irA(opcion.sig); }, 320);
+          }
+        });
+        grupo.appendChild(btn);
+      })(op);
+    });
+
+    $msgs().appendChild(grupo);
+    scrollDown();
+  }
+
+  /* ── Búsqueda por CP ──────────────────────────────────── */
+  function buscarTienda() {
+    var campo = document.getElementById('chatbot-cp-field');
+    var cp = (campo.value || '').trim();
+
+    if (!/^\d{5}$/.test(cp)) {
+      campo.style.borderColor = '#ba1a1a';
+      campo.focus();
+      return;
+    }
+    campo.style.borderColor = '';
+    $cpInput().classList.add('hidden');
+    addUserBubble('Mi CP es ' + cp);
+
+    var pfx = cp.substring(0, 2);
+    var coincidentes = TIENDAS.filter(function (t) {
+      return t.cp.substring(0, 2) === pfx;
+    });
+    var lista  = coincidentes.length > 0 ? coincidentes : TIENDAS;
+    var titulo = coincidentes.length > 0
+      ? 'Encontré la sucursal más cercana a tu área:'
+      : 'No tenemos sucursal en tu estado. Aquí están todas nuestras sucursales:';
+
+    var inner =
+      '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface">' + titulo + '</div>';
+
+    lista.forEach(function (t) {
+      inner +=
+        '<div class="bg-surface-container-low rounded-lg px-3 py-2 text-xs border border-outline-variant space-y-0.5">' +
+          '<p class="font-semibold text-on-surface text-sm">' + t.nombre + '</p>' +
+          '<p class="text-on-surface-variant">' + t.direccion + '</p>' +
+          '<p class="text-on-surface-variant">CP ' + t.cp + '</p>' +
+          '<p class="text-primary mt-1">📞 ' + t.telefono + '</p>' +
+          '<p class="text-on-surface-variant text-[10px]">' + t.horario + '</p>' +
+        '</div>';
+    });
+
+    inner +=
+      '<button class="text-xs text-primary hover:underline chatbot-volver-btn">← Menú principal</button>';
+
+    addBotBubble(inner, true);
+
+    /* Adjunta el evento al botón volver que acaba de renderizarse */
+    setTimeout(function () {
+      var btns = $msgs().querySelectorAll('.chatbot-volver-btn');
+      var ultimo = btns[btns.length - 1];
+      if (ultimo) {
+        ultimo.addEventListener('click', function () { irA('inicio'); });
+        ultimo.classList.remove('chatbot-volver-btn');
+      }
+      scrollDown();
+    }, 0);
+  }
+
+  /* ── Toggle ventana ───────────────────────────────────── */
+  function toggle() {
+    abierto = !abierto;
+    var win  = document.getElementById('chatbot-window');
+    var icon = document.getElementById('chatbot-icon');
+    if (abierto) {
+      win.classList.remove('hidden');
+      icon.textContent = 'close';
+      icon.style.fontVariationSettings = "'FILL' 0";
+      if (!$msgs().hasChildNodes()) irA('inicio');
+    } else {
+      win.classList.add('hidden');
+      icon.textContent = 'support_agent';
+      icon.style.fontVariationSettings = "'FILL' 1";
+    }
+  }
+
+  /* ── API pública ──────────────────────────────────────── */
+  window._chatbot = { toggle: toggle, buscarTienda: buscarTienda };
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var field = document.getElementById('chatbot-cp-field');
+    if (field) {
+      field.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') buscarTienda();
+      });
+    }
+  });
+})();
+</script>

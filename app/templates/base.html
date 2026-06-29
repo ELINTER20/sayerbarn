@@ -221,12 +221,12 @@
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
             </div>
             <div class="col-span-1 flex flex-col space-y-unit-sm">
-                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Contacto</button>
+                <a href="{{ url_for('main.contacto') }}" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
             </div>
             <div class="col-span-1 flex flex-col space-y-unit-sm">
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
-                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Sucursales</button>
+                <a href="{{ url_for('main.contacto') }}#sucursales" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Sucursales</a>
             </div>
         </div>
     </footer>
@@ -336,6 +336,8 @@
 
         </div>
     </div>
+
+    {% include 'partials/chatbot.html' %}
 
     <!-- Toast carrito -->
     <div id="carrito-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-on-surface text-surface font-body-md text-body-md px-5 py-3 rounded-xl shadow-lg opacity-0 translate-y-2 transition-all duration-300 pointer-events-none whitespace-nowrap"></div>

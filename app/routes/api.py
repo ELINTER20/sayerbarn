@@ -461,6 +461,12 @@ def eliminar_producto(producto_id):
     return jsonify({'message': 'Producto eliminado.'}), 200
 
 
+@api_bp.route('/api/tiendas')
+def listar_tiendas():
+    from app.tiendas import TIENDAS
+    return jsonify(TIENDAS), 200
+
+
 @api_bp.route('/api/guardar-asesoria', methods=['POST'])
 def guardar_asesoria():
     """Guarda el resultado de una asesoría en la BD.

@@ -855,6 +855,16 @@ def confirmacion_pedido(pedido_id):
                            usuario=usuario_actual())
 
 
+@main.route('/contacto')
+def contacto():
+    import json as _json
+    from app.tiendas import TIENDAS
+    return render_template('contacto.html',
+                           tiendas=TIENDAS,
+                           tiendas_json=_json.dumps(TIENDAS, ensure_ascii=False),
+                           usuario=usuario_actual())
+
+
 @main.route('/mis-pedidos')
 def mis_pedidos():
     """Historial de pedidos del usuario, agrupando items de la misma compra."""
