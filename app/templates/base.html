@@ -196,25 +196,32 @@
             </div>
             <!-- Menú móvil -->
             <div class="md:hidden flex items-center space-x-1">
+               
                 {% if usuario %}
                 <a href="{{ url_for('public.carrito') }}" class="relative p-1 text-primary" title="Carrito">
                     <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-error text-on-error text-[9px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
-                </a>
-                {% else %}
-                <a href="{{ url_for('auth.login') }}"
-                   class="text-primary border border-primary px-3 py-1 rounded font-label-md text-label-md text-sm">
-                    Iniciar sesión
-                </a>
-                <a href="{{ url_for('auth.registro') }}"
-                   class="bg-primary text-white px-3 py-1 rounded font-label-md text-label-md text-sm">
-                    Registrarse
                 </a>
                 {% endif %}
                 <button onclick="toggleMenu()" class="text-primary p-1">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
                 </button>
             </div>
+        </div>
+        <!-- Menú móvil desplegable -->
+        <div id="mobile-menu" class="hidden md:hidden bg-surface-container-lowest border-t border-outline-variant px-margin-mobile py-unit-md flex flex-col gap-unit-md">
+            <a href="{{ url_for('public.index') }}" class="font-bold text-xl text-primary py-2">Inicio</a>
+            <a href="{{ url_for('public.asesoria') }}" class="font-bold text-xl text-on-surface py-2">Asesoría</a>
+            <a href="{{ url_for('public.catalogo') }}" class="font-bold text-xl text-on-surface py-2">Catálogo</a>
+            {% if usuario %}
+            <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-bold text-xl text-on-surface py-2">Mi cuenta</a>
+            <form method="POST" action="{{ url_for('auth.logout') }}">
+                 <button type="submit" class="font-bold text-xl text-error py-2">Cerrar sesión</button>
+            </form>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="font-bold text-xl text-primary py-2">Iniciar sesión</a>
+            <a href="{{ url_for('auth.registro') }}" class="font-bold text-xl text-primary py-2">Registrarse</a>
+            {% endif %}
         </div>
         <div class="h-[2px] w-full prism-stripe"></div>
     </header>
@@ -233,12 +240,12 @@
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
             </div>
             <div class="col-span-1 flex flex-col space-y-unit-sm">
-                <a href="{{ url_for('public.contacto') }}" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
+                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Contacto</button>
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
             </div>
             <div class="col-span-1 flex flex-col space-y-unit-sm">
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
-                <a href="{{ url_for('public.contacto') }}#sucursales" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Sucursales</a>
+                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Sucursales</button>
             </div>
         </div>
     </footer>
@@ -390,8 +397,6 @@
         </div>
     </div>
 
-    {% include 'partials/chatbot.html' %}
-
     <!-- Toast carrito -->
     <div id="carrito-toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-on-surface text-surface font-body-md text-body-md px-5 py-3 rounded-xl shadow-lg opacity-0 translate-y-2 transition-all duration-300 pointer-events-none whitespace-nowrap"></div>
 
@@ -442,7 +447,7 @@
                 } else {
                     // Ya está en el límite — mostrar aviso
                     var toast = document.getElementById('carrito-toast');
-                    toast.textContent = '⚠ Solo hay ' + stockMax + ' unidad' + (stockMax !== 1 ? 'es' : '') + ' disponible' + (stockMax !== 1 ? 's' : '');
+                    toast.textContent = '⚠️ Solo hay ' + stockMax + ' unidad' + (stockMax !== 1 ? 'es' : '') + ' disponible' + (stockMax !== 1 ? 's' : '');
                     toast.classList.remove('opacity-0', 'translate-y-2');
                     toast.classList.add('opacity-100', 'translate-y-0');
                     setTimeout(function() {
