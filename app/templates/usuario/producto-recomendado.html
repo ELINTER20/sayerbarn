@@ -65,12 +65,26 @@
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row gap-unit-md items-center mt-unit-lg md:mt-0 flex-wrap">
+                    {% if resultado.activo and resultado.stock and resultado.stock > 0 %}
                     <!-- Compra directa en SayerBarn -->
-                    <a href="{{ url_for('main.checkout', producto_id=resultado.producto_id) }}"
+                    <a href="{{ url_for('pedidos.checkout', producto_id=resultado.producto_id) }}"
                        class="w-full sm:w-auto bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
                         Comprar aquí
                     </a>
+                    <!-- Añadir al carrito -->
+                    <button type="button"
+                        onclick="agregarAlCarrito('{{ resultado.producto_id }}', '{{ resultado.nombre | replace("'", "\\'") }}', '{{ resultado.precio_referencia or 0 }}', '{{ resultado.imagen_url or "" }}', '{{ resultado.stock }}')"
+                        class="w-full sm:w-auto bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_shopping_cart</span>
+                        Añadir al carrito
+                    </button>
+                    {% else %}
+                    <span class="w-full sm:w-auto bg-amber-50 border border-amber-200 text-amber-700 font-label-md text-label-md px-8 py-3 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed opacity-80">
+                        <span class="material-symbols-outlined">remove_shopping_cart</span>
+                        Agotado
+                    </span>
+                    {% endif %}
                     {% if resultado.link_compra_ml %}
                     <a href="{{ resultado.link_compra_ml }}" target="_blank" rel="noopener"
                        class="w-full sm:w-auto bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
@@ -85,7 +99,7 @@
                         Ficha técnica
                     </a>
                     {% endif %}
-                    <a href="{{ url_for('main.asesoria') }}"
+                    <a href="{{ url_for('public.asesoria') }}"
                        class="w-full sm:w-auto flex items-center justify-center gap-2 text-primary font-label-md text-label-md hover:underline underline-offset-4 px-4 py-3">
                         <span class="material-symbols-outlined">refresh</span>
                         Nueva asesoría
@@ -125,8 +139,30 @@
                     {% endif %}
                 </div>
                 <div class="flex-grow text-center sm:text-left">
+                    <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">{{ complemento.tipo | capitalize if complemento.tipo else 'Complemento' }}</p>
                     <h4 class="font-headline-md text-headline-md text-primary">{{ complemento.nombre }}</h4>
-                    <p class="font-body-md text-body-md text-on-surface-variant mt-1">Complemento recomendado para este producto.</p>
+                    {% if complemento.precio_referencia %}
+                    <p class="font-body-md text-body-md text-on-surface-variant mt-0.5">${{ "%.2f"|format(complemento.precio_referencia) }} MXN</p>
+                    {% endif %}
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 shrink-0 w-full sm:w-auto">
+                    <a href="{{ url_for('public.detalle_producto', producto_id=complemento.id) }}"
+                       class="px-5 py-2.5 bg-surface-container border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 text-sm">
+                        <span class="material-symbols-outlined text-[16px]">info</span>
+                        Ver producto
+                    </a>
+                    {% if complemento.stock and complemento.stock > 0 %}
+                    <button type="button"
+                        onclick="agregarAlCarrito('{{ complemento.id }}', '{{ complemento.nombre | replace("'", "\\'") }}', '{{ complemento.precio_referencia or 0 }}', '{{ complemento.imagen_url or "" }}', '{{ complemento.stock }}')"
+                        class="px-5 py-2.5 bg-primary-container text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 text-sm">
+                        <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
+                        Agregar
+                    </button>
+                    {% else %}
+                    <span class="px-5 py-2.5 bg-amber-50 border border-amber-200 text-amber-700 font-label-md text-label-md rounded-lg flex items-center justify-center gap-2 text-sm cursor-not-allowed opacity-70">
+                        Agotado
+                    </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -139,7 +175,7 @@
             <p class="font-body-md text-body-md text-on-surface-variant mb-unit-md max-w-md mx-auto">
                 Puedes ver esta y otras recomendaciones en tu historial de asesorías.
             </p>
-            <a href="{{ url_for('main.historial') }}"
+            <a href="{{ url_for('usuario.historial') }}"
                class="inline-flex font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">
                 Ver mi historial
             </a>
@@ -149,8 +185,8 @@
                 Crea una cuenta o inicia sesión para tener a mano tus productos recomendados.
             </p>
             <div class="flex flex-wrap justify-center gap-unit-md">
-                <a href="{{ url_for('main.login') }}" class="font-label-md text-label-md bg-transparent text-primary hover:bg-surface-container-high/50 px-6 py-2.5 rounded-lg border border-primary/20 transition-all duration-200">Iniciar sesión</a>
-                <a href="{{ url_for('main.registro') }}" class="font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Registrarse</a>
+                <a href="{{ url_for('auth.login') }}" class="font-label-md text-label-md bg-transparent text-primary hover:bg-surface-container-high/50 px-6 py-2.5 rounded-lg border border-primary/20 transition-all duration-200">Iniciar sesión</a>
+                <a href="{{ url_for('auth.registro') }}" class="font-label-md text-label-md bg-primary-container text-on-primary px-6 py-2.5 rounded-lg hover:opacity-90 transition-opacity">Registrarse</a>
             </div>
             {% endif %}
         </div>

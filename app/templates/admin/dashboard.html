@@ -24,14 +24,14 @@
 
 <!-- KPIs -->
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-unit-xl">
-    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-primary-container flex flex-col justify-between h-32">
+    <a href="{{ url_for('admin.productos') }}" class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-primary-container flex flex-col justify-between h-32 hover:bg-surface-container-low transition-colors">
         <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Productos activos</span>
         <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ productos_activos }}</span>
-    </div>
-    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-secondary flex flex-col justify-between h-32">
+    </a>
+    <a href="{{ url_for('admin.pedidos') }}" class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-secondary flex flex-col justify-between h-32 hover:bg-surface-container-low transition-colors">
         <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Asesorías realizadas</span>
         <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ total_asesorias }}</span>
-    </div>
+    </a>
     <a href="{{ url_for('admin.pedidos', estado='pendiente') }}"
        class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-amber-400 flex flex-col justify-between h-32 hover:bg-surface-container-low transition-colors">
         <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Pedidos pendientes</span>
@@ -42,10 +42,10 @@
             {% endif %}
         </div>
     </a>
-    <div class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-outline flex flex-col justify-between h-32">
+    <a href="{{ url_for('admin.publicar') }}" class="bg-surface-container-lowest p-6 rounded-xl card-shadow border-t-4 border-outline flex flex-col justify-between h-32 hover:bg-surface-container-low transition-colors">
         <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Publicaciones M. Libre</span>
         <span class="font-headline-lg text-headline-lg text-on-surface font-bold">{{ publicaciones_ml }}</span>
-    </div>
+    </a>
 </div>
 
 <!-- Bento Grid -->

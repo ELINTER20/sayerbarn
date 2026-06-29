@@ -2,8 +2,10 @@
 {% block title %}SayerBarn - Catálogo{% endblock %}
 
 {% block extra_styles %}
+<style>
 .card-hidden { display: none !important; }
 .filter-chip-active { background-color: #0033a0 !important; color: #ffffff !important; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -35,47 +37,35 @@
                 <div>
                     <h3 class="font-label-md text-label-md text-on-surface mb-3">Uso</h3>
                     <div class="flex flex-col gap-2">
+                        {% for uso_val in usos %}
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="uso" value="interior" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Interior</span>
+                            <input type="checkbox" class="filter-check rounded border-outline" data-group="uso" value="{{ uso_val | lower }}" />
+                            <span class="font-body-md text-body-md text-on-surface-variant">{{ uso_val | capitalize }}</span>
                         </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="uso" value="exterior" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Exterior</span>
-                        </label>
+                        {% endfor %}
                     </div>
                 </div>
                 <hr class="border-surface-container-highest" />
                 <div>
                     <h3 class="font-label-md text-label-md text-on-surface mb-3">Acabado</h3>
                     <div class="flex flex-col gap-2">
+                        {% for acabado_val in acabados %}
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="acabado" value="brillante" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Brillante</span>
+                            <input type="checkbox" class="filter-check rounded border-outline" data-group="acabado" value="{{ acabado_val | lower }}" />
+                            <span class="font-body-md text-body-md text-on-surface-variant">{{ acabado_val | capitalize }}</span>
                         </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="acabado" value="mate" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Mate</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="acabado" value="semi-mate" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Semi mate</span>
-                        </label>
+                        {% endfor %}
                     </div>
                 </div>
                 <hr class="border-surface-container-highest" />
                 <div>
                     <h3 class="font-label-md text-label-md text-on-surface mb-3">Tipo de producto</h3>
                     <div class="flex flex-col gap-2">
-                        <a href="{{ url_for('main.catalogo') }}"
-                           class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if not categoria_filtro %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
-                            Todos
-                        </a>
                         {% for cat in categorias %}
-                        <a href="{{ url_for('main.catalogo', categoria=cat.id) }}"
-                           class="font-body-md text-body-md px-3 py-1.5 rounded-lg transition-colors {% if categoria_filtro == cat.id %}bg-primary-container text-on-primary font-semibold{% else %}text-on-surface-variant hover:bg-surface-container{% endif %}">
-                            {{ cat.nombre }}
-                        </a>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="filter-check rounded border-outline" data-group="categoria" value="{{ cat.nombre | lower }}" />
+                            <span class="font-body-md text-body-md text-on-surface-variant">{{ cat.nombre }}</span>
+                        </label>
                         {% endfor %}
                     </div>
                 </div>
@@ -111,7 +101,8 @@
                     data-superficie="{% if producto.sup_madera %}madera {% endif %}{% if producto.sup_metal %}metal {% endif %}{% if producto.sup_concreto %}concreto {% endif %}{% if producto.sup_otro %}otro{% endif %}"
                     data-uso="{{ producto.uso | lower if producto.uso else '' }}"
                     data-acabado="{{ producto.acabado | lower if producto.acabado else '' }}"
-                    data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}">
+                    data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}"
+                    data-categoria="{{ producto.categoria | lower if producto.categoria else '' }}">
                     <div class="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     {% if usuario %}
                     <button type="button"
@@ -125,7 +116,7 @@
                         {% endif %}
                     </button>
                     {% else %}
-                    <a href="{{ url_for('main.login') }}" class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors" title="Inicia sesión para guardar favoritos">
+                    <a href="{{ url_for('auth.login') }}" class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors" title="Inicia sesión para guardar favoritos">
                         <span class="material-symbols-outlined text-[22px] text-outline">favorite_border</span>
                     </a>
                     {% endif %}
@@ -165,7 +156,7 @@
                         <p class="font-label-md text-label-md text-primary mb-3">Rendimiento: {{ producto.rendimiento_min }} m²/L</p>
                         {% endif %}
                         <div class="flex flex-col gap-2 mt-auto">
-                            <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}"
+                            <a href="{{ url_for('public.detalle_producto', producto_id=producto.id) }}"
                                class="w-full font-label-md text-label-md text-on-primary bg-primary-container px-4 py-2 rounded-full hover:bg-primary-container/90 transition-colors shadow-sm text-center">
                                 Ver producto
                             </a>
@@ -272,10 +263,15 @@
         btn.disabled = false;
     }
 
-    const cards = Array.from(document.querySelectorAll('.product-card'));
+    function normalizar(str) {
+        return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const cards  = Array.from(document.querySelectorAll('.product-card'));
     const checks = Array.from(document.querySelectorAll('.filter-check'));
-    const buscador = document.getElementById('buscador');
-    const contador = document.getElementById('contador');
+    const buscador     = document.getElementById('buscador');
+    const contador     = document.getElementById('contador');
     const sinResultados = document.getElementById('sin-resultados');
 
     function getActiveFilters() {
@@ -284,7 +280,7 @@
             if (cb.checked) {
                 const g = cb.dataset.group;
                 if (!groups[g]) groups[g] = [];
-                groups[g].push(cb.value);
+                groups[g].push(normalizar(cb.value));
             }
         });
         return groups;
@@ -292,42 +288,47 @@
 
     function applyFilters() {
         const filters = getActiveFilters();
-        const query = buscador.value.trim().toLowerCase();
+        const query = normalizar(buscador ? buscador.value : '');
         let visible = 0;
         cards.forEach(card => {
             let show = true;
-            if (query && !card.dataset.nombre.includes(query)) show = false;
+            if (query && !normalizar(card.dataset.nombre).includes(query)) show = false;
             if (show && filters.superficie) {
-                const sup = card.dataset.superficie;
+                const sup = normalizar(card.dataset.superficie);
                 if (!filters.superficie.some(v => sup.includes(v))) show = false;
             }
             if (show && filters.uso) {
-                const uso = card.dataset.uso;
+                const uso = normalizar(card.dataset.uso);
                 if (!filters.uso.some(v => uso === v || uso === 'ambos')) show = false;
             }
             if (show && filters.acabado) {
-                if (!filters.acabado.some(v => card.dataset.acabado.includes(v))) show = false;
+                const acabado = normalizar(card.dataset.acabado);
+                if (!filters.acabado.some(v => acabado === v)) show = false;
             }
-            if (show && filters.tipo) {
-                if (!filters.tipo.some(v => card.dataset.tipo.includes(v))) show = false;
+            if (show && filters.categoria) {
+                const cat = normalizar(card.dataset.categoria);
+                if (!filters.categoria.some(v => cat === v)) show = false;
             }
             card.classList.toggle('card-hidden', !show);
             if (show) visible++;
         });
-        contador.textContent = `Mostrando ${visible} producto${visible !== 1 ? 's' : ''}`;
-        sinResultados.classList.toggle('hidden', visible > 0);
+        if (contador) contador.textContent = `Mostrando ${visible} producto${visible !== 1 ? 's' : ''}`;
+        if (sinResultados) sinResultados.classList.toggle('hidden', visible > 0);
     }
 
     function limpiarFiltros() {
         checks.forEach(cb => cb.checked = false);
-        buscador.value = '';
+        if (buscador) buscador.value = '';
         applyFilters();
     }
 
     checks.forEach(cb => cb.addEventListener('change', applyFilters));
-    buscador.addEventListener('input', applyFilters);
-    document.getElementById('btn-limpiar').addEventListener('click', limpiarFiltros);
-    document.getElementById('btn-limpiar-2').addEventListener('click', limpiarFiltros);
+    if (buscador) buscador.addEventListener('input', applyFilters);
+    var btnL1 = document.getElementById('btn-limpiar');
+    var btnL2 = document.getElementById('btn-limpiar-2');
+    if (btnL1) btnL1.addEventListener('click', limpiarFiltros);
+    if (btnL2) btnL2.addEventListener('click', limpiarFiltros);
+    }); // fin DOMContentLoaded filtros
 
     document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarAsesoria(); });
 

@@ -16,7 +16,7 @@
         </div>
         <h2 class="font-headline-md text-headline-md text-on-surface mb-unit-lg text-center">Crea tu cuenta</h2>
 
-        <form action="{{ url_for('main.registro') }}" class="space-y-unit-md" method="POST">
+        <form action="{{ url_for('auth.registro') }}" class="space-y-unit-md" method="POST">
             <div>
                 <label class="block font-label-sm text-label-sm text-on-surface-variant mb-unit-xs uppercase" for="nombre">Nombre completo</label>
                 <div class="relative">
@@ -71,7 +71,7 @@
         <div class="mt-unit-lg text-center">
             <p class="font-body-md text-body-md text-on-surface-variant">
                 ¿Ya tienes cuenta?
-                <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="{{ url_for('main.login') }}">Inicia sesión</a>
+                <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="{{ url_for('auth.login') }}">Inicia sesión</a>
             </p>
         </div>
         <div class="mt-unit-md text-center">

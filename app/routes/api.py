@@ -147,7 +147,7 @@ def chat():
         "- Decide qué preguntar según lo que el cliente ya respondió. No sigas un orden fijo.\n"
         "- Con 3 o 4 respuestas normalmente ya tienes suficiente para recomendar. No hagas más preguntas de las necesarias.\n"
         "- Si la primera respuesta ya te da suficiente contexto, recomienda directamente.\n"
-        "- Siempre necesitas saber al menos: superficie, uso (interior/exterior) y área aproximada.\n"
+        "- Siempre necesitas saber al menos: superficie, uso (interior/exterior), clima de la zona y área aproximada.\n"
         "- Si el cliente menciona una superficie que no está en el catálogo, responde con sin_resultado de inmediato.\n"
         "- Solo recomienda productos del catálogo. Si ninguno encaja, usa sin_resultado.\n\n"
 
@@ -157,6 +157,7 @@ def chat():
         "- Las opciones deben cubrir los casos reales más comunes del catálogo.\n"
         "- Para área siempre usa: ['Menos de 5 m²', '5 a 15 m²', '15 a 30 m²', 'Más de 30 m²']\n"
         "- Para uso siempre usa: ['Interior', 'Exterior', 'Ambos']\n"
+        "- Para clima siempre usa: ['Alta humedad', 'Alta temperatura', 'Exposición a lluvia', 'Clima templado']\n"
         "- Para acabado usa: ['Brillante', 'Semi mate', 'Mate', 'Sin preferencia']\n"
         "- Para superficie usa: ['Madera', 'Metal', 'Concreto', 'Otro']\n"
         "- Para preguntas de sí/no usa siempre: ['Sí', 'No', 'No estoy seguro']\n\n"
@@ -472,7 +473,7 @@ def guardar_asesoria():
     """Guarda el resultado de una asesoría en la BD.
     Funciona tanto para usuarios logueados como para visitantes anónimos."""
     from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
-    from app.routes import usuario_actual
+    from app.helpers.auth_utils import usuario_actual
 
     data = request.get_json(silent=True) or {}
     clave       = (data.get('clave') or '').strip()

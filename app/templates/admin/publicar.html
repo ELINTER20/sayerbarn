@@ -21,10 +21,21 @@
     {{ error }}
 </div>
 {% endif %}
-{% if exito %}
+
+{% if exito == '1' %}
 <div class="mb-unit-md bg-[#E8F5E9] text-[#1B5E20] font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2">
     <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1;">check_circle</span>
-    Publicación registrada correctamente. Pendiente de envío a Mercado Libre.
+    Producto publicado correctamente en Mercado Libre.
+</div>
+{% elif exito == 'pausado' %}
+<div class="mb-unit-md bg-amber-50 text-amber-800 font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2 border border-amber-200">
+    <span class="material-symbols-outlined text-[20px]">pause_circle</span>
+    Publicación pausada en Mercado Libre.
+</div>
+{% elif exito == 'reactivado' %}
+<div class="mb-unit-md bg-[#E8F5E9] text-[#1B5E20] font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2">
+    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings:'FILL' 1;">play_circle</span>
+    Publicación reactivada en Mercado Libre.
 </div>
 {% endif %}
 
@@ -39,6 +50,7 @@
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Canal</th>
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Estado</th>
                     <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Fecha</th>
+                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Acciones</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-outline-variant/50">
@@ -53,7 +65,16 @@
                             {% endif %}
                         </div>
                     </td>
-                    <td class="py-3 px-6 font-label-md text-label-md text-on-surface">{{ pub.producto_nombre }}</td>
+                    <td class="py-3 px-6">
+                        <span class="font-label-md text-label-md text-on-surface block">{{ pub.producto_nombre }}</span>
+                        {% if pub.ml_url %}
+                        <a href="{{ pub.ml_url }}" target="_blank"
+                           class="font-label-sm text-label-sm text-primary hover:underline inline-flex items-center gap-1 mt-0.5">
+                            <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                            Ver en ML
+                        </a>
+                        {% endif %}
+                    </td>
                     <td class="py-3 px-6">
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
                             <span class="material-symbols-outlined text-[14px]">storefront</span>
@@ -65,6 +86,11 @@
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800 border border-green-200">
                             <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
                             Publicado
+                        </span>
+                        {% elif pub.estado == 'pausado' %}
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            Pausado
                         </span>
                         {% elif pub.estado == 'error' %}
                         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-error-container text-on-error-container border border-error/20">
@@ -81,10 +107,43 @@
                     <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">
                         {{ pub.created_at.strftime('%d/%m/%Y') if pub.created_at else '—' }}
                     </td>
+                    <td class="py-3 px-6">
+                        <div class="flex items-center gap-2">
+                            {% if pub.estado == 'publicado' and pub.ml_item_id %}
+                            <!-- Botón pausar -->
+                            <form method="POST" action="{{ url_for('admin.pausar_publicacion', pub_id=pub.id) }}"
+                                  onsubmit="return confirm('¿Pausar esta publicación en Mercado Libre?');">
+                                <button type="submit"
+                                        title="Pausar publicación"
+                                        class="p-2 rounded-lg hover:bg-amber-50 text-amber-600 transition-colors border border-amber-200 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[18px]">pause</span>
+                                    <span class="font-label-sm text-label-sm hidden sm:inline">Pausar</span>
+                                </button>
+                            </form>
+                            {% elif pub.estado == 'pausado' and pub.ml_item_id %}
+                            <!-- Botón reactivar -->
+                            <form method="POST" action="{{ url_for('admin.reactivar_publicacion', pub_id=pub.id) }}"
+                                  onsubmit="return confirm('¿Reactivar esta publicación en Mercado Libre?');">
+                                <button type="submit"
+                                        title="Reactivar publicación"
+                                        class="p-2 rounded-lg hover:bg-green-50 text-green-700 transition-colors border border-green-200 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                                    <span class="font-label-sm text-label-sm hidden sm:inline">Reactivar</span>
+                                </button>
+                            </form>
+                            {% elif pub.ml_url %}
+                            <!-- Sin acción disponible pero con link -->
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">—</span>
+                            {% else %}
+                            <!-- Pendiente sin ml_item_id: sin acciones posibles -->
+                            <span class="font-label-sm text-label-sm text-on-surface-variant">—</span>
+                            {% endif %}
+                        </div>
+                    </td>
                 </tr>
                 {% else %}
                 <tr>
-                    <td colspan="5" class="py-12 text-center font-body-md text-body-md text-on-surface-variant">
+                    <td colspan="6" class="py-12 text-center font-body-md text-body-md text-on-surface-variant">
                         <div class="flex flex-col items-center gap-3">
                             <span class="material-symbols-outlined text-[48px]">storefront</span>
                             No hay publicaciones registradas aún.
@@ -99,7 +158,8 @@
 
 <!-- Modal nueva publicación -->
 <div id="modal-nueva-pub" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="document.getElementById('modal-nueva-pub').classList.add('hidden'); document.getElementById('modal-nueva-pub').classList.remove('flex');"></div>
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+         onclick="document.getElementById('modal-nueva-pub').classList.add('hidden'); document.getElementById('modal-nueva-pub').classList.remove('flex');"></div>
     <div class="relative bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant w-full max-w-md">
         <div class="h-1 w-full bg-gradient-to-r from-[#0033A0] via-[#455aa5] to-[#98adfe] rounded-t-xl"></div>
         <div class="p-6">
@@ -138,7 +198,7 @@
                 </div>
                 <div class="bg-primary-fixed/30 border border-primary/10 rounded-lg px-4 py-3 flex items-start gap-2">
                     <span class="material-symbols-outlined text-primary text-[18px] mt-0.5">info</span>
-                    <p class="font-label-sm text-label-sm text-on-surface-variant">La publicación quedará en estado <strong>pendiente</strong> hasta que se configure la integración con la API de Mercado Libre.</p>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">El producto se publicará directamente en Mercado Libre. Asegúrate de que tenga precio e imagen definidos.</p>
                 </div>
                 <div class="flex gap-3 pt-2">
                     <button type="button"
@@ -148,72 +208,12 @@
                     </button>
                     <button type="submit"
                             class="flex-1 px-4 py-3 bg-primary-container text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity shadow-sm flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-[18px]">add</span>
-                        Registrar
+                        <span class="material-symbols-outlined text-[18px]">publish</span>
+                        Publicar en ML
                     </button>
                 </div>
             </form>
         </div>
-    </div>
-</div>
-
-
-<div class="bg-surface-container-lowest rounded-xl card-shadow border border-outline-variant/30 overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-surface-bright border-b border-outline-variant">
-                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Imagen</th>
-                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Producto</th>
-                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Canal</th>
-                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Estado</th>
-                    <th class="py-4 px-6 font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Fecha</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-outline-variant/50">
-                {% for pub in publicaciones %}
-                <tr class="hover:bg-surface-bright/50 transition-colors">
-                    <td class="py-3 px-6">
-                        <div class="w-12 h-12 rounded-lg bg-surface-variant border border-outline-variant/50 overflow-hidden flex items-center justify-center">
-                            {% if pub.imagen_url %}
-                            <img alt="{{ pub.producto_nombre }}" class="w-full h-full object-contain" src="{{ pub.imagen_url }}" />
-                            {% else %}
-                            <span class="material-symbols-outlined text-outline text-[24px]">water_drop</span>
-                            {% endif %}
-                        </div>
-                    </td>
-                    <td class="py-3 px-6 font-label-md text-label-md text-on-surface">{{ pub.producto_nombre }}</td>
-                    <td class="py-3 px-6">
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
-                            <span class="material-symbols-outlined text-[14px]">storefront</span>
-                            {{ pub.canal | capitalize }}
-                        </span>
-                    </td>
-                    <td class="py-3 px-6">
-                        {% if pub.estado == 'publicado' %}
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800 border border-green-200">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
-                            Publicado
-                        </span>
-                        {% else %}
-                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-surface-variant text-on-surface-variant border border-outline-variant">
-                            {{ pub.estado | capitalize }}
-                        </span>
-                        {% endif %}
-                    </td>
-                    <td class="py-3 px-6 font-body-md text-body-md text-on-surface-variant">
-                        {{ pub.created_at.strftime('%d/%m/%Y') if pub.created_at else '—' }}
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="5" class="py-12 text-center font-body-md text-body-md text-on-surface-variant">
-                        No hay publicaciones registradas.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 </div>
 {% endblock %}

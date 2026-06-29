@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% block title %}SayerBarn - Mis recomendaciones{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 mb-unit-lg">
+        <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors">Mi cuenta</a>
+        <span class="material-symbols-outlined text-[16px] text-on-surface-variant">chevron_right</span>
+        <span class="font-label-md text-label-md text-primary font-bold">Mis recomendaciones</span>
+    </nav>
+
+    <div class="flex items-center gap-3 mb-unit-xl">
+        <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">recommend</span>
+        </div>
+        <div>
+            <h1 class="font-headline-lg text-headline-lg text-primary">Mis recomendaciones</h1>
+            <p class="font-body-md text-body-md text-on-surface-variant">Productos que la IA seleccionó para tus proyectos anteriores.</p>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+        {% if asesorias %}
+            {% for a in asesorias %}
+            <div class="border-b border-outline-variant last:border-0">
+                <!-- Fila principal -->
+                <div class="flex flex-col md:flex-row items-start md:items-center gap-unit-md p-unit-md hover:bg-surface-container-low transition-colors duration-200">
+
+                    <!-- Imagen producto -->
+                    <div class="shrink-0 w-16 h-16 bg-surface-container rounded-lg border border-outline-variant p-2 flex items-center justify-center overflow-hidden">
+                        {% if a.imagen_url %}
+                        <img src="{{ a.imagen_url }}" alt="{{ a.producto_nombre }}" class="w-full h-full object-contain" />
+                        {% else %}
+                        <span class="material-symbols-outlined text-outline text-[28px]">water_drop</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Info asesoría -->
+                    <div class="flex-grow min-w-0">
+                        <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-0.5">
+                            {{ a.created_at.strftime('%d %b %Y') if a.created_at else '—' }}
+                        </p>
+                        <h3 class="font-label-md text-label-md text-on-surface truncate">
+                            {% if a.producto_nombre %}{{ a.producto_nombre }}{% else %}Sin producto recomendado{% endif %}
+                        </h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant mt-0.5 text-sm">
+                            {% if a.superficie %}{{ a.superficie | capitalize }}{% endif %}
+                            {% if a.uso %} · {{ a.uso }}{% endif %}
+                            {% if a.area_m2 %} · {{ a.area_m2 }} m²{% endif %}
+                        </p>
+                    </div>
+
+                    <!-- Badge resultado + botón detalle -->
+                    <div class="flex items-center gap-3 shrink-0">
+                        {% if a.resultado == 'encontrado' %}
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold bg-[#E8F5E9] text-[#1B5E20] border border-green-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>Producto encontrado
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[12px] font-semibold bg-surface-container text-on-surface-variant border border-outline-variant">
+                            <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>Sin resultado
+                        </span>
+                        {% endif %}
+                        {% if a.producto_id %}
+                        <button onclick="toggleDetalle({{ a.id }})"
+                                class="px-4 py-2 rounded-lg border border-primary text-primary font-label-md text-label-md hover:bg-primary hover:text-white transition-all text-sm whitespace-nowrap">
+                            Ver detalle
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Panel de detalle colapsable — muestra el producto recomendado -->
+                {% if a.producto_id %}
+                <div id="detalle-{{ a.id }}" class="hidden border-t border-outline-variant bg-surface-container-low px-unit-md py-unit-md">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start">
+                        <!-- Imagen grande -->
+                        {% if a.imagen_url %}
+                        <div class="w-24 h-24 shrink-0 bg-surface-container-lowest rounded-xl border border-outline-variant p-2 flex items-center justify-center">
+                            <img src="{{ a.imagen_url }}" alt="{{ a.producto_nombre }}" class="w-full h-full object-contain" />
+                        </div>
+                        {% endif %}
+                        <!-- Info producto -->
+                        <div class="flex-grow">
+                            <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Producto recomendado</p>
+                            <h4 class="font-headline-md text-headline-md text-primary mb-2">{{ a.producto_nombre }}</h4>
+                            <div class="flex flex-wrap gap-4 text-sm text-on-surface-variant mb-3">
+                                {% if a.rendimiento_min %}
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">format_paint</span>
+                                    Rendimiento: {{ a.rendimiento_min }} m²/L
+                                </span>
+                                {% endif %}
+                                {% if a.litros_estimados %}
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">water_drop</span>
+                                    ~{{ a.litros_estimados }} L para tu proyecto
+                                </span>
+                                {% endif %}
+                                {% if a.precio_referencia %}
+                                <span class="flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[16px] text-primary">sell</span>
+                                    ${{ "%.2f"|format(a.precio_referencia) }} MXN
+                                </span>
+                                {% endif %}
+                            </div>
+                            <!-- Botones de acción -->
+                            <div class="flex flex-wrap gap-2">
+                                <a href="{{ url_for('public.detalle_producto', producto_id=a.producto_id) }}"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">info</span>
+                                    Ver ficha
+                                </a>
+                                {% if a.stock and a.stock > 0 and a.activo %}
+                                <a href="{{ url_for('pedidos.checkout', producto_id=a.producto_id) }}"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-primary-container text-on-primary font-label-md text-label-md rounded-lg hover:opacity-90 transition-opacity text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">shopping_bag</span>
+                                    Comprar ahora
+                                </a>
+                                {% else %}
+                                <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-amber-50 border border-amber-200 text-amber-700 font-label-md text-label-md rounded-lg text-sm cursor-not-allowed opacity-70">
+                                    <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
+                                    Agotado
+                                </span>
+                                {% endif %}
+                                {% if a.link_compra_ml %}
+                                <a href="{{ a.link_compra_ml }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-container-lowest border border-primary/30 text-primary font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">storefront</span>
+                                    Ver en ML
+                                </a>
+                                {% endif %}
+                                {% if a.ficha_tecnica_url %}
+                                <a href="{{ a.ficha_tecnica_url }}" target="_blank" rel="noopener"
+                                   class="inline-flex items-center gap-1.5 px-4 py-2 bg-surface-container-lowest border border-outline-variant text-on-surface-variant font-label-md text-label-md rounded-lg hover:bg-surface-container transition-colors text-sm">
+                                    <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span>
+                                    Ficha técnica
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="flex flex-col items-center justify-center py-16 gap-4 text-on-surface-variant">
+                <span class="material-symbols-outlined text-[56px]">history</span>
+                <p class="font-body-lg text-body-lg">No tienes asesorías registradas aún.</p>
+                <a href="{{ url_for('public.asesoria') }}"
+                   class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
+                    <span class="material-symbols-outlined text-[18px]">chat</span>
+                    Iniciar asesoría
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleDetalle(id) {
+    var panel = document.getElementById('detalle-' + id);
+    if (panel.classList.contains('hidden')) {
+        panel.classList.remove('hidden');
+    } else {
+        panel.classList.add('hidden');
+    }
+}
+</script>
+{% endblock %}

@@ -78,13 +78,17 @@
                 </div>
                 <div class="space-y-1.5">
                     <label class="font-label-md text-label-md text-on-surface-variant px-1">Tipo</label>
-                    <select name="tipo" class="w-full px-4 py-2.5 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none bg-white" required>
-                        <option value="">Selecciona el tipo</option>
-                        <option value="diluyente">Diluyente</option>
-                        <option value="catalizador">Catalizador</option>
-                        <option value="aditivo">Aditivo</option>
-                        <option value="retardador">Retardador</option>
-                    </select>
+                    <input name="tipo" type="text" required list="tipos-complemento"
+                        placeholder="Ej: diluyente, catalizador..."
+                        class="w-full px-4 py-2.5 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-white" />
+                    <datalist id="tipos-complemento">
+                        <option value="diluyente">
+                        <option value="catalizador">
+                        <option value="aditivo">
+                        <option value="retardador">
+                        <option value="sellador">
+                        <option value="fondo">
+                    </datalist>
                 </div>
                 <div class="space-y-1.5">
                     <label class="font-label-md text-label-md text-on-surface-variant px-1">Proporción de uso</label>

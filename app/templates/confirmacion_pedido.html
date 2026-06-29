@@ -73,13 +73,13 @@
         <!-- Acciones -->
         <div class="flex flex-col sm:flex-row gap-unit-md w-full justify-center">
             {% if usuario %}
-            <a href="{{ url_for('main.mis_pedidos') }}"
+            <a href="{{ url_for('pedidos.mis_pedidos') }}"
                class="bg-primary-container text-on-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:opacity-90 transition-opacity flex items-center justify-center gap-2 shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">receipt_long</span>
                 Ver mis pedidos
             </a>
             {% endif %}
-            <a href="{{ url_for('main.catalogo') }}"
+            <a href="{{ url_for('public.catalogo') }}"
                class="bg-surface-container-lowest text-primary border-2 border-primary font-label-md text-label-md px-8 py-3 rounded-lg hover:bg-surface-container-low transition-colors flex items-center justify-center gap-2">
                 <span class="material-symbols-outlined text-[18px]">storefront</span>
                 Seguir comprando

@@ -23,7 +23,7 @@ def admin_required(f):
                 abort(403)
         except Exception:
             # Si no hay sesión válida, redirige al login
-            return redirect(url_for('main.login'))
+            return redirect(url_for('auth.login'))
         return f(*args, **kwargs)
     return decorated
 
@@ -47,8 +47,8 @@ def dashboard():
     cur.execute("SELECT COUNT(*) as total FROM publicaciones_marketplace WHERE estado = 'publicado'")
     publicaciones_ml = cur.fetchone()['total']
 
-    # Cuenta pedidos pendientes de gestión (pendiente + pagado)
-    cur.execute("SELECT COUNT(*) as total FROM pedidos WHERE estado_pedido IN ('pendiente','pagado')")
+    # Cuenta pedidos que requieren gestión (solo confirmados con pago)
+    cur.execute("SELECT COUNT(*) as total FROM pedidos WHERE estado_pedido IN ('pagado','en_proceso')")
     pedidos_pendientes = cur.fetchone()['total']
 
     # Los 5 productos más recomendados por la IA en los últimos 7 días
@@ -99,12 +99,22 @@ def productos():
     # Cuenta el total para calcular cuántas páginas hay
     cur.execute("SELECT COUNT(*) as total FROM productos")
     total = cur.fetchone()['total']
+
+    # Stock bajo para alerta
+    cur.execute("""
+        SELECT id, nombre, COALESCE(stock,0) AS stock
+        FROM productos
+        WHERE activo = 1 AND COALESCE(stock,0) <= 5
+        ORDER BY stock ASC
+    """)
+    stock_bajo = cur.fetchall()
     cur.close()
 
     return render_template(
         'admin/productos.html',
         productos=productos_lista,
         pagina=pagina,
+        stock_bajo=stock_bajo,
         total=total,
         por_pagina=por_pagina
     )
@@ -371,13 +381,18 @@ def pedidos():
     }
     fecha_expr = fmt_map.get(periodo, fmt_map['dia'])
 
-    condiciones = ["1=1"]
+    # Por defecto solo mostramos pedidos con pago confirmado.
+    # El admin puede ver pendientes/cancelados usando el filtro de estado explícito.
+    condiciones = ["pd.estado_pedido NOT IN ('pendiente', 'cancelado')"]
     params = []
     if periodo == 'hoy':
         condiciones.append("DATE(pd.created_at) = CURDATE()")
     if filtro_estado:
-        condiciones.append("pd.estado_pedido = %s")
-        params.append(filtro_estado)
+        # Si el admin filtra explícitamente por un estado, lo respetamos sin restricción
+        condiciones = ["pd.estado_pedido = %s"]
+        params = [filtro_estado]
+        if periodo == 'hoy':
+            condiciones.append("DATE(pd.created_at) = CURDATE()")
     where = " AND ".join(condiciones)
 
     cur = mysql.connection.cursor()
@@ -496,13 +511,18 @@ def exportar_pedidos_pdf():
     }
     fecha_expr = fmt_map.get(periodo, fmt_map['dia'])
 
-    condiciones = ["1=1"]
+    # Por defecto solo mostramos pedidos con pago confirmado.
+    # El admin puede ver pendientes/cancelados usando el filtro de estado explícito.
+    condiciones = ["pd.estado_pedido NOT IN ('pendiente', 'cancelado')"]
     params = []
     if periodo == 'hoy':
         condiciones.append("DATE(pd.created_at) = CURDATE()")
     if filtro_estado:
-        condiciones.append("pd.estado_pedido = %s")
-        params.append(filtro_estado)
+        # Si el admin filtra explícitamente por un estado, lo respetamos sin restricción
+        condiciones = ["pd.estado_pedido = %s"]
+        params = [filtro_estado]
+        if periodo == 'hoy':
+            condiciones.append("DATE(pd.created_at) = CURDATE()")
     where = " AND ".join(condiciones)
 
     cur = mysql.connection.cursor()
@@ -658,7 +678,8 @@ def publicar():
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT pm.id, pm.canal, pm.estado, pm.created_at,
-               p.nombre as producto_nombre, p.imagen_url
+            pm.ml_item_id, pm.ml_url,
+            p.nombre as producto_nombre, p.imagen_url
         FROM publicaciones_marketplace pm
         JOIN productos p ON pm.producto_id = p.id
         ORDER BY pm.created_at DESC
@@ -678,23 +699,118 @@ def publicar():
 @admin_bp.route('/publicar/nueva', methods=['POST'])
 @admin_required
 def crear_publicacion():
-    """Registra una nueva publicación en estado pendiente hasta integrar la API de ML."""
-    producto_id = request.form.get('producto_id', type=int)
-    canal = request.form.get('canal', 'mercadolibre').strip()
+    """Publica un producto en Mercado Libre vía API y registra el resultado."""
+    from app.helpers.ml import publicar_producto
 
+    producto_id = request.form.get('producto_id', type=int)
     if not producto_id:
         return redirect(url_for('admin.publicar', error='Debes seleccionar un producto.'))
 
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            INSERT INTO publicaciones_marketplace (producto_id, canal, estado)
-            VALUES (%s, %s, 'pendiente')
-        """, (producto_id, canal))
-        mysql.connection.commit()
+    # Cargar datos completos del producto desde la BD
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT p.id, p.nombre, p.descripcion_ia, p.categoria_id,
+               p.precio_referencia, p.imagen_url, p.condicion_nueva,
+               p.rendimiento_min, p.uso, p.acabado,
+               p.sup_madera, p.sup_metal, p.sup_concreto, p.sup_otro,
+               COALESCE(p.stock, 1) AS stock
+        FROM productos p
+        WHERE p.id = %s AND p.activo = 1
+    """, (producto_id,))
+    producto = cur.fetchone()
+
+    if not producto:
         cur.close()
+        return redirect(url_for('admin.publicar', error='Producto no encontrado o inactivo.'))
+
+    # Llamar a la API de ML
+    ml_item_id, ml_url, error_msg = publicar_producto(producto)
+
+    if error_msg:
+        cur.close()
+        return redirect(url_for('admin.publicar', error=error_msg))
+
+    # Guardar publicación exitosa en la BD
+    try:
+        cur.execute("""
+            INSERT INTO publicaciones_marketplace
+                (producto_id, canal, estado, ml_item_id, ml_url)
+            VALUES (%s, 'mercadolibre', 'publicado', %s, %s)
+        """, (producto_id, ml_item_id, ml_url))
+
+        # Actualizar el link_compra_ml en el producto para que aparezca en catálogo
+        cur.execute(
+            "UPDATE productos SET link_compra_ml = %s WHERE id = %s",
+            (ml_url, producto_id)
+        )
+        mysql.connection.commit()
     except Exception as e:
-        print(f"[ERROR PUBLICAR] {e}")
-        return redirect(url_for('admin.publicar', error='Error al registrar la publicación.'))
+        mysql.connection.rollback()
+        print(f'[ERROR PUBLICAR BD] {e}')
+        return redirect(url_for('admin.publicar',
+                                error='Publicado en ML pero error al guardar en BD.'))
+    finally:
+        cur.close()
 
     return redirect(url_for('admin.publicar', exito='1'))
+
+@admin_bp.route('/publicar/<int:pub_id>/pausar', methods=['POST'])
+@admin_required
+def pausar_publicacion(pub_id):
+    """Pausa una publicación activa en ML."""
+    from app.helpers.ml import pausar_publicacion as ml_pausar
+
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT ml_item_id FROM publicaciones_marketplace WHERE id = %s",
+        (pub_id,)
+    )
+    pub = cur.fetchone()
+
+    if not pub or not pub.get('ml_item_id'):
+        cur.close()
+        return redirect(url_for('admin.publicar', error='No se encontró el item en Mercado Libre.'))
+
+    ok, _ = ml_pausar(pub['ml_item_id'])
+    if ok:
+        cur.execute(
+            "UPDATE publicaciones_marketplace SET estado = 'pausado' WHERE id = %s",
+            (pub_id,)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('admin.publicar', exito='pausado'))
+
+    cur.close()
+    return redirect(url_for('admin.publicar', error='No se pudo pausar la publicación en Mercado Libre.'))
+
+
+@admin_bp.route('/publicar/<int:pub_id>/reactivar', methods=['POST'])
+@admin_required
+def reactivar_publicacion(pub_id):
+    """Reactiva una publicación pausada en ML."""
+    from app.helpers.ml import reactivar_publicacion as ml_reactivar
+
+    cur = mysql.connection.cursor()
+    cur.execute(
+        "SELECT ml_item_id FROM publicaciones_marketplace WHERE id = %s",
+        (pub_id,)
+    )
+    pub = cur.fetchone()
+
+    if not pub or not pub.get('ml_item_id'):
+        cur.close()
+        return redirect(url_for('admin.publicar', error='No se encontró el item en Mercado Libre.'))
+
+    ok, _ = ml_reactivar(pub['ml_item_id'])
+    if ok:
+        cur.execute(
+            "UPDATE publicaciones_marketplace SET estado = 'publicado' WHERE id = %s",
+            (pub_id,)
+        )
+        mysql.connection.commit()
+        cur.close()
+        return redirect(url_for('admin.publicar', exito='reactivado'))
+
+    cur.close()
+    return redirect(url_for('admin.publicar', error='No se pudo reactivar la publicación en Mercado Libre.'))
