@@ -53,12 +53,12 @@
     .catch(function () {});
 
   var URLS = {
-    catalogo:  "{{ url_for('main.catalogo') }}",
-    asesoria:  "{{ url_for('main.asesoria') }}",
-    carrito:   "{{ url_for('main.carrito') }}",
-    pedidos:   "{{ url_for('main.mis_pedidos') }}",
-    favoritos: "{{ url_for('main.favoritos') }}",
-    contacto:  "{{ url_for('main.contacto') }}",
+    catalogo:  "{{ url_for('public.catalogo') }}",
+    asesoria:  "{{ url_for('public.asesoria') }}",
+    carrito:   "{{ url_for('public.carrito') }}",
+    pedidos:   "{{ url_for('pedidos.mis_pedidos') }}",
+    favoritos: "{{ url_for('usuario.favoritos') }}",
+    contacto:  "{{ url_for('public.contacto') }}",
   };
 
   var FLUJOS = {
@@ -220,7 +220,8 @@
           '<p class="font-semibold text-on-surface text-sm">' + t.nombre + '</p>' +
           '<p class="text-on-surface-variant">' + t.direccion + '</p>' +
           '<p class="text-on-surface-variant">CP ' + t.cp + '</p>' +
-          '<p class="text-primary mt-1">📞 ' + t.telefono + '</p>' +
+          '<p class="text-primary mt-1">💬 WA: ' + t.whatsapp + '</p>' +
+          '<p class="text-on-surface-variant text-[10px]">📞 Fijo: ' + t.telefono + '</p>' +
           '<p class="text-on-surface-variant text-[10px]">' + t.horario + '</p>' +
         '</div>';
     });

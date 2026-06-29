@@ -7,29 +7,29 @@
   <!-- Encabezado -->
   <div class="text-center space-y-unit-sm">
     <h1 class="font-headline-lg text-headline-lg text-primary">Contacto y Sucursales</h1>
-    <p class="font-body-lg text-body-lg text-on-surface-variant">Estamos para ayudarte. Encuéntranos en la sucursal más cercana o contáctanos directamente.</p>
+    <p class="font-body-lg text-body-lg text-on-surface-variant">Encuéntranos en la sucursal más cercana o contáctanos directamente.</p>
   </div>
 
-  <!-- Datos de contacto -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-    <div class="bg-surface-container-lowest rounded-xl p-unit-lg border border-outline-variant shadow-sm flex gap-unit-md items-start">
-      <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-        <span class="material-symbols-outlined text-primary text-[24px]">call</span>
-      </div>
-      <div>
-        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Teléfono</p>
-        <a href="tel:+528001234567" class="font-headline-md text-headline-md text-on-surface hover:text-primary transition-colors">800 123 4567</a>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Lun–Vie 8:00–18:00 · Sáb 9:00–14:00</p>
-      </div>
+  <!-- Horario general -->
+  <div class="bg-surface-container-lowest rounded-xl p-unit-lg border border-outline-variant shadow-sm flex gap-unit-md items-start max-w-md mx-auto">
+    <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+      <span class="material-symbols-outlined text-primary text-[24px]">schedule</span>
     </div>
-    <div class="bg-surface-container-lowest rounded-xl p-unit-lg border border-outline-variant shadow-sm flex gap-unit-md items-start">
-      <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-        <span class="material-symbols-outlined text-primary text-[24px]">mail</span>
-      </div>
-      <div>
-        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-1">Correo electrónico</p>
-        <a href="mailto:contacto@sayerdabet.com" class="font-headline-md text-headline-md text-on-surface hover:text-primary transition-colors break-all">contacto@sayerdabet.com</a>
-        <p class="font-body-md text-body-md text-on-surface-variant mt-1">Respondemos en menos de 24 horas hábiles</p>
+    <div>
+      <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-2">Horarios (todas las sucursales)</p>
+      <div class="space-y-1">
+        <div class="flex justify-between gap-8 font-body-md text-body-md">
+          <span class="text-on-surface">Lunes – Viernes</span>
+          <span class="text-on-surface-variant">8:30 – 18:00</span>
+        </div>
+        <div class="flex justify-between gap-8 font-body-md text-body-md">
+          <span class="text-on-surface">Sábado</span>
+          <span class="text-on-surface-variant">8:30 – 15:00</span>
+        </div>
+        <div class="flex justify-between gap-8 font-body-md text-body-md">
+          <span class="text-on-surface">Domingo</span>
+          <span class="text-on-surface-variant">Cerrado</span>
+        </div>
       </div>
     </div>
   </div>
@@ -37,14 +37,13 @@
   <!-- Buscador por CP -->
   <div id="sucursales" class="bg-surface-bright rounded-xl p-unit-xl border border-outline-variant shadow-sm space-y-unit-lg scroll-mt-24">
     <div class="text-center space-y-unit-sm">
-      <div class="flex items-center justify-center gap-2 mb-unit-sm">
+      <div class="flex items-center justify-center gap-2">
         <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">location_on</span>
         <h2 class="font-headline-md text-headline-md text-primary">Encuentra tu sucursal más cercana</h2>
       </div>
-      <p class="font-body-md text-body-md text-on-surface-variant">Ingresa tu código postal y te mostramos la sucursal en tu estado.</p>
+      <p class="font-body-md text-body-md text-on-surface-variant">Ingresa tu código postal y te mostramos la sucursal más cercana a ti.</p>
     </div>
 
-    <!-- Input -->
     <div class="flex flex-col sm:flex-row gap-unit-md max-w-md mx-auto">
       <input id="contacto-cp-field" type="text" inputmode="numeric" maxlength="5"
         placeholder="Código postal (5 dígitos)"
@@ -56,7 +55,6 @@
       </button>
     </div>
 
-    <!-- Resultado de búsqueda -->
     <div id="contacto-resultado" class="hidden"></div>
   </div>
 
@@ -71,20 +69,20 @@
           <h3 class="font-headline-md text-headline-md text-on-surface">{{ tienda.nombre }}</h3>
         </div>
 
-        <div class="flex gap-2 items-start text-on-surface-variant font-body-md text-body-md">
+        <div class="flex gap-2 items-start font-body-md text-body-md text-on-surface-variant">
           <span class="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0">location_on</span>
           <span>{{ tienda.direccion }}</span>
         </div>
         <p class="font-label-sm text-label-sm text-outline">CP {{ tienda.cp }}</p>
 
-        <div class="flex gap-2 items-center text-on-surface font-body-md text-body-md">
-          <span class="material-symbols-outlined text-[16px] flex-shrink-0 text-primary">call</span>
-          <a href="tel:+52{{ tienda.telefono | replace(' ', '') }}" class="hover:text-primary transition-colors">{{ tienda.telefono }}</a>
+        <div class="flex gap-2 items-center font-body-md text-body-md">
+          <span class="material-symbols-outlined text-[16px] flex-shrink-0 text-primary">chat</span>
+          <a href="tel:+52{{ tienda.whatsapp | replace(' ', '') }}" class="text-on-surface hover:text-primary transition-colors">WhatsApp: {{ tienda.whatsapp }}</a>
         </div>
 
-        <div class="flex gap-2 items-center text-on-surface-variant font-body-md text-body-md">
-          <span class="material-symbols-outlined text-[16px] flex-shrink-0">schedule</span>
-          <span>{{ tienda.horario }}</span>
+        <div class="flex gap-2 items-center font-body-md text-body-md">
+          <span class="material-symbols-outlined text-[16px] flex-shrink-0 text-on-surface-variant">call</span>
+          <a href="tel:+52{{ tienda.telefono | replace(' ', '') }}" class="text-on-surface-variant hover:text-primary transition-colors">Fijo: {{ tienda.telefono }}</a>
         </div>
 
         <a href="{{ tienda.maps_url }}" target="_blank" rel="noopener"
@@ -104,17 +102,42 @@
 <script>
   var TIENDAS_CONTACTO = {{ tiendas_json | safe }};
 
+  function _tarjetaTienda(t) {
+    return '<div class="bg-surface-container-lowest rounded-xl p-unit-lg border-2 border-primary/30 shadow-sm space-y-unit-sm">' +
+      '<div class="flex items-center gap-2">' +
+        '<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:\'FILL\' 1;">store</span>' +
+        '<h3 class="font-headline-md text-headline-md text-on-surface">' + t.nombre + '</h3>' +
+      '</div>' +
+      '<div class="flex gap-2 items-start font-body-md text-body-md text-on-surface-variant">' +
+        '<span class="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0">location_on</span>' +
+        '<span>' + t.direccion + '</span>' +
+      '</div>' +
+      '<p class="font-label-sm text-label-sm text-outline">CP ' + t.cp + '</p>' +
+      '<div class="flex gap-2 items-center font-body-md text-body-md">' +
+        '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-primary">chat</span>' +
+        '<a href="tel:+52' + t.whatsapp.replace(/\s/g, '') + '" class="text-on-surface hover:text-primary transition-colors">WhatsApp: ' + t.whatsapp + '</a>' +
+      '</div>' +
+      '<div class="flex gap-2 items-center font-body-md text-body-md">' +
+        '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-on-surface-variant">call</span>' +
+        '<a href="tel:+52' + t.telefono.replace(/\s/g, '') + '" class="text-on-surface-variant hover:text-primary transition-colors">Fijo: ' + t.telefono + '</a>' +
+      '</div>' +
+      '<a href="' + t.maps_url + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">' +
+        '<span class="material-symbols-outlined text-[14px]">map</span>Ver en Google Maps' +
+      '</a>' +
+    '</div>';
+  }
+
   function contactoBuscarTienda() {
     var campo = document.getElementById('contacto-cp-field');
     var resultado = document.getElementById('contacto-resultado');
     var cp = (campo.value || '').trim();
 
     if (!/^\d{5}$/.test(cp)) {
-      campo.classList.add('!border-error');
+      campo.style.borderColor = '#ba1a1a';
       campo.focus();
       return;
     }
-    campo.classList.remove('!border-error');
+    campo.style.borderColor = '';
 
     var pfx = cp.substring(0, 2);
     var coincidentes = TIENDAS_CONTACTO.filter(function (t) {
@@ -122,40 +145,14 @@
     });
     var lista  = coincidentes.length > 0 ? coincidentes : TIENDAS_CONTACTO;
     var titulo = coincidentes.length > 0
-      ? 'Sucursal más cercana a tu código postal <strong>' + cp + '</strong>:'
+      ? 'Sucursal(es) más cercana(s) a tu código postal <strong>' + cp + '</strong>:'
       : 'No tenemos sucursal en ese estado. Aquí están todas nuestras sucursales:';
 
-    var html = '<p class="font-body-md text-body-md text-on-surface-variant mb-unit-md">' + titulo + '</p>';
-    html += '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">';
+    var tarjetas = lista.map(_tarjetaTienda).join('');
 
-    lista.forEach(function (t) {
-      html +=
-        '<div class="bg-surface-container-lowest rounded-xl p-unit-lg border-2 border-primary/30 shadow-sm space-y-unit-sm">' +
-          '<div class="flex items-center gap-2">' +
-            '<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:\'FILL\' 1;">store</span>' +
-            '<h3 class="font-headline-md text-headline-md text-on-surface">' + t.nombre + '</h3>' +
-          '</div>' +
-          '<div class="flex gap-2 items-start text-on-surface-variant font-body-md text-body-md">' +
-            '<span class="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0">location_on</span>' +
-            '<span>' + t.direccion + '</span>' +
-          '</div>' +
-          '<p class="font-label-sm text-label-sm text-outline">CP ' + t.cp + '</p>' +
-          '<div class="flex gap-2 items-center font-body-md text-body-md">' +
-            '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-primary">call</span>' +
-            '<a href="tel:+52' + t.telefono.replace(/\s/g, '') + '" class="text-on-surface hover:text-primary transition-colors">' + t.telefono + '</a>' +
-          '</div>' +
-          '<div class="flex gap-2 items-center text-on-surface-variant font-body-md text-body-md">' +
-            '<span class="material-symbols-outlined text-[16px] flex-shrink-0">schedule</span>' +
-            '<span>' + t.horario + '</span>' +
-          '</div>' +
-          '<a href="' + t.maps_url + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">' +
-            '<span class="material-symbols-outlined text-[14px]">map</span>Ver en Google Maps' +
-          '</a>' +
-        '</div>';
-    });
-
-    html += '</div>';
-    resultado.innerHTML = html;
+    resultado.innerHTML =
+      '<p class="font-body-md text-body-md text-on-surface-variant mb-unit-md">' + titulo + '</p>' +
+      '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">' + tarjetas + '</div>';
     resultado.classList.remove('hidden');
     resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }

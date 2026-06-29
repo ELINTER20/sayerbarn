@@ -243,3 +243,16 @@ def resultado_asesoria(asesoria_id):
 def carrito():
     """Página del carrito (lógica del carrito vive en JS/API)."""
     return render_template('carrito.html', usuario=usuario_actual())
+
+
+@public_bp.route('/contacto')
+def contacto():
+    """Página de contacto con datos de sucursales y buscador por CP."""
+    import json as _json
+    from app.tiendas import TIENDAS
+    return render_template(
+        'contacto.html',
+        tiendas=TIENDAS,
+        tiendas_json=_json.dumps(TIENDAS, ensure_ascii=False),
+        usuario=usuario_actual(),
+    )
