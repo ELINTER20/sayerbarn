@@ -125,12 +125,12 @@
 
     <!-- Navbar -->
     <header class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
-        <div class="flex justify-between items-center h-40 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+        <div class="flex justify-between items-center h-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Logo -->
             <a href="{{ url_for('public.index') }}">
                 <img src="{{ url_for('static', filename='img/logo_sayer.jpeg') }}"
                      alt="Sayer Dabet"
-                     style="height: 100px; width: auto;" />
+                     style="height: 70px; width: auto;" />
             </a>
             <!-- Navegación escritorio -->
             <nav class="hidden md:flex space-x-gutter">
@@ -196,32 +196,25 @@
             </div>
             <!-- Menú móvil -->
             <div class="md:hidden flex items-center space-x-1">
-               
                 {% if usuario %}
                 <a href="{{ url_for('public.carrito') }}" class="relative p-1 text-primary" title="Carrito">
                     <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-error text-on-error text-[9px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}"
+                   class="text-primary border border-primary px-3 py-1 rounded font-label-md text-label-md text-sm">
+                    Iniciar sesión
+                </a>
+                <a href="{{ url_for('auth.registro') }}"
+                   class="bg-primary text-white px-3 py-1 rounded font-label-md text-label-md text-sm">
+                    Registrarse
                 </a>
                 {% endif %}
                 <button onclick="toggleMenu()" class="text-primary p-1">
                     <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
                 </button>
             </div>
-        </div>
-        <!-- Menú móvil desplegable -->
-        <div id="mobile-menu" class="hidden md:hidden bg-surface-container-lowest border-t border-outline-variant px-margin-mobile py-unit-md flex flex-col gap-unit-md">
-            <a href="{{ url_for('public.index') }}" class="font-bold text-xl text-primary py-2">Inicio</a>
-            <a href="{{ url_for('public.asesoria') }}" class="font-bold text-xl text-on-surface py-2">Asesoría</a>
-            <a href="{{ url_for('public.catalogo') }}" class="font-bold text-xl text-on-surface py-2">Catálogo</a>
-            {% if usuario %}
-            <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-bold text-xl text-on-surface py-2">Mi cuenta</a>
-            <form method="POST" action="{{ url_for('auth.logout') }}">
-                 <button type="submit" class="font-bold text-xl text-error py-2">Cerrar sesión</button>
-            </form>
-            {% else %}
-            <a href="{{ url_for('auth.login') }}" class="font-bold text-xl text-primary py-2">Iniciar sesión</a>
-            <a href="{{ url_for('auth.registro') }}" class="font-bold text-xl text-primary py-2">Registrarse</a>
-            {% endif %}
         </div>
         <div class="h-[2px] w-full prism-stripe"></div>
     </header>
@@ -324,10 +317,10 @@
                     <p class="font-body-sm text-on-surface-variant">Artículo 27 #3, Progreso, 39350 Acapulco de Juárez, Gro.</p>
                     <div class="flex flex-wrap gap-3 mt-1">
                         <a href="tel:+527299965629" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
-                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 729 996 5629
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 744 292 9451
                         </a>
                         <a href="tel:+527444862840" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
-                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 486 2840
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 468 9770
                         </a>
                         <a href="https://maps.google.com/?q=Sayer+Dabet+Articulo+27+Acapulco" target="_blank" rel="noopener"
                            class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
