@@ -196,33 +196,14 @@
             </div>
             <!-- Menú móvil -->
             <div class="md:hidden flex items-center space-x-1">
-               
+
                 {% if usuario %}
                 <a href="{{ url_for('public.carrito') }}" class="relative p-1 text-primary" title="Carrito">
                     <span class="material-symbols-outlined text-[22px]">shopping_cart</span>
                     <span class="carrito-contador hidden absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] bg-error text-on-error text-[9px] font-bold rounded-full flex items-center justify-center leading-none px-1"></span>
                 </a>
                 {% endif %}
-                <button onclick="toggleMenu()" class="text-primary p-1">
-                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
-                </button>
             </div>
-        </div>
-        <!-- Menú móvil desplegable -->
-        <div id="mobile-menu" class="hidden md:hidden bg-surface-container-lowest border-t border-outline-variant px-margin-mobile py-unit-md flex flex-col gap-unit-md">
-            <a href="{{ url_for('public.index') }}" class="font-bold text-xl text-primary py-2">Inicio</a>
-            <a href="{{ url_for('public.asesoria') }}" class="font-bold text-xl text-on-surface py-2">Asesoría</a>
-            <a href="{{ url_for('public.catalogo') }}" class="font-bold text-xl text-on-surface py-2">Catálogo</a>
-            <a href="{{ url_for('public.contacto') }}" class="font-bold text-xl text-on-surface py-2">Contacto</a>
-            {% if usuario %}
-            <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-bold text-xl text-on-surface py-2">Mi cuenta</a>
-            <form method="POST" action="{{ url_for('auth.logout') }}">
-                 <button type="submit" class="font-bold text-xl text-error py-2">Cerrar sesión</button>
-            </form>
-            {% else %}
-            <a href="{{ url_for('auth.login') }}" class="font-bold text-xl text-primary py-2">Iniciar sesión</a>
-            <a href="{{ url_for('auth.registro') }}" class="font-bold text-xl text-primary py-2">Registrarse</a>
-            {% endif %}
         </div>
         <div class="h-[2px] w-full prism-stripe"></div>
     </header>
@@ -239,6 +220,7 @@
                 <div class="font-headline-sm text-[20px] leading-[28px] font-bold text-on-primary">SayerBarn</div>
                 <p class="font-body-md text-body-md text-primary-fixed-dim/80">El Mejor Barniz</p>
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
+                <a href="{{ url_for('public.contacto') }}" class="md:hidden inline-block font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
                 <a href="{{ url_for('public.contacto') }}" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
@@ -264,11 +246,6 @@
             <span class="material-symbols-outlined text-[22px]"
                   style="font-variation-settings:'FILL' {% if request.endpoint == 'public.asesoria' %}1{% else %}0{% endif %};">chat</span>
             <span class="text-[10px] font-semibold leading-none">Asesoría</span>
-        </a>
-        <a href="{{ url_for('public.asesoria') }}" class="flex-1 flex items-center justify-center {% if request.endpoint == 'public.asesoria' %}opacity-30 pointer-events-none{% endif %}">
-            <span class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center shadow-md">
-                <span class="material-symbols-outlined text-white text-[26px]">add</span>
-            </span>
         </a>
         <a href="{{ url_for('public.catalogo') }}"
            class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.catalogo' %}text-white{% else %}text-[#8a8a88]{% endif %}">
@@ -531,11 +508,6 @@
             document.body.style.overflow = '';
         }
        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarContacto(); });
-
-        function toggleMenu() {
-            var menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        }
     </script>
 </body>
 </html>

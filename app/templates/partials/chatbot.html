@@ -6,16 +6,16 @@
 -->
 <div id="navbot-wrap">
 
-  <!-- Botón flotante -->
+  <!-- Botón flotante: en móvil va más arriba para no tapar la barra de navegación inferior -->
   <button onclick="_navbot.toggle()" title="¿Necesitas ayuda?"
-    class="fixed bottom-6 right-6 z-[200] w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center btn-lift">
+    class="fixed bottom-24 md:bottom-6 right-6 z-[200] w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg border-2 border-white flex items-center justify-center btn-lift">
     <span id="navbot-icon" class="material-symbols-outlined text-[26px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
   </button>
 
   <!-- Ventana del chat -->
   <div id="navbot-window"
-    class="hidden fixed bottom-24 right-6 z-[200] w-96 max-w-[calc(100vw-2rem)] bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
-    style="max-height:560px">
+    class="hidden fixed bottom-[168px] md:bottom-24 right-6 z-[200] w-96 max-w-[calc(100vw-2rem)] bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
+    style="max-height:480px">
 
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-3 bg-primary flex-shrink-0">
