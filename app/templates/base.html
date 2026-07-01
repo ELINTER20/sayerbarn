@@ -213,6 +213,7 @@
             <a href="{{ url_for('public.index') }}" class="font-bold text-xl text-primary py-2">Inicio</a>
             <a href="{{ url_for('public.asesoria') }}" class="font-bold text-xl text-on-surface py-2">Asesoría</a>
             <a href="{{ url_for('public.catalogo') }}" class="font-bold text-xl text-on-surface py-2">Catálogo</a>
+            <a href="{{ url_for('public.contacto') }}" class="font-bold text-xl text-on-surface py-2">Contacto</a>
             {% if usuario %}
             <a href="{{ url_for('usuario.mi_cuenta') }}" class="font-bold text-xl text-on-surface py-2">Mi cuenta</a>
             <form method="POST" action="{{ url_for('auth.logout') }}">
@@ -240,12 +241,12 @@
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
-                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Contacto</button>
+                <a href="{{ url_for('public.contacto') }}" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
-                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Sucursales</button>
+                <a href="{{ url_for('public.contacto') }}#sucursales" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Sucursales</a>
             </div>
         </div>
     </footer>
