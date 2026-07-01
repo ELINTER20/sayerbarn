@@ -1,38 +1,43 @@
-<!-- ── Chatbot de navegación flotante ─────────────────────────── -->
-<div id="chatbot-wrap">
+<!--
+  Chatbot de navegación (flujo de opciones, sin IA).
+  Botón flotante presente en todas las páginas públicas — se incluye
+  únicamente desde base.html. No tiene relación con el asesor de IA
+  de productos (ese vive en /api/chat y en la página de Asesoría).
+-->
+<div id="navbot-wrap">
 
   <!-- Botón flotante -->
-  <button onclick="_chatbot.toggle()" title="Asistente de navegación"
+  <button onclick="_navbot.toggle()" title="¿Necesitas ayuda?"
     class="fixed bottom-6 right-6 z-[200] w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center btn-lift">
-    <span id="chatbot-icon" class="material-symbols-outlined text-[26px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
+    <span id="navbot-icon" class="material-symbols-outlined text-[26px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
   </button>
 
   <!-- Ventana del chat -->
-  <div id="chatbot-window"
-    class="hidden fixed bottom-24 right-6 z-[200] w-80 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
+  <div id="navbot-window"
+    class="hidden fixed bottom-24 right-6 z-[200] w-80 max-w-[calc(100vw-3rem)] bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
     style="max-height:480px">
 
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-3 bg-primary flex-shrink-0">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
-        <span class="font-label-md text-label-md text-on-primary">Asistente SayerBarn</span>
+        <span class="font-label-md text-label-md text-on-primary">Ayuda para navegar</span>
       </div>
-      <button onclick="_chatbot.toggle()" class="text-on-primary/70 hover:text-on-primary transition-colors p-1 rounded">
+      <button onclick="_navbot.toggle()" class="text-on-primary/70 hover:text-on-primary transition-colors p-1 rounded">
         <span class="material-symbols-outlined text-[20px]">close</span>
       </button>
     </div>
 
     <!-- Mensajes -->
-    <div id="chatbot-msgs" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:180px"></div>
+    <div id="navbot-msgs" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:180px"></div>
 
-    <!-- Input de código postal (oculto por defecto) -->
-    <div id="chatbot-cp-input" class="hidden flex-shrink-0 px-4 pb-4 pt-1 border-t border-outline-variant bg-surface-container-lowest">
+    <!-- Input de código postal (solo visible en el paso de buscar tienda) -->
+    <div id="navbot-cp-box" class="hidden flex-shrink-0 px-4 pb-4 pt-1 border-t border-outline-variant bg-surface-container-lowest">
       <div class="flex gap-2">
-        <input id="chatbot-cp-field" type="text" inputmode="numeric" maxlength="5"
+        <input id="navbot-cp-field" type="text" inputmode="numeric" maxlength="5"
           placeholder="Código postal (5 dígitos)"
-          class="flex-1 border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors">
-        <button onclick="_chatbot.buscarTienda()"
+          class="flex-1 border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors" />
+        <button onclick="_navbot.buscarTienda()"
           class="bg-primary text-on-primary px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity flex-shrink-0">
           Buscar
         </button>
@@ -45,152 +50,196 @@
 <script>
 (function () {
   var abierto = false;
-  var TIENDAS = [];
+  var tiendas = [];
 
   fetch('/api/tiendas')
     .then(function (r) { return r.json(); })
-    .then(function (d) { TIENDAS = d; })
-    .catch(function () {});
+    .then(function (data) { tiendas = data; })
+    .catch(function () { tiendas = []; });
 
-  var URLS = {
+  var RUTAS = {
     catalogo:  "{{ url_for('public.catalogo') }}",
     asesoria:  "{{ url_for('public.asesoria') }}",
     carrito:   "{{ url_for('public.carrito') }}",
     pedidos:   "{{ url_for('pedidos.mis_pedidos') }}",
     favoritos: "{{ url_for('usuario.favoritos') }}",
-    contacto:  "{{ url_for('public.contacto') }}",
   };
 
-  var FLUJOS = {
-    inicio: {
-      bot: '¡Hola! Soy el asistente de navegación de SayerBarn. ¿En qué te ayudo hoy?',
+  /* ── Árbol de conversación ────────────────────────────────
+     Cada paso es o bien una lista de opciones (botones), o el
+     paso especial "cp" que muestra el input de código postal. */
+  var PASOS = {
+    menu: {
+      mensaje: '¡Hola! Soy el asistente de navegación de SayerBarn 👋 ¿En qué te ayudo?',
       opciones: [
-        { texto: 'Navegar la página',       sig: 'navegacion' },
-        { texto: 'Encontrar tienda cercana', sig: 'tienda_cp'  },
-        { texto: 'Hacer una devolución',     sig: 'devolucion' },
+        { texto: '¿Necesitas ayuda para navegar la página?', ir: 'navegar' },
+        { texto: '¿Quieres encontrar la tienda más cercana?', ir: 'cp' },
+        { texto: '¿Necesitas hacer una devolución?', ir: 'devolucion' },
       ]
     },
-    navegacion: {
-      bot: '¿A qué sección quieres ir?',
+    navegar: {
+      mensaje: 'Claro, ¿qué estás buscando?',
       opciones: [
-        { texto: 'Ver el catálogo',   url: URLS.catalogo  },
-        { texto: 'Asesoría con IA',   url: URLS.asesoria  },
-        { texto: 'Mi carrito',        url: URLS.carrito   },
-        { texto: 'Mis pedidos',       url: URLS.pedidos   },
-        { texto: 'Mis favoritos',     url: URLS.favoritos },
-        { texto: '← Menú principal',  sig: 'inicio'       },
+        { texto: 'Ver el catálogo de productos', url: RUTAS.catalogo },
+        { texto: 'Cómo hacer un pedido', ir: 'ayuda_pedido' },
+        { texto: 'Ver mi historial de pedidos', url: RUTAS.pedidos },
+        { texto: 'Ver mis productos favoritos', url: RUTAS.favoritos },
+        { texto: '← Regresar al menú', ir: 'menu' },
       ]
     },
-    tienda_cp: {
-      bot: 'Escribe tu código postal de 5 dígitos y te digo qué sucursal te queda más cerca.',
-      tipo: 'input_cp'
+    ayuda_pedido: {
+      mensaje: 'Para hacer un pedido:\n1. Entra al Catálogo y elige un producto.\n2. Da clic en "Agregar al carrito".\n3. Abre tu carrito (ícono 🛒 arriba) y confirma la compra.',
+      opciones: [
+        { texto: 'Ir al catálogo', url: RUTAS.catalogo },
+        { texto: 'Ir a mi carrito', url: RUTAS.carrito },
+        { texto: '← Regresar al menú', ir: 'menu' },
+      ]
+    },
+    cp: {
+      mensaje: 'Escribe tu código postal de 5 dígitos y te digo qué sucursal te queda más cerca.',
+      esperaCp: true
     },
     devolucion: {
-      bot: 'Para gestionar una devolución necesitas tu número de pedido. ¿Lo tienes a la mano?',
+      mensaje: 'Para una devolución necesito saber si ya tienes tu número de pedido a la mano.',
       opciones: [
-        { texto: 'Sí, lo tengo',          sig: 'dev_con_num'  },
-        { texto: 'No, necesito buscarlo',  sig: 'dev_sin_num'  },
-        { texto: '← Menú principal',       sig: 'inicio'       },
+        { texto: 'Sí, ya lo tengo', ir: 'devolucion_con_numero' },
+        { texto: 'No, necesito buscarlo', ir: 'devolucion_sin_numero' },
+        { texto: '← Regresar al menú', ir: 'menu' },
       ]
     },
-    dev_con_num: {
-      bot: 'Contáctanos con tu número de pedido:\n📞 800 123 4567\n✉ contacto@sayerdabet.com\n\nTe respondemos en menos de 24 horas hábiles.',
+    devolucion_con_numero: {
+      mensaje: 'Perfecto. Contáctanos con tu número de pedido para iniciar la devolución:\n📞 800 123 4567\n✉ contacto@sayerdabet.com\n\nTe respondemos en menos de 24 horas hábiles.',
       opciones: [
-        { texto: '🏠 Volver al inicio', sig: 'inicio' },
+        { texto: '← Regresar al menú', ir: 'menu' },
       ]
     },
-    dev_sin_num: {
-      bot: 'Puedes encontrar tu número de pedido en la sección "Mis Pedidos".',
+    devolucion_sin_numero: {
+      mensaje: 'Sin problema, puedes encontrar tu número de pedido en la sección "Mis pedidos".',
       opciones: [
-        { texto: 'Ir a Mis Pedidos',    url: URLS.pedidos },
-        { texto: '← Menú principal',    sig: 'inicio'     },
+        { texto: 'Ir a Mis pedidos', url: RUTAS.pedidos },
+        { texto: '← Regresar al menú', ir: 'menu' },
       ]
     },
   };
 
-  /* ── Helpers DOM ──────────────────────────────────────── */
-  function $msgs()    { return document.getElementById('chatbot-msgs'); }
-  function $cpInput() { return document.getElementById('chatbot-cp-input'); }
-  function scrollDown() { var m = $msgs(); if (m) m.scrollTop = m.scrollHeight; }
+  /* ── Helpers de DOM ───────────────────────────────────── */
+  function contenedorMsgs() { return document.getElementById('navbot-msgs'); }
+  function cajaCp()         { return document.getElementById('navbot-cp-box'); }
+  function bajarScroll()    { var c = contenedorMsgs(); if (c) c.scrollTop = c.scrollHeight; }
 
-  function addBotBubble(innerHtml, wide) {
-    var m = $msgs();
-    var wrap = document.createElement('div');
-    wrap.className = 'flex gap-2 items-start';
-    var maxW = wide ? 'max-w-[230px]' : 'max-w-[210px]';
-    wrap.innerHTML =
+  function burbujaBot(html) {
+    var fila = document.createElement('div');
+    fila.className = 'flex gap-2 items-start';
+    fila.innerHTML =
       '<span class="material-symbols-outlined text-primary text-[18px] mt-1 flex-shrink-0" style="font-variation-settings:\'FILL\' 1;">smart_toy</span>' +
-      '<div class="' + maxW + ' space-y-1.5">' + innerHtml + '</div>';
-    m.appendChild(wrap);
-    scrollDown();
+      '<div class="max-w-[230px] space-y-1.5">' + html + '</div>';
+    contenedorMsgs().appendChild(fila);
+    bajarScroll();
   }
 
-  function addUserBubble(texto) {
-    var m = $msgs();
-    var el = document.createElement('div');
-    el.className = 'flex justify-end';
-    el.innerHTML =
-      '<div class="bg-primary text-on-primary rounded-lg px-3 py-2 text-sm max-w-[210px] leading-snug">' +
-      texto + '</div>';
-    m.appendChild(el);
-    scrollDown();
+  function burbujaUsuario(texto) {
+    var fila = document.createElement('div');
+    fila.className = 'flex justify-end';
+    fila.innerHTML = '<div class="bg-primary text-on-primary rounded-lg px-3 py-2 text-sm max-w-[210px] leading-snug">' + texto + '</div>';
+    contenedorMsgs().appendChild(fila);
+    bajarScroll();
   }
 
-  /* ── Máquina de estados ───────────────────────────────── */
-  function irA(estado) {
-    var flujo = FLUJOS[estado];
-    if (!flujo) return;
+  function textoAHtml(texto) {
+    return (texto || '').replace(/\n/g, '<br>');
+  }
 
-    $cpInput().classList.add('hidden');
+  /* ── Motor de flujo ───────────────────────────────────── */
+  function irAPaso(nombrePaso) {
+    var paso = PASOS[nombrePaso];
+    if (!paso) return;
 
-    var texto = (flujo.bot || '').replace(/\n/g, '<br>');
-    addBotBubble(
-      '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface leading-snug">' + texto + '</div>',
-      false
-    );
+    cajaCp().classList.add('hidden');
 
-    if (flujo.tipo === 'input_cp') {
-      $cpInput().classList.remove('hidden');
-      document.getElementById('chatbot-cp-field').value = '';
-      setTimeout(function () { document.getElementById('chatbot-cp-field').focus(); }, 60);
+    burbujaBot('<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface leading-snug">' + textoAHtml(paso.mensaje) + '</div>');
+
+    if (paso.esperaCp) {
+      cajaCp().classList.remove('hidden');
+      document.getElementById('navbot-cp-field').value = '';
+      setTimeout(function () { document.getElementById('navbot-cp-field').focus(); }, 60);
       return;
     }
 
-    if (!flujo.opciones || !flujo.opciones.length) return;
+    if (!paso.opciones || !paso.opciones.length) return;
 
     var grupo = document.createElement('div');
     grupo.className = 'flex flex-col gap-1';
 
-    flujo.opciones.forEach(function (op) {
-      (function (opcion) {
-        var btn = document.createElement('button');
-        btn.className =
-          'text-left text-xs px-3 py-1.5 rounded-lg border border-primary/40 text-primary ' +
-          'hover:bg-primary/10 transition-colors w-full';
-        btn.textContent = opcion.texto;
-        btn.addEventListener('click', function () {
-          grupo.querySelectorAll('button').forEach(function (b) {
-            b.disabled = true;
-            b.classList.add('opacity-40', 'cursor-default');
-          });
-          if (opcion.url) {
-            window.location.href = opcion.url;
-          } else if (opcion.sig) {
-            addUserBubble(opcion.texto);
-            setTimeout(function () { irA(opcion.sig); }, 320);
-          }
+    paso.opciones.forEach(function (opcion) {
+      var boton = document.createElement('button');
+      boton.className = 'text-left text-xs px-3 py-1.5 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-full';
+      boton.textContent = opcion.texto;
+      boton.addEventListener('click', function () {
+        grupo.querySelectorAll('button').forEach(function (b) {
+          b.disabled = true;
+          b.classList.add('opacity-40', 'cursor-default');
         });
-        grupo.appendChild(btn);
-      })(op);
+        if (opcion.url) {
+          window.location.href = opcion.url;
+          return;
+        }
+        burbujaUsuario(opcion.texto);
+        setTimeout(function () { irAPaso(opcion.ir); }, 300);
+      });
+      grupo.appendChild(boton);
     });
 
-    $msgs().appendChild(grupo);
-    scrollDown();
+    contenedorMsgs().appendChild(grupo);
+    bajarScroll();
   }
 
-  /* ── Búsqueda por CP ──────────────────────────────────── */
+  /* ── Buscador de tienda por código postal ────────────────
+     Compara los primeros 2 dígitos del CP (estado) contra cada
+     tienda. Dentro del mismo estado, se queda con la(s) de CP
+     numéricamente más cercano. Si ninguna tienda está en el
+     mismo estado, muestra todas para que el usuario elija. */
+  function buscarTiendaPorCp(cp) {
+    var cpNum = parseInt(cp, 10);
+    var prefijo = cp.substring(0, 2);
+
+    var mismoEstado = tiendas.filter(function (t) {
+      return t.cp.substring(0, 2) === prefijo;
+    });
+
+    if (mismoEstado.length === 0) {
+      return { lista: tiendas, titulo: 'No tenemos sucursal en tu estado. Aquí están todas nuestras sucursales:' };
+    }
+
+    var distanciaMin = Infinity;
+    mismoEstado.forEach(function (t) {
+      var d = Math.abs(parseInt(t.cp, 10) - cpNum);
+      if (d < distanciaMin) distanciaMin = d;
+    });
+    var masCercanas = mismoEstado.filter(function (t) {
+      return Math.abs(parseInt(t.cp, 10) - cpNum) === distanciaMin;
+    });
+
+    return {
+      lista: masCercanas,
+      titulo: masCercanas.length === 1
+        ? 'La sucursal más cercana a tu código postal es:'
+        : 'Estas son tus sucursales más cercanas:'
+    };
+  }
+
+  function tarjetaTienda(t) {
+    return '<div class="bg-surface-container-low rounded-lg px-3 py-2 text-xs border border-outline-variant space-y-0.5">' +
+      '<p class="font-semibold text-on-surface text-sm">' + t.nombre + '</p>' +
+      '<p class="text-on-surface-variant">' + t.direccion + '</p>' +
+      '<p class="text-on-surface-variant">CP ' + t.cp + '</p>' +
+      '<p class="text-primary mt-1">💬 WhatsApp: ' + t.whatsapp + '</p>' +
+      '<p class="text-on-surface-variant text-[10px]">📞 Fijo: ' + t.telefono + '</p>' +
+      '<p class="text-on-surface-variant text-[10px]">' + t.horario + '</p>' +
+    '</div>';
+  }
+
   function buscarTienda() {
-    var campo = document.getElementById('chatbot-cp-field');
+    var campo = document.getElementById('navbot-cp-field');
     var cp = (campo.value || '').trim();
 
     if (!/^\d{5}$/.test(cp)) {
@@ -199,91 +248,44 @@
       return;
     }
     campo.style.borderColor = '';
-    $cpInput().classList.add('hidden');
-    addUserBubble('Mi CP es ' + cp);
+    cajaCp().classList.add('hidden');
+    burbujaUsuario('Mi CP es ' + cp);
 
-    var cpNum = parseInt(cp);
-    var pfx   = cp.substring(0, 2);
+    var resultado = buscarTiendaPorCp(cp);
+    var html = '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface">' + resultado.titulo + '</div>';
+    resultado.lista.forEach(function (t) { html += tarjetaTienda(t); });
+    html += '<button id="navbot-volver-cp" class="text-xs text-primary hover:underline">← Regresar al menú</button>';
 
-    var mismoEstado = TIENDAS.filter(function (t) {
-      return t.cp.substring(0, 2) === pfx;
-    });
+    burbujaBot(html);
 
-    var lista, titulo;
-
-    if (mismoEstado.length === 0) {
-      lista  = TIENDAS;
-      titulo = 'No tenemos sucursal en tu estado. Aquí están todas:';
-    } else {
-      var minDist = Infinity;
-      mismoEstado.forEach(function (t) {
-        var d = Math.abs(parseInt(t.cp) - cpNum);
-        if (d < minDist) minDist = d;
-      });
-      lista = mismoEstado.filter(function (t) {
-        return Math.abs(parseInt(t.cp) - cpNum) === minDist;
-      });
-      titulo = lista.length === 1
-        ? 'Sucursal más cercana a tu código postal:'
-        : 'Sucursales más cercanas a tu código postal:';
-    }
-
-    var inner =
-      '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface">' + titulo + '</div>';
-
-    lista.forEach(function (t) {
-      inner +=
-        '<div class="bg-surface-container-low rounded-lg px-3 py-2 text-xs border border-outline-variant space-y-0.5">' +
-          '<p class="font-semibold text-on-surface text-sm">' + t.nombre + '</p>' +
-          '<p class="text-on-surface-variant">' + t.direccion + '</p>' +
-          '<p class="text-on-surface-variant">CP ' + t.cp + '</p>' +
-          '<p class="text-primary mt-1">💬 WA: ' + t.whatsapp + '</p>' +
-          '<p class="text-on-surface-variant text-[10px]">📞 Fijo: ' + t.telefono + '</p>' +
-          '<p class="text-on-surface-variant text-[10px]">' + t.horario + '</p>' +
-        '</div>';
-    });
-
-    inner +=
-      '<button class="text-xs text-primary hover:underline chatbot-volver-btn">← Menú principal</button>';
-
-    addBotBubble(inner, true);
-
-    /* Adjunta el evento al botón volver que acaba de renderizarse */
-    setTimeout(function () {
-      var btns = $msgs().querySelectorAll('.chatbot-volver-btn');
-      var ultimo = btns[btns.length - 1];
-      if (ultimo) {
-        ultimo.addEventListener('click', function () { irA('inicio'); });
-        ultimo.classList.remove('chatbot-volver-btn');
-      }
-      scrollDown();
-    }, 0);
+    var botonVolver = document.getElementById('navbot-volver-cp');
+    if (botonVolver) botonVolver.addEventListener('click', function () { irAPaso('menu'); });
+    bajarScroll();
   }
 
-  /* ── Toggle ventana ───────────────────────────────────── */
+  /* ── Abrir / cerrar ───────────────────────────────────── */
   function toggle() {
     abierto = !abierto;
-    var win  = document.getElementById('chatbot-window');
-    var icon = document.getElementById('chatbot-icon');
+    var ventana = document.getElementById('navbot-window');
+    var icono = document.getElementById('navbot-icon');
     if (abierto) {
-      win.classList.remove('hidden');
-      icon.textContent = 'close';
-      icon.style.fontVariationSettings = "'FILL' 0";
-      if (!$msgs().hasChildNodes()) irA('inicio');
+      ventana.classList.remove('hidden');
+      icono.textContent = 'close';
+      icono.style.fontVariationSettings = "'FILL' 0";
+      if (!contenedorMsgs().hasChildNodes()) irAPaso('menu');
     } else {
-      win.classList.add('hidden');
-      icon.textContent = 'support_agent';
-      icon.style.fontVariationSettings = "'FILL' 1";
+      ventana.classList.add('hidden');
+      icono.textContent = 'support_agent';
+      icono.style.fontVariationSettings = "'FILL' 1";
     }
   }
 
-  /* ── API pública ──────────────────────────────────────── */
-  window._chatbot = { toggle: toggle, buscarTienda: buscarTienda };
+  window._navbot = { toggle: toggle, buscarTienda: buscarTienda };
 
   document.addEventListener('DOMContentLoaded', function () {
-    var field = document.getElementById('chatbot-cp-field');
-    if (field) {
-      field.addEventListener('keydown', function (e) {
+    var campo = document.getElementById('navbot-cp-field');
+    if (campo) {
+      campo.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') buscarTienda();
       });
     }
