@@ -14,31 +14,31 @@
 
   <!-- Ventana del chat -->
   <div id="navbot-window"
-    class="hidden fixed bottom-24 right-6 z-[200] w-80 max-w-[calc(100vw-3rem)] bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
-    style="max-height:480px">
+    class="hidden fixed bottom-24 right-6 z-[200] w-96 max-w-[calc(100vw-2rem)] bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant flex flex-col overflow-hidden"
+    style="max-height:560px">
 
     <!-- Header -->
     <div class="flex items-center justify-between px-4 py-3 bg-primary flex-shrink-0">
       <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
-        <span class="font-label-md text-label-md text-on-primary">Ayuda para navegar</span>
+        <span class="material-symbols-outlined text-on-primary text-[22px]" style="font-variation-settings:'FILL' 1;">support_agent</span>
+        <span class="text-base font-semibold text-on-primary">Ayuda para navegar</span>
       </div>
       <button onclick="_navbot.toggle()" class="text-on-primary/70 hover:text-on-primary transition-colors p-1 rounded">
-        <span class="material-symbols-outlined text-[20px]">close</span>
+        <span class="material-symbols-outlined text-[22px]">close</span>
       </button>
     </div>
 
     <!-- Mensajes -->
-    <div id="navbot-msgs" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:180px"></div>
+    <div id="navbot-msgs" class="flex-1 overflow-y-auto p-4 space-y-3" style="min-height:220px"></div>
 
     <!-- Input de código postal (solo visible en el paso de buscar tienda) -->
     <div id="navbot-cp-box" class="hidden flex-shrink-0 px-4 pb-4 pt-1 border-t border-outline-variant bg-surface-container-lowest">
       <div class="flex gap-2">
         <input id="navbot-cp-field" type="text" inputmode="numeric" maxlength="5"
           placeholder="Código postal (5 dígitos)"
-          class="flex-1 border border-outline-variant rounded-lg px-3 py-2 text-sm bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors" />
+          class="flex-1 border border-outline-variant rounded-lg px-3 py-2.5 text-base bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors" />
         <button onclick="_navbot.buscarTienda()"
-          class="bg-primary text-on-primary px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity flex-shrink-0">
+          class="bg-primary text-on-primary px-4 py-2.5 rounded-lg text-base font-semibold hover:opacity-90 transition-opacity flex-shrink-0">
           Buscar
         </button>
       </div>
@@ -131,8 +131,8 @@
     var fila = document.createElement('div');
     fila.className = 'flex gap-2 items-start';
     fila.innerHTML =
-      '<span class="material-symbols-outlined text-primary text-[18px] mt-1 flex-shrink-0" style="font-variation-settings:\'FILL\' 1;">smart_toy</span>' +
-      '<div class="max-w-[230px] space-y-1.5">' + html + '</div>';
+      '<span class="material-symbols-outlined text-primary text-[20px] mt-1 flex-shrink-0" style="font-variation-settings:\'FILL\' 1;">smart_toy</span>' +
+      '<div class="max-w-[270px] space-y-2">' + html + '</div>';
     contenedorMsgs().appendChild(fila);
     bajarScroll();
   }
@@ -140,7 +140,7 @@
   function burbujaUsuario(texto) {
     var fila = document.createElement('div');
     fila.className = 'flex justify-end';
-    fila.innerHTML = '<div class="bg-primary text-on-primary rounded-lg px-3 py-2 text-sm max-w-[210px] leading-snug">' + texto + '</div>';
+    fila.innerHTML = '<div class="bg-primary text-on-primary rounded-lg px-3 py-2 text-base max-w-[250px] leading-snug">' + texto + '</div>';
     contenedorMsgs().appendChild(fila);
     bajarScroll();
   }
@@ -156,7 +156,7 @@
 
     cajaCp().classList.add('hidden');
 
-    burbujaBot('<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface leading-snug">' + textoAHtml(paso.mensaje) + '</div>');
+    burbujaBot('<div class="bg-surface-container rounded-lg px-3 py-2 text-base text-on-surface leading-snug">' + textoAHtml(paso.mensaje) + '</div>');
 
     if (paso.esperaCp) {
       cajaCp().classList.remove('hidden');
@@ -172,7 +172,7 @@
 
     paso.opciones.forEach(function (opcion) {
       var boton = document.createElement('button');
-      boton.className = 'text-left text-xs px-3 py-1.5 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-full';
+      boton.className = 'text-left text-sm px-3 py-2 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-full leading-snug';
       boton.textContent = opcion.texto;
       boton.addEventListener('click', function () {
         grupo.querySelectorAll('button').forEach(function (b) {
@@ -228,13 +228,13 @@
   }
 
   function tarjetaTienda(t) {
-    return '<div class="bg-surface-container-low rounded-lg px-3 py-2 text-xs border border-outline-variant space-y-0.5">' +
-      '<p class="font-semibold text-on-surface text-sm">' + t.nombre + '</p>' +
+    return '<div class="bg-surface-container-low rounded-lg px-3 py-2.5 text-sm border border-outline-variant space-y-1">' +
+      '<p class="font-semibold text-on-surface text-base">' + t.nombre + '</p>' +
       '<p class="text-on-surface-variant">' + t.direccion + '</p>' +
       '<p class="text-on-surface-variant">CP ' + t.cp + '</p>' +
       '<p class="text-primary mt-1">💬 WhatsApp: ' + t.whatsapp + '</p>' +
-      '<p class="text-on-surface-variant text-[10px]">📞 Fijo: ' + t.telefono + '</p>' +
-      '<p class="text-on-surface-variant text-[10px]">' + t.horario + '</p>' +
+      '<p class="text-on-surface-variant text-xs">📞 Fijo: ' + t.telefono + '</p>' +
+      '<p class="text-on-surface-variant text-xs">' + t.horario + '</p>' +
     '</div>';
   }
 
@@ -252,9 +252,9 @@
     burbujaUsuario('Mi CP es ' + cp);
 
     var resultado = buscarTiendaPorCp(cp);
-    var html = '<div class="bg-surface-container rounded-lg px-3 py-2 text-sm text-on-surface">' + resultado.titulo + '</div>';
+    var html = '<div class="bg-surface-container rounded-lg px-3 py-2 text-base text-on-surface">' + resultado.titulo + '</div>';
     resultado.lista.forEach(function (t) { html += tarjetaTienda(t); });
-    html += '<button id="navbot-volver-cp" class="text-xs text-primary hover:underline">← Regresar al menú</button>';
+    html += '<button id="navbot-volver-cp" class="text-sm text-primary hover:underline">← Regresar al menú</button>';
 
     burbujaBot(html);
 
