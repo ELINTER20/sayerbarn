@@ -125,12 +125,12 @@
 
     <!-- Navbar -->
     <header class="bg-surface-container-lowest w-full sticky top-0 z-50 border-b-2 border-primary/10 shadow-sm">
-        <div class="flex justify-between items-center h-40 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+        <div class="flex justify-between items-center h-24 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <!-- Logo -->
             <a href="{{ url_for('public.index') }}">
                 <img src="{{ url_for('static', filename='img/logo_sayer.jpeg') }}"
                      alt="Sayer Dabet"
-                     style="height: 100px; width: auto;" />
+                     style="height: 70px; width: auto;" />
             </a>
             <!-- Navegación escritorio -->
             <nav class="hidden md:flex space-x-gutter">
@@ -240,12 +240,12 @@
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
-                <a href="{{ url_for('public.contacto') }}" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
+                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Contacto</button>
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
                 <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
-                <a href="{{ url_for('public.contacto') }}#sucursales" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Sucursales</a>
+                <button onclick="abrirContacto()" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline text-left">Sucursales</button>
             </div>
         </div>
     </footer>
@@ -364,10 +364,10 @@
                     <p class="font-body-sm text-on-surface-variant">Artículo 27 #3, Progreso, 39350 Acapulco de Juárez, Gro.</p>
                     <div class="flex flex-wrap gap-3 mt-1">
                         <a href="tel:+527299965629" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
-                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 729 996 5629
+                            <span class="material-symbols-outlined text-[14px]">chat</span>WhatsApp: 744 292 9451
                         </a>
                         <a href="tel:+527444862840" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-on-surface-variant hover:text-primary hover:underline">
-                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 486 2840
+                            <span class="material-symbols-outlined text-[14px]">call</span>Fijo: 744 468 9770
                         </a>
                         <a href="https://maps.google.com/?q=Sayer+Dabet+Articulo+27+Acapulco" target="_blank" rel="noopener"
                            class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">
@@ -489,7 +489,7 @@
                 } else {
                     // Ya está en el límite — mostrar aviso
                     var toast = document.getElementById('carrito-toast');
-                    toast.textContent = '⚠ Solo hay ' + stockMax + ' unidad' + (stockMax !== 1 ? 'es' : '') + ' disponible' + (stockMax !== 1 ? 's' : '');
+                    toast.textContent = '⚠️ Solo hay ' + stockMax + ' unidad' + (stockMax !== 1 ? 'es' : '') + ' disponible' + (stockMax !== 1 ? 's' : '');
                     toast.classList.remove('opacity-0', 'translate-y-2');
                     toast.classList.add('opacity-100', 'translate-y-0');
                     setTimeout(function() {

@@ -12,25 +12,49 @@
         <h1 class="font-headline-lg text-headline-lg text-on-surface">Editar Producto</h1>
     </div>
 
+    {% if error %}
+    <div class="mb-unit-md bg-error-container text-on-error-container font-body-md text-body-md px-4 py-3 rounded-lg flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px]">error</span>
+        {{ error }}
+    </div>
+    {% endif %}
+
     <div class="bg-surface rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] overflow-hidden">
         <div class="h-1 w-full bg-gradient-to-r from-[#0033A0] via-[#455aa5] to-[#98adfe]"></div>
-        <form action="{{ url_for('admin.editar_producto', id=producto.id) }}" method="POST" class="p-gutter grid grid-cols-1 md:grid-cols-2 gap-gutter">
+        <form action="{{ url_for('admin.editar_producto', id=producto.id) }}" method="POST" enctype="multipart/form-data"
+              class="p-gutter grid grid-cols-1 md:grid-cols-2 gap-gutter">
 
-            <!-- Columna izquierda -->
+            <!-- ── Columna izquierda ── -->
             <div class="space-y-unit-lg flex flex-col">
+
+                <!-- Clave: fija desde la creación, no editable (la usa el módulo de IA para identificar productos) -->
                 <div class="space-y-unit-sm">
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="nombre">Nombre del Producto</label>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="clave">Clave del producto</label>
+                    <input class="w-full px-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface-variant uppercase cursor-not-allowed"
+                        id="clave" type="text" value="{{ producto.clave or '' }}" disabled />
+                    <p class="font-label-sm text-label-sm text-outline">La clave no se puede modificar una vez creado el producto.</p>
+                </div>
+
+                <!-- Nombre -->
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="nombre">Nombre del producto</label>
                     <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
                         id="nombre" name="nombre" placeholder="Ej. Barniz Marino Premium" type="text"
-                        value="{{ producto.nombre or '' }}" />
+                        value="{{ producto.nombre or '' }}" maxlength="200" />
                 </div>
+
+                <!-- Descripción -->
                 <div class="space-y-unit-sm flex-grow flex flex-col">
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="descripcion">Descripción</label>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="descripcion">
+                        Descripción <span class="text-on-surface-variant font-normal">(para la IA)</span>
+                    </label>
                     <textarea class="w-full flex-grow px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface resize-none"
-                        id="descripcion" name="descripcion" placeholder="Descripción detallada del producto..." rows="5">{{ producto.descripcion_ia or '' }}</textarea>
+                        id="descripcion" name="descripcion" placeholder="Descripción natural del producto. La IA la usa para recomendar." rows="4">{{ producto.descripcion_ia or '' }}</textarea>
                 </div>
+
+                <!-- Superficies -->
                 <div class="space-y-unit-sm">
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Superficie</label>
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Superficie compatible</label>
                     <div class="flex flex-wrap gap-2">
                         <label class="inline-flex items-center bg-[#E8EDF7] px-3 py-1.5 rounded-full cursor-pointer hover:bg-primary-fixed-dim transition-colors">
                             <input class="form-checkbox h-4 w-4 text-primary rounded border-outline-variant mr-2 bg-white focus:ring-primary"
@@ -54,10 +78,13 @@
                         </label>
                     </div>
                 </div>
+
+                <!-- Uso y Acabado -->
                 <div class="grid grid-cols-2 gap-unit-md">
                     <div class="space-y-unit-sm">
                         <label class="block font-label-sm text-label-sm text-on-surface-variant" for="uso">Uso</label>
-                        <select class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface" id="uso" name="uso">
+                        <select class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                            id="uso" name="uso">
                             <option value="">Sin especificar</option>
                             <option value="interior" {% if producto.uso == 'interior' %}selected{% endif %}>Interior</option>
                             <option value="exterior" {% if producto.uso == 'exterior' %}selected{% endif %}>Exterior</option>
@@ -71,41 +98,106 @@
                                 id="acabado" name="acabado">
                                 <option value="">Sin acabado</option>
                                 <option value="brillante" {% if producto.acabado == 'brillante' %}selected{% endif %}>Brillante</option>
-                                <option value="semi-mate" {% if producto.acabado == 'semi-mate' %}selected{% endif %}>Semi mate</option>
+                                <option value="semimate" {% if producto.acabado == 'semimate' %}selected{% endif %}>Semi mate</option>
                                 <option value="mate" {% if producto.acabado == 'mate' %}selected{% endif %}>Mate</option>
+                                <option value="ninguno" {% if producto.acabado == 'ninguno' %}selected{% endif %}>Ninguno (fondos)</option>
                             </select>
                             <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
                         </div>
                     </div>
                 </div>
+
+                <!-- Categoría -->
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="categoria_id">
+                        Categoría <span class="text-error">*</span>
+                    </label>
+                    <div class="relative">
+                        <select class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface appearance-none cursor-pointer"
+                            id="categoria_id" name="categoria_id" required>
+                            <option value="" disabled {% if not producto.categoria_id %}selected{% endif %}>Selecciona categoría...</option>
+                            {% for cat in categorias %}
+                            <option value="{{ cat.id }}" {% if producto.categoria_id == cat.id %}selected{% endif %}>{{ cat.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- Columna derecha -->
+            <!-- ── Columna derecha ── -->
             <div class="space-y-unit-lg">
+
+                <!-- Imagen del producto: arrastrar/soltar o seleccionar desde el dispositivo -->
                 <div class="space-y-unit-sm">
-                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Imagen Principal</label>
-                    {% if producto.imagen_url %}
-                    <div class="rounded-xl overflow-hidden border border-outline-variant h-40 flex items-center justify-center bg-surface-container-low mb-2">
-                        <img src="{{ producto.imagen_url }}" alt="{{ producto.nombre }}" class="max-h-full max-w-full object-contain p-2" />
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant">Imagen del producto</label>
+
+                    <div id="dropzone"
+                         class="relative rounded-xl border-2 border-dashed border-outline-variant hover:border-primary transition-colors bg-surface-container-low cursor-pointer overflow-hidden">
+                        <input type="file" id="imagen_file" name="imagen_file"
+                               accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" />
+
+                        <!-- Estado vacío -->
+                        <div id="dropzone-empty"
+                             class="flex flex-col items-center justify-center gap-2 py-8 px-4 text-center {% if producto.imagen_url %}hidden{% endif %}">
+                            <span class="material-symbols-outlined text-4xl text-outline">cloud_upload</span>
+                            <p class="font-body-md text-body-md text-on-surface-variant">
+                                Arrastra una imagen aquí o <span class="text-primary font-bold">haz clic para seleccionar</span>
+                            </p>
+                            <p class="font-label-sm text-label-sm text-outline">PNG, JPG, WEBP o GIF · máx. 5MB</p>
+                        </div>
+
+                        <!-- Preview -->
+                        <div id="dropzone-preview"
+                             class="relative h-40 flex items-center justify-center bg-surface-container-low {% if not producto.imagen_url %}hidden{% endif %}">
+                            <img id="img-tag" src="{{ producto.imagen_url or '' }}" alt="{{ producto.nombre }}"
+                                 class="max-h-full max-w-full object-contain p-2" />
+                            <button type="button" id="btn-quitar-imagen"
+                                    class="absolute top-2 right-2 bg-surface rounded-full w-8 h-8 flex items-center justify-center shadow hover:bg-error-container transition-colors">
+                                <span class="material-symbols-outlined text-[18px] text-error">close</span>
+                            </button>
+                        </div>
                     </div>
-                    {% endif %}
-                    <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
-                        id="imagen_url" name="imagen_url" placeholder="URL de la imagen"
-                        type="text" value="{{ producto.imagen_url or '' }}" />
-                    <p class="font-label-sm text-label-sm text-outline">URL de imagen externa o ruta local.</p>
+
+                    <details class="mt-1">
+                        <summary class="font-label-sm text-label-sm text-primary cursor-pointer select-none">O pegar una URL de imagen</summary>
+                        <input class="w-full mt-2 px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                            id="imagen_url" name="imagen_url" placeholder="https://..."
+                            type="text" value="{{ producto.imagen_url or '' }}" />
+                    </details>
+
+                    <p id="imagen-error" class="font-label-sm text-label-sm text-error hidden"></p>
+                    <p class="font-label-sm text-label-sm text-outline">Subir una imagen nueva reemplaza la actual.</p>
                 </div>
+
+                <!-- Rendimiento -->
                 <div class="space-y-unit-sm">
                     <label class="block font-label-sm text-label-sm text-on-surface-variant" for="rendimiento">Rendimiento (m²/L)</label>
                     <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
-                        id="rendimiento" name="rendimiento" placeholder="Ej. 12" type="number"
+                        id="rendimiento" name="rendimiento" placeholder="Ej. 8" type="number" step="0.1" min="0"
                         value="{{ producto.rendimiento_min or '' }}" />
                 </div>
+
+                <!-- Precio -->
+                <div class="space-y-unit-sm">
+                    <label class="block font-label-sm text-label-sm text-on-surface-variant" for="precio">Precio de referencia (MXN)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 font-body-md text-body-md text-outline">$</span>
+                        <input class="w-full pl-8 pr-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
+                            id="precio" name="precio" placeholder="0.00" type="number" step="0.01" min="0"
+                            value="{{ producto.precio_referencia or '' }}" />
+                    </div>
+                </div>
+
+                <!-- Stock -->
                 <div class="space-y-unit-sm">
                     <label class="block font-label-sm text-label-sm text-on-surface-variant" for="stock">Stock disponible</label>
                     <input class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-on-surface"
-                        id="stock" name="stock" placeholder="Ej. 10" type="number" min="0"
+                        id="stock" name="stock" placeholder="Ej. 10" type="number" step="1" min="0"
                         value="{{ producto.stock or 0 }}" />
                 </div>
+
+                <!-- Enlace Mercado Libre -->
                 <div class="space-y-unit-sm">
                     <label class="block font-label-sm text-label-sm text-on-surface-variant" for="enlace">Enlace de compra (Mercado Libre)</label>
                     <div class="relative">
@@ -117,7 +209,7 @@
                 </div>
             </div>
 
-            <!-- Acciones (span ambas columnas) -->
+            <!-- ── Acciones ── -->
             <div class="col-span-1 md:col-span-2 pt-unit-md mt-unit-md border-t border-outline-variant flex justify-end space-x-4">
                 <a href="{{ url_for('admin.productos') }}"
                    class="px-6 py-3 bg-white border-2 border-primary text-primary font-label-md text-label-md font-bold rounded-lg hover:bg-surface-container-low transition-colors flex items-center">
@@ -132,4 +224,115 @@
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var dropzone   = document.getElementById('dropzone');
+    var fileInput  = document.getElementById('imagen_file');
+    var empty      = document.getElementById('dropzone-empty');
+    var previewBox = document.getElementById('dropzone-preview');
+    var imgTag     = document.getElementById('img-tag');
+    var urlInput   = document.getElementById('imagen_url');
+    var errorMsg   = document.getElementById('imagen-error');
+    var btnQuitar  = document.getElementById('btn-quitar-imagen');
+
+    var MAX_MB = 5;
+    var TIPOS_VALIDOS = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+
+    function mostrarError(msg) {
+        errorMsg.textContent = msg;
+        errorMsg.classList.remove('hidden');
+    }
+    function limpiarError() {
+        errorMsg.textContent = '';
+        errorMsg.classList.add('hidden');
+    }
+    function mostrarPreview(src) {
+        imgTag.src = src;
+        empty.classList.add('hidden');
+        previewBox.classList.remove('hidden');
+    }
+    function limpiarSeleccion() {
+        fileInput.value = '';
+        imgTag.src = '';
+        previewBox.classList.add('hidden');
+        empty.classList.remove('hidden');
+    }
+
+    function manejarArchivo(file) {
+        limpiarError();
+        if (!file) return;
+        if (TIPOS_VALIDOS.indexOf(file.type) === -1) {
+            mostrarError('Formato no soportado. Usa PNG, JPG, WEBP o GIF.');
+            fileInput.value = '';
+            return;
+        }
+        if (file.size > MAX_MB * 1024 * 1024) {
+            mostrarError('La imagen supera el tamaño máximo de ' + MAX_MB + 'MB.');
+            fileInput.value = '';
+            return;
+        }
+        // Si se elige un archivo, la URL manual se limpia para evitar ambigüedad
+        urlInput.value = '';
+        var reader = new FileReader();
+        reader.onload = function (e) { mostrarPreview(e.target.result); };
+        reader.readAsDataURL(file);
+    }
+
+    dropzone.addEventListener('click', function (e) {
+        if (btnQuitar && (e.target === btnQuitar || btnQuitar.contains(e.target))) return;
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+        manejarArchivo(fileInput.files[0]);
+    });
+
+    ['dragenter', 'dragover'].forEach(function (evt) {
+        dropzone.addEventListener(evt, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.add('border-primary');
+        });
+    });
+    ['dragleave', 'drop'].forEach(function (evt) {
+        dropzone.addEventListener(evt, function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropzone.classList.remove('border-primary');
+        });
+    });
+    dropzone.addEventListener('drop', function (e) {
+        var files = e.dataTransfer.files;
+        if (files && files.length) {
+            fileInput.files = files;
+            manejarArchivo(files[0]);
+        }
+    });
+
+    if (btnQuitar) {
+        btnQuitar.addEventListener('click', function (e) {
+            e.stopPropagation();
+            limpiarSeleccion();
+        });
+    }
+
+    // Si el usuario escribe una URL manualmente, mostrar su preview y soltar el archivo elegido
+    urlInput.addEventListener('input', function () {
+        var url = urlInput.value.trim();
+        if (url) {
+            fileInput.value = '';
+            limpiarError();
+            previewBox.classList.add('hidden');
+            imgTag.src = url;
+            imgTag.onload  = function () { previewBox.classList.remove('hidden'); empty.classList.add('hidden'); };
+            imgTag.onerror = function () { previewBox.classList.add('hidden'); };
+        } else if (!fileInput.files.length) {
+            limpiarSeleccion();
+        }
+    });
+})();
+</script>
 {% endblock %}

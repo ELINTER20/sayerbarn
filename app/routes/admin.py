@@ -2,6 +2,7 @@ from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 from app import mysql
+from app.helpers.uploads import guardar_imagen_producto
 
 # Blueprint de administración: todas sus rutas empiezan con /admin
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -144,6 +145,7 @@ def agregar_producto():
         imagen_url  = request.form.get('imagen_url', '').strip() or None
         rendimiento = request.form.get('rendimiento', type=float) or None
         precio      = request.form.get('precio', type=float) or None
+        stock       = request.form.get('stock', type=int) or 0
         enlace      = request.form.get('enlace', '').strip() or None
         # Checkboxes de superficie: 1 si marcados, 0 si no
         sup_madera  = 1 if request.form.get('sup_madera') else 0
@@ -151,15 +153,32 @@ def agregar_producto():
         sup_concreto= 1 if request.form.get('sup_concreto') else 0
         sup_otro    = 1 if request.form.get('sup_otro') else 0
 
+        # Si se subió una imagen desde el dispositivo, guardarla y usar su ruta;
+        # si no, se conserva lo que haya en el campo de URL manual (fallback).
+        imagen_error = None
+        try:
+            archivo = request.files.get('imagen_file')
+            ruta_guardada = guardar_imagen_producto(archivo, clave)
+            if ruta_guardada:
+                imagen_url = ruta_guardada
+        except ValueError as e:
+            imagen_error = str(e)
+
         # Guardar valores para repoblar el formulario si hay error
         form_data = {
             'clave': clave, 'nombre': nombre, 'descripcion': descripcion,
             'categoria_id': str(categoria_id) if categoria_id else '',
             'uso': uso, 'acabado': acabado, 'imagen_url': imagen_url,
-            'rendimiento': rendimiento, 'precio': precio, 'enlace': enlace,
+            'rendimiento': rendimiento, 'precio': precio, 'stock': stock, 'enlace': enlace,
             'sup_madera': sup_madera, 'sup_metal': sup_metal,
             'sup_concreto': sup_concreto, 'sup_otro': sup_otro,
         }
+
+        if imagen_error:
+            return render_template('admin/agregar_producto.html',
+                                   categorias=categorias,
+                                   form=form_data,
+                                   error=imagen_error)
 
         # Validar campos obligatorios
         if not clave or not nombre or not categoria_id:
@@ -175,13 +194,13 @@ def agregar_producto():
                   (clave, nombre, descripcion_ia, categoria_id,
                    uso, acabado,
                    sup_madera, sup_metal, sup_concreto, sup_otro,
-                   rendimiento_min, precio_referencia,
+                   rendimiento_min, precio_referencia, stock,
                    imagen_url, link_compra_ml, activo)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,1)
             """, (clave, nombre, descripcion, categoria_id,
                   uso, acabado,
                   sup_madera, sup_metal, sup_concreto, sup_otro,
-                  rendimiento, precio,
+                  rendimiento, precio, stock,
                   imagen_url, enlace))
             mysql.connection.commit()
             cur.close()
@@ -208,41 +227,81 @@ def agregar_producto():
 def editar_producto(id):
     cur = mysql.connection.cursor()
 
+    # Categorías para el selector (se necesitan en GET y también si hay que
+    # volver a mostrar el formulario por un error de validación)
+    cur.execute("SELECT id, nombre FROM categorias ORDER BY nombre")
+    categorias = cur.fetchall()
+
+    # Producto actual: da la clave (fija) y sirve de fallback si algo no se envía
+    cur.execute("SELECT * FROM productos WHERE id = %s", (id,))
+    producto_actual = cur.fetchone()
+
+    if not producto_actual:
+        cur.close()
+        abort(404)
+
     if request.method == 'POST':
-        nombre = request.form.get('nombre', '').strip()
-        descripcion = request.form.get('descripcion', '').strip()
-        acabado = request.form.get('acabado') or None
-        rendimiento = request.form.get('rendimiento') or None
-        enlace = request.form.get('enlace', '').strip() or None
-        uso = request.form.get('uso') or None
-        imagen_url = request.form.get('imagen_url', '').strip() or None
-        sup_madera = 1 if request.form.get('sup_madera') else 0
-        sup_metal = 1 if request.form.get('sup_metal') else 0
+        nombre       = request.form.get('nombre', '').strip()
+        descripcion  = request.form.get('descripcion', '').strip() or None
+        categoria_id = request.form.get('categoria_id', type=int)
+        uso          = request.form.get('uso') or None
+        acabado      = request.form.get('acabado') or None
+        rendimiento  = request.form.get('rendimiento', type=float) or None
+        precio       = request.form.get('precio', type=float) or None
+        stock        = request.form.get('stock', type=int) or 0
+        enlace       = request.form.get('enlace', '').strip() or None
+        imagen_url   = request.form.get('imagen_url', '').strip() or None
+        sup_madera   = 1 if request.form.get('sup_madera') else 0
+        sup_metal    = 1 if request.form.get('sup_metal') else 0
         sup_concreto = 1 if request.form.get('sup_concreto') else 0
-        sup_otro = 1 if request.form.get('sup_otro') else 0
+        sup_otro     = 1 if request.form.get('sup_otro') else 0
+
+        # Igual que en agregar_producto: si se sube un archivo, reemplaza la
+        # imagen; si no se sube nada Y tampoco hay URL manual, se conserva la actual.
+        imagen_error = None
+        try:
+            archivo = request.files.get('imagen_file')
+            ruta_guardada = guardar_imagen_producto(archivo, producto_actual['clave'])
+            if ruta_guardada:
+                imagen_url = ruta_guardada
+            elif not imagen_url:
+                imagen_url = producto_actual['imagen_url']
+        except ValueError as e:
+            imagen_error = str(e)
+
+        if imagen_error:
+            producto_preview = dict(producto_actual)
+            producto_preview.update({
+                'nombre': nombre, 'descripcion_ia': descripcion, 'categoria_id': categoria_id,
+                'uso': uso, 'acabado': acabado, 'rendimiento_min': rendimiento,
+                'precio_referencia': precio, 'stock': stock, 'link_compra_ml': enlace,
+                'sup_madera': sup_madera, 'sup_metal': sup_metal,
+                'sup_concreto': sup_concreto, 'sup_otro': sup_otro,
+            })
+            cur.close()
+            return render_template('admin/editar_producto.html',
+                                   producto=producto_preview,
+                                   categorias=categorias,
+                                   error=imagen_error)
 
         cur.execute("""
             UPDATE productos SET
-                nombre = %s, descripcion_ia = %s, acabado = %s,
-                rendimiento_min = %s, link_compra_ml = %s, uso = %s,
-                imagen_url = %s,
+                nombre = %s, descripcion_ia = %s, categoria_id = %s, acabado = %s,
+                rendimiento_min = %s, precio_referencia = %s, stock = %s,
+                link_compra_ml = %s, uso = %s, imagen_url = %s,
                 sup_madera = %s, sup_metal = %s, sup_concreto = %s, sup_otro = %s
             WHERE id = %s
-        """, (nombre, descripcion, acabado, rendimiento, enlace, uso,
-              imagen_url, sup_madera, sup_metal, sup_concreto, sup_otro, id))
+        """, (nombre, descripcion, categoria_id, acabado,
+              rendimiento, precio, stock,
+              enlace, uso, imagen_url,
+              sup_madera, sup_metal, sup_concreto, sup_otro, id))
         mysql.connection.commit()
         cur.close()
         return redirect(url_for('admin.productos'))
 
     # GET: carga los datos actuales del producto para prellenar el formulario
-    cur.execute("SELECT * FROM productos WHERE id = %s", (id,))
-    producto = cur.fetchone()
     cur.close()
-
-    if not producto:
-        abort(404)
-
-    return render_template('admin/editar_producto.html', producto=producto)
+    return render_template('admin/editar_producto.html', producto=producto_actual, categorias=categorias)
 
 
 @admin_bp.route('/productos/<int:id>/toggle', methods=['POST'])
