@@ -151,8 +151,73 @@
             <div class="bg-error-container text-on-error-container px-4 py-3 rounded-xl">{{ error }}</div>
             {% endif %}
 
-            <!-- ③ GRID DE TARJETAS: 1 col en móvil, 2 en md, 3 en lg -->
-            <div id="grid-productos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 md:pb-0">
+            <!-- ③a GRID MÓVIL: 2 columnas estilo "vitrina" (Mercado Libre) -->
+            <div id="grid-productos-mobile" class="grid md:hidden grid-cols-2 gap-[10px] pb-4">
+                {% for producto in productos %}
+                <div class="product-card bg-surface-container-lowest rounded-lg overflow-hidden border border-surface-container-highest relative flex flex-col"
+                    data-nombre="{{ producto.nombre | lower }}"
+                    data-superficie="{% if producto.sup_madera %}madera {% endif %}{% if producto.sup_metal %}metal {% endif %}{% if producto.sup_concreto %}concreto {% endif %}{% if producto.sup_otro %}otro{% endif %}"
+                    data-uso="{{ producto.uso | lower if producto.uso else '' }}"
+                    data-acabado="{{ producto.acabado | lower if producto.acabado else '' }}"
+                    data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}"
+                    data-categoria="{{ producto.categoria | lower if producto.categoria else '' }}">
+
+                    <!-- Imagen -->
+                    <div class="relative w-full aspect-square bg-surface-container-low/30">
+                        {% if producto.imagen_url %}
+                        <img alt="{{ producto.nombre }}" src="{{ producto.imagen_url }}"
+                             class="w-full h-full object-contain"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+                        <div class="hidden w-full h-full items-center justify-center">
+                            <span class="material-symbols-outlined text-[48px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                        </div>
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[48px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+                        </div>
+                        {% endif %}
+
+                        <!-- ❤️ Favorito: arriba a la izquierda -->
+                        {% if usuario %}
+                        <button type="button"
+                            onclick="toggleFav(this, {{ producto.id }}, {{ 'true' if producto.id in favoritos_ids else 'false' }})"
+                            class="absolute top-2 left-2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low/85 shadow-sm"
+                            title="{{ 'Quitar de favoritos' if producto.id in favoritos_ids else 'Agregar a favoritos' }}">
+                            {% if producto.id in favoritos_ids %}
+                            <span class="material-symbols-outlined text-[18px] text-error" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                            {% else %}
+                            <span class="material-symbols-outlined text-[18px] text-outline">favorite_border</span>
+                            {% endif %}
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}"
+                           class="absolute top-2 left-2 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-surface-container-low/85 shadow-sm"
+                           title="Inicia sesión para guardar favoritos">
+                            <span class="material-symbols-outlined text-[18px] text-outline">favorite_border</span>
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="px-2 pt-2 pb-3 flex flex-col flex-grow">
+                        <h3 class="font-body-md text-on-surface text-[13px] leading-snug mb-1 line-clamp-2">{{ producto.nombre }}</h3>
+
+                        {% if producto.rendimiento_min %}
+                        <span class="font-label-sm text-[11px] text-on-surface-variant mt-0.5">Rinde {{ producto.rendimiento_min }}</span>
+                        {% endif %}
+                    </div>
+
+                    <a href="{{ url_for('public.detalle_producto', producto_id=producto.id) }}"
+                       class="absolute inset-0" aria-label="Ver {{ producto.nombre }}"></a>
+                </div>
+                {% else %}
+                <div class="col-span-2 text-center py-unit-xl text-on-surface-variant font-body-md text-body-md">
+                    No hay productos disponibles en este momento.
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- ③b GRID DE TARJETAS (escritorio/tablet): 2 en md, 3 en lg -->
+            <div id="grid-productos" class="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {% for producto in productos %}
                 <div class="product-card bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-highest overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col relative group"
                     data-nombre="{{ producto.nombre | lower }}"
@@ -397,7 +462,7 @@
                     if (!filters.categoria.some(v => cat === v)) show = false;
                 }
                 card.classList.toggle('card-hidden', !show);
-                if (show) visible++;
+                if (show && card.offsetParent !== null) visible++;
             });
             if (contador) contador.textContent = `Mostrando ${visible} producto${visible !== 1 ? 's' : ''}`;
             if (sinResultados) sinResultados.classList.toggle('hidden', visible > 0);
