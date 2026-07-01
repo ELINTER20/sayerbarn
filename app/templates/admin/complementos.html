@@ -15,18 +15,18 @@
 
         <div class="space-y-3">
             {% for comp in complementos %}
-            <div class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex items-center justify-between hover:border-primary/40 transition-colors">
-                <div class="flex gap-4 items-start">
-                    <div class="p-3 bg-surface-container-low rounded-lg text-primary">
+            <div class="bg-white p-4 rounded-xl border border-outline-variant card-shadow flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:border-primary/40 transition-colors">
+                <div class="flex gap-4 items-start w-full sm:w-auto">
+                    <div class="p-3 bg-surface-container-low rounded-lg text-primary shrink-0">
                         <span class="material-symbols-outlined">science</span>
                     </div>
-                    <div>
+                    <div class="min-w-0">
                         <h3 class="font-label-md text-label-md text-on-surface">{{ comp.complemento_nombre }}</h3>
                         <p class="font-body-md text-label-md text-on-surface-variant flex items-center gap-1 mt-0.5">
                             <span class="material-symbols-outlined text-[14px]">link</span>
                             Asociado a: {{ comp.producto_nombre }}
                         </p>
-                        <div class="flex gap-2 mt-3">
+                        <div class="flex flex-wrap gap-2 mt-3">
                             {% if comp.proporcion %}
                             <span class="px-2.5 py-0.5 bg-orange-100 text-orange-700 rounded-full font-label-sm text-[11px] font-bold">{{ comp.proporcion }}</span>
                             {% endif %}
@@ -34,13 +34,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-1">
-                    <form method="POST" action="{{ url_for('admin.eliminar_complemento', id=comp.id) }}" onsubmit="return confirm('¿Eliminar este complemento?')">
-                        <button class="p-2 text-outline hover:text-error hover:bg-error-container/30 rounded-lg transition-colors">
-                            <span class="material-symbols-outlined">delete</span>
-                        </button>
-                    </form>
-                </div>
+                <form method="POST" action="{{ url_for('admin.eliminar_complemento', id=comp.id) }}" onsubmit="return confirm('¿Eliminar este complemento?')"
+                      class="w-full sm:w-auto">
+                    <button class="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2.5 sm:p-2 text-error sm:text-outline border border-error/30 sm:border-0 hover:text-error hover:bg-error-container/30 rounded-lg transition-colors min-h-[44px]">
+                        <span class="material-symbols-outlined">delete</span>
+                        <span class="sm:hidden font-label-md text-label-md">Eliminar</span>
+                    </button>
+                </form>
             </div>
             {% else %}
             <div class="text-center py-12 text-on-surface-variant font-body-md text-body-md">
@@ -50,9 +50,70 @@
         </div>
     </section>
 
-    <!-- Formulario agregar complemento (columna derecha) -->
-    <aside class="col-span-12 lg:col-span-5">
-        <div class="bg-white rounded-2xl border border-outline-variant card-shadow overflow-hidden sticky top-24">
+    <!-- Formulario agregar complemento: móvil arriba (tras botón "+ Agregar"), escritorio columna derecha -->
+    <aside class="col-span-12 lg:col-span-5 order-first lg:order-none">
+
+        <!-- Móvil: acordeón colapsable -->
+        <details class="lg:hidden mb-6 group">
+            <summary class="cursor-pointer select-none list-none w-full flex items-center justify-center gap-2 bg-primary-container text-on-primary font-label-md text-label-md py-3 rounded-lg shadow-md min-h-[44px]">
+                <span class="material-symbols-outlined">add</span>
+                Agregar complemento
+                <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+            </summary>
+            <div class="bg-white rounded-2xl border border-outline-variant card-shadow overflow-hidden mt-4">
+                <form class="p-5 space-y-5" method="POST" action="{{ url_for('admin.agregar_complemento') }}">
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-label-md text-on-surface-variant px-1">Producto principal</label>
+                        <select name="producto_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none bg-white min-h-[44px]" required>
+                            <option value="">Selecciona un producto</option>
+                            {% for p in productos %}
+                            <option value="{{ p.id }}">{{ p.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-label-md text-on-surface-variant px-1">Complemento</label>
+                        <select name="complemento_id" class="w-full px-4 py-3 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none appearance-none bg-white min-h-[44px]" required>
+                            <option value="">Selecciona el complemento</option>
+                            {% for p in productos %}
+                            <option value="{{ p.id }}">{{ p.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-label-md text-on-surface-variant px-1">Tipo</label>
+                        <input name="tipo" type="text" required list="tipos-complemento-mobile"
+                            placeholder="Ej: diluyente, catalizador..."
+                            class="w-full px-4 py-3 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-white min-h-[44px]" />
+                        <datalist id="tipos-complemento-mobile">
+                            <option value="diluyente">
+                            <option value="catalizador">
+                            <option value="aditivo">
+                            <option value="retardador">
+                            <option value="sellador">
+                            <option value="fondo">
+                        </datalist>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="font-label-md text-label-md text-on-surface-variant px-1">Proporción de uso</label>
+                        <input class="w-full px-4 py-3 border border-outline-variant rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none min-h-[44px]"
+                            name="proporcion" placeholder="Ej: 30% o 1:3" type="text" />
+                    </div>
+                    <div class="pt-4 space-y-3">
+                        <button class="w-full bg-primary-container text-on-primary font-bold py-3 rounded-lg shadow-md hover:bg-primary transition-all flex items-center justify-center gap-2 min-h-[44px]" type="submit">
+                            <span class="material-symbols-outlined">save</span>
+                            Guardar
+                        </button>
+                        <a href="{{ url_for('admin.complementos') }}" class="w-full text-center text-primary font-bold py-3 rounded-lg border border-primary/30 hover:bg-primary-fixed transition-colors text-body-md flex items-center justify-center min-h-[44px]">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </details>
+
+        <!-- Escritorio: tarjeta siempre visible -->
+        <div class="hidden lg:block bg-white rounded-2xl border border-outline-variant card-shadow overflow-hidden sticky top-24">
             <div class="bg-surface-container p-6 border-b border-outline-variant">
                 <h3 class="font-headline-md text-headline-md text-primary">Agregar complemento</h3>
                 <p class="font-body-md text-label-md text-on-surface-variant">Crea una nueva asociación producto-complemento.</p>

@@ -18,11 +18,11 @@
             </div>
 
             <div class="p-unit-lg md:p-unit-xl">
-                <div class="flex items-center mb-unit-lg">
-                    <button onclick="pasoAnterior()" class="text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
+                <div class="flex flex-col md:flex-row md:items-center mb-unit-lg gap-1 md:gap-0">
+                    <button onclick="pasoAnterior()" class="self-start text-on-surface-variant hover:text-primary transition-colors p-2 -ml-2 rounded-full hover:bg-surface-container-high">
                         <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
                     </button>
-                    <span class="ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría de producto</span>
+                    <span class="md:ml-2 font-label-sm text-label-sm text-outline uppercase tracking-wider">Asesoría de producto</span>
                 </div>
                 <div id="producto-context-banner" class="hidden mb-unit-lg px-4 py-3 bg-primary/10 rounded-lg flex items-center gap-3">
                     <span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
@@ -40,14 +40,14 @@
             </div>
 
             <!-- Input libre -->
-            <div id="input-libre-area" class="hidden border-t border-surface-variant px-unit-lg pt-unit-md pb-unit-sm">
+            <div id="input-libre-area" class="hidden border-t border-surface-variant px-unit-lg pt-unit-md pb-unit-md">
                 <p class="font-label-sm text-label-sm text-outline mb-unit-xs">O escríbele algo más a la IA</p>
-                <div class="flex gap-unit-sm items-center">
+                <div class="relative">
                     <input id="input-libre" type="text" placeholder="Ej: es para una puerta de madera en el exterior..."
-                        class="flex-grow bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none" />
+                        class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 pr-12 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none" />
                     <button onclick="enviarLibre()"
-                        class="w-10 h-10 bg-primary text-on-primary rounded-lg flex items-center justify-center hover:bg-primary-container transition-colors flex-shrink-0">
-                        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+                        class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-primary text-on-primary rounded-md flex items-center justify-center hover:bg-primary-container transition-colors">
+                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">send</span>
                     </button>
                 </div>
             </div>
@@ -99,7 +99,7 @@
         h1.textContent = texto;
         c.appendChild(h1);
         const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-2 gap-unit-md mb-unit-md';
+        grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-unit-md mb-unit-md';
         c.appendChild(grid);
         opciones.forEach(function(op) {
             const btn = document.createElement('button');

@@ -5,96 +5,154 @@
 <style>
 .card-hidden { display: none !important; }
 .filter-chip-active { background-color: #0033a0 !important; color: #ffffff !important; }
+
+/* === Panel de filtros: bottom sheet en móvil === */
+@media (max-width: 767px) {
+    #filtros-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 180;
+        max-height: 85vh;
+        display: none;
+        flex-direction: column;
+        border-radius: 1rem 1rem 0 0;
+        box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+        background-color: #ffffff;
+        overflow: hidden;
+    }
+    #filtros-panel.mobile-open { display: flex; }
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
+
+    <!-- ① BARRA DE BÚSQUEDA: siempre arriba, ancho completo -->
+    <div class="bg-surface-container-lowest p-3 rounded-xl shadow-sm border border-surface-container-highest mb-4">
+        <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+            <input id="buscador" type="text" placeholder="Buscar productos..."
+                class="w-full pl-10 pr-4 py-2.5 bg-surface-container-low border border-surface-container-highest rounded-full font-body-md text-body-md focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" />
+        </div>
+    </div>
+
+    <!-- Fila contador + botón filtrar (solo móvil) -->
+    <div class="flex items-center justify-between mb-4">
+        <span id="contador" class="font-label-md text-label-md text-on-surface-variant">
+            Mostrando {{ productos | length }} productos
+        </span>
+        <button onclick="abrirFiltros()"
+            class="md:hidden flex items-center gap-1.5 font-label-md text-label-md text-primary border border-primary/30 px-3 py-2 rounded-lg min-h-[44px]">
+            <span class="material-symbols-outlined text-[18px]">tune</span>
+            Filtrar y ordenar
+        </button>
+    </div>
+
+    <!-- Backdrop móvil -->
+    <div id="filtros-backdrop" class="fixed inset-0 bg-black/50 z-[170]"
+         style="display:none;" onclick="cerrarFiltros()"></div>
+
     <div class="flex flex-col md:flex-row gap-gutter">
 
-        <!-- Sidebar de filtros -->
-        <aside class="w-full md:w-64 shrink-0 bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-surface-container-highest h-fit sticky top-28">
-            <h2 class="font-headline-md text-headline-md mb-6 text-primary">Filtros</h2>
-            <div class="space-y-6">
-                <div>
-                    <h3 class="font-label-md text-label-md text-on-surface mb-3">Superficie</h3>
-                    <div class="flex flex-col gap-2">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="superficie" value="madera" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Madera</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="superficie" value="metal" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Metal</span>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="superficie" value="concreto" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">Concreto</span>
-                        </label>
+        <!-- ② PANEL DE FILTROS (sidebar en desktop, bottom sheet en móvil) -->
+        <aside id="filtros-panel"
+               class="md:w-64 md:shrink-0 md:bg-surface-container-lowest md:p-6 md:rounded-xl md:shadow-sm md:border md:border-surface-container-highest md:h-fit md:sticky md:top-28">
+
+            <!-- Cabecera del drawer (solo móvil) -->
+            <div class="md:hidden shrink-0 flex items-center justify-between px-5 py-4 border-b border-surface-container-highest bg-white">
+                <h2 class="font-headline-md text-headline-md text-primary">Filtros</h2>
+                <button onclick="cerrarFiltros()"
+                    class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Contenido con scroll (móvil) / normal (desktop) -->
+            <div class="flex-1 min-h-0 overflow-y-auto px-5 py-5 md:px-0 md:py-0">
+                <h2 class="hidden md:block font-headline-md text-headline-md mb-6 text-primary">Filtros</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-label-md text-label-md text-on-surface mb-3">Superficie</h3>
+                        <div class="flex flex-col gap-2">
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="filter-check rounded border-outline" data-group="superficie" value="madera" />
+                                <span class="font-body-md text-body-md text-on-surface-variant">Madera</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="filter-check rounded border-outline" data-group="superficie" value="metal" />
+                                <span class="font-body-md text-body-md text-on-surface-variant">Metal</span>
+                            </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="filter-check rounded border-outline" data-group="superficie" value="concreto" />
+                                <span class="font-body-md text-body-md text-on-surface-variant">Concreto</span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr class="border-surface-container-highest" />
+                    <div>
+                        <h3 class="font-label-md text-label-md text-on-surface mb-3">Uso</h3>
+                        <div class="flex flex-col gap-2">
+                            {% for uso_val in usos %}
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="filter-check rounded border-outline" data-group="uso" value="{{ uso_val | lower }}" />
+                                <span class="font-body-md text-body-md text-on-surface-variant">{{ uso_val | capitalize }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr class="border-surface-container-highest" />
+                    <div>
+                        <h3 class="font-label-md text-label-md text-on-surface mb-3">Acabado</h3>
+                        <div class="flex flex-col gap-2">
+                            {% for acabado_val in acabados %}
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="filter-check rounded border-outline" data-group="acabado" value="{{ acabado_val | lower }}" />
+                                <span class="font-body-md text-body-md text-on-surface-variant">{{ acabado_val | capitalize }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <hr class="border-surface-container-highest" />
+                    <div>
+                        <h3 class="font-label-md text-label-md text-on-surface mb-3">Tipo de producto</h3>
+                        <div class="flex flex-col gap-2">
+                            {% for cat in categorias %}
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" class="filter-check rounded border-outline" data-group="categoria" value="{{ cat.nombre | lower }}" />
+                                <span class="font-body-md text-body-md text-on-surface-variant">{{ cat.nombre }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
-                <hr class="border-surface-container-highest" />
-                <div>
-                    <h3 class="font-label-md text-label-md text-on-surface mb-3">Uso</h3>
-                    <div class="flex flex-col gap-2">
-                        {% for uso_val in usos %}
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="uso" value="{{ uso_val | lower }}" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">{{ uso_val | capitalize }}</span>
-                        </label>
-                        {% endfor %}
-                    </div>
-                </div>
-                <hr class="border-surface-container-highest" />
-                <div>
-                    <h3 class="font-label-md text-label-md text-on-surface mb-3">Acabado</h3>
-                    <div class="flex flex-col gap-2">
-                        {% for acabado_val in acabados %}
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="acabado" value="{{ acabado_val | lower }}" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">{{ acabado_val | capitalize }}</span>
-                        </label>
-                        {% endfor %}
-                    </div>
-                </div>
-                <hr class="border-surface-container-highest" />
-                <div>
-                    <h3 class="font-label-md text-label-md text-on-surface mb-3">Tipo de producto</h3>
-                    <div class="flex flex-col gap-2">
-                        {% for cat in categorias %}
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" class="filter-check rounded border-outline" data-group="categoria" value="{{ cat.nombre | lower }}" />
-                            <span class="font-body-md text-body-md text-on-surface-variant">{{ cat.nombre }}</span>
-                        </label>
-                        {% endfor %}
-                    </div>
+                <div class="mt-6 pt-6 border-t border-surface-container-highest">
+                    <button id="btn-limpiar"
+                        class="font-label-md text-label-md text-primary hover:text-primary-container underline w-full text-center">
+                        Limpiar filtros
+                    </button>
                 </div>
             </div>
-            <div class="mt-6 pt-6 border-t border-surface-container-highest">
-                <button id="btn-limpiar" class="font-label-md text-label-md text-primary hover:text-primary-container underline w-full text-center">
-                    Limpiar filtros
+
+            <!-- Pie del drawer — "Ver resultados" (solo móvil) -->
+            <div class="md:hidden shrink-0 px-5 py-4 border-t border-surface-container-highest bg-white">
+                <button onclick="cerrarFiltros()"
+                    class="w-full bg-primary text-on-primary font-label-md text-label-md py-3 rounded-full min-h-[44px]">
+                    Ver resultados
                 </button>
             </div>
         </aside>
 
-        <!-- Área de productos -->
+        <!-- ③ ÁREA DE PRODUCTOS -->
         <div class="flex-1 flex flex-col gap-6">
-            <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-surface-container-highest flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="relative w-full sm:w-96">
-                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-                    <input id="buscador" type="text" placeholder="Buscar productos..."
-                        class="w-full pl-10 pr-4 py-2 bg-surface-container-low border border-surface-container-highest rounded-full font-body-md text-body-md focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" />
-                </div>
-                <span id="contador" class="font-label-md text-label-md text-on-surface-variant whitespace-nowrap">
-                    Mostrando {{ productos | length }} productos
-                </span>
-            </div>
-
             {% if error %}
             <div class="bg-error-container text-on-error-container px-4 py-3 rounded-xl">{{ error }}</div>
             {% endif %}
 
-            <div id="grid-productos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- ③ GRID DE TARJETAS: 1 col en móvil, 2 en md, 3 en lg -->
+            <div id="grid-productos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-4 md:pb-0">
                 {% for producto in productos %}
                 <div class="product-card bg-surface-container-lowest rounded-xl shadow-sm border border-surface-container-highest overflow-hidden hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col relative group"
                     data-nombre="{{ producto.nombre | lower }}"
@@ -103,11 +161,14 @@
                     data-acabado="{{ producto.acabado | lower if producto.acabado else '' }}"
                     data-tipo="{{ producto.categoria | lower if producto.categoria else '' }}"
                     data-categoria="{{ producto.categoria | lower if producto.categoria else '' }}">
+
                     <div class="h-1 w-full bg-gradient-to-r from-primary via-secondary to-primary-container opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                    <!-- ❤️ Favorito: arriba a la izquierda -->
                     {% if usuario %}
                     <button type="button"
                         onclick="toggleFav(this, {{ producto.id }}, {{ 'true' if producto.id in favoritos_ids else 'false' }})"
-                        class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors"
+                        class="absolute top-3 left-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors"
                         title="{{ 'Quitar de favoritos' if producto.id in favoritos_ids else 'Agregar a favoritos' }}">
                         {% if producto.id in favoritos_ids %}
                         <span class="material-symbols-outlined text-[22px] text-error" style="font-variation-settings: 'FILL' 1;">favorite</span>
@@ -116,10 +177,14 @@
                         {% endif %}
                     </button>
                     {% else %}
-                    <a href="{{ url_for('auth.login') }}" class="absolute top-3 right-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors" title="Inicia sesión para guardar favoritos">
+                    <a href="{{ url_for('auth.login') }}"
+                       class="absolute top-3 left-3 z-10 w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-low/80 hover:bg-surface-container shadow-sm transition-colors"
+                       title="Inicia sesión para guardar favoritos">
                         <span class="material-symbols-outlined text-[22px] text-outline">favorite_border</span>
                     </a>
                     {% endif %}
+
+                    <!-- Imagen -->
                     <div class="p-6 flex justify-center items-center bg-surface-container-low/30 h-48">
                         {% if producto.imagen_url %}
                         <img alt="{{ producto.nombre }}" class="max-h-full object-contain drop-shadow-sm" src="{{ producto.imagen_url }}"
@@ -129,8 +194,10 @@
                         <span class="material-symbols-outlined text-[64px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
                         {% endif %}
                     </div>
+
                     <div class="p-5 flex flex-col flex-grow">
-                        <div class="flex gap-2 mb-2 flex-wrap">
+                        <!-- Etiquetas centradas -->
+                        <div class="flex gap-2 mb-2 flex-wrap justify-center">
                             {% if producto.categoria %}
                             <span class="px-2 py-1 rounded-md bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px]">{{ producto.categoria }}</span>
                             {% endif %}
@@ -141,23 +208,29 @@
                             <span class="px-2 py-1 rounded-md bg-primary-fixed text-on-primary-fixed font-label-sm text-[10px]">{{ producto.acabado | capitalize }}</span>
                             {% endif %}
                         </div>
-                        <div class="flex items-center gap-2 mb-3 flex-wrap">
+                        <div class="flex items-center gap-2 mb-3 flex-wrap justify-center">
                             {% if not producto.activo %}
                             <span class="px-2 py-1 rounded-full bg-error-container text-on-error-container font-label-sm text-[10px]">No disponible</span>
                             {% elif producto.stock <= 0 %}
                             <span class="px-2 py-1 rounded-full bg-surface-bright text-on-surface-variant font-label-sm text-[10px]">Agotado</span>
                             {% endif %}
                         </div>
+
+                        <!-- Nombre y descripción -->
                         <h3 class="font-headline-md text-on-surface text-lg mb-1 line-clamp-1">{{ producto.nombre }}</h3>
                         <p class="font-body-md text-body-md text-on-surface-variant text-sm mb-3 line-clamp-2 flex-grow">
                             {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
                         </p>
+
+                        <!-- Rendimiento -->
                         {% if producto.rendimiento_min %}
                         <p class="font-label-md text-label-md text-primary mb-3">Rendimiento: {{ producto.rendimiento_min }} m²/L</p>
                         {% endif %}
+
+                        <!-- ④ BOTONES: ancho completo, apilados -->
                         <div class="flex flex-col gap-2 mt-auto">
                             <a href="{{ url_for('public.detalle_producto', producto_id=producto.id) }}"
-                               class="w-full font-label-md text-label-md text-on-primary bg-primary-container px-4 py-2 rounded-full hover:bg-primary-container/90 transition-colors shadow-sm text-center">
+                               class="w-full font-label-md text-label-md text-on-primary bg-primary-container px-4 py-2 rounded-full hover:bg-primary-container/90 transition-colors shadow-sm text-center min-h-[44px] flex items-center justify-center">
                                 Ver producto
                             </a>
                             {% if producto.activo and producto.stock > 0 %}
@@ -168,13 +241,13 @@
                                data-imagen="{{ producto.imagen_url or '' }}"
                                data-stock="{{ producto.stock }}"
                                onclick="agregarAlCarrito(this.dataset.id, this.dataset.nombre, this.dataset.precio, this.dataset.imagen, this.dataset.stock)"
-                               class="w-full font-label-md text-label-md text-primary border border-primary/40 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5">
+                               class="w-full font-label-md text-label-md text-primary border border-primary/40 px-4 py-2 rounded-full hover:bg-primary/10 transition-colors flex items-center justify-center gap-1.5 min-h-[44px]">
                                 <span class="material-symbols-outlined text-[16px]">add_shopping_cart</span>
                                 Agregar al carrito
                             </button>
                             {% else %}
                             <button type="button" disabled
-                               class="w-full font-label-md text-label-md text-outline border border-outline-variant px-4 py-2 rounded-full flex items-center justify-center gap-1.5 cursor-not-allowed opacity-50">
+                               class="w-full font-label-md text-label-md text-outline border border-outline-variant px-4 py-2 rounded-full flex items-center justify-center gap-1.5 cursor-not-allowed opacity-50 min-h-[44px]">
                                 <span class="material-symbols-outlined text-[16px]">remove_shopping_cart</span>
                                 {% if not producto.activo %}No disponible{% else %}Agotado{% endif %}
                             </button>
@@ -230,6 +303,19 @@
 
 {% block scripts %}
 <script>
+    /* ── Filtros: abrir/cerrar drawer móvil ─────────────────── */
+    function abrirFiltros() {
+        document.getElementById('filtros-panel').classList.add('mobile-open');
+        document.getElementById('filtros-backdrop').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    function cerrarFiltros() {
+        document.getElementById('filtros-panel').classList.remove('mobile-open');
+        document.getElementById('filtros-backdrop').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    /* ── Favoritos ──────────────────────────────────────────── */
     async function toggleFav(btn, productoId, esFavorito) {
         btn.disabled = true;
         var method = esFavorito ? 'DELETE' : 'POST';
@@ -263,76 +349,77 @@
         btn.disabled = false;
     }
 
+    /* ── Filtrado de productos ──────────────────────────────── */
     function normalizar(str) {
-        return (str || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+        return (str || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').trim();
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-    const cards  = Array.from(document.querySelectorAll('.product-card'));
-    const checks = Array.from(document.querySelectorAll('.filter-check'));
-    const buscador     = document.getElementById('buscador');
-    const contador     = document.getElementById('contador');
-    const sinResultados = document.getElementById('sin-resultados');
+        const cards  = Array.from(document.querySelectorAll('.product-card'));
+        const checks = Array.from(document.querySelectorAll('.filter-check'));
+        const buscador      = document.getElementById('buscador');
+        const contador      = document.getElementById('contador');
+        const sinResultados = document.getElementById('sin-resultados');
 
-    function getActiveFilters() {
-        const groups = {};
-        checks.forEach(cb => {
-            if (cb.checked) {
-                const g = cb.dataset.group;
-                if (!groups[g]) groups[g] = [];
-                groups[g].push(normalizar(cb.value));
-            }
-        });
-        return groups;
-    }
+        function getActiveFilters() {
+            const groups = {};
+            checks.forEach(cb => {
+                if (cb.checked) {
+                    const g = cb.dataset.group;
+                    if (!groups[g]) groups[g] = [];
+                    groups[g].push(normalizar(cb.value));
+                }
+            });
+            return groups;
+        }
 
-    function applyFilters() {
-        const filters = getActiveFilters();
-        const query = normalizar(buscador ? buscador.value : '');
-        let visible = 0;
-        cards.forEach(card => {
-            let show = true;
-            if (query && !normalizar(card.dataset.nombre).includes(query)) show = false;
-            if (show && filters.superficie) {
-                const sup = normalizar(card.dataset.superficie);
-                if (!filters.superficie.some(v => sup.includes(v))) show = false;
-            }
-            if (show && filters.uso) {
-                const uso = normalizar(card.dataset.uso);
-                if (!filters.uso.some(v => uso === v || uso === 'ambos')) show = false;
-            }
-            if (show && filters.acabado) {
-                const acabado = normalizar(card.dataset.acabado);
-                if (!filters.acabado.some(v => acabado === v)) show = false;
-            }
-            if (show && filters.categoria) {
-                const cat = normalizar(card.dataset.categoria);
-                if (!filters.categoria.some(v => cat === v)) show = false;
-            }
-            card.classList.toggle('card-hidden', !show);
-            if (show) visible++;
-        });
-        if (contador) contador.textContent = `Mostrando ${visible} producto${visible !== 1 ? 's' : ''}`;
-        if (sinResultados) sinResultados.classList.toggle('hidden', visible > 0);
-    }
+        function applyFilters() {
+            const filters = getActiveFilters();
+            const query = normalizar(buscador ? buscador.value : '');
+            let visible = 0;
+            cards.forEach(card => {
+                let show = true;
+                if (query && !normalizar(card.dataset.nombre).includes(query)) show = false;
+                if (show && filters.superficie) {
+                    const sup = normalizar(card.dataset.superficie);
+                    if (!filters.superficie.some(v => sup.includes(v))) show = false;
+                }
+                if (show && filters.uso) {
+                    const uso = normalizar(card.dataset.uso);
+                    if (!filters.uso.some(v => uso === v || uso === 'ambos')) show = false;
+                }
+                if (show && filters.acabado) {
+                    const acabado = normalizar(card.dataset.acabado);
+                    if (!filters.acabado.some(v => acabado === v)) show = false;
+                }
+                if (show && filters.categoria) {
+                    const cat = normalizar(card.dataset.categoria);
+                    if (!filters.categoria.some(v => cat === v)) show = false;
+                }
+                card.classList.toggle('card-hidden', !show);
+                if (show) visible++;
+            });
+            if (contador) contador.textContent = `Mostrando ${visible} producto${visible !== 1 ? 's' : ''}`;
+            if (sinResultados) sinResultados.classList.toggle('hidden', visible > 0);
+        }
 
-    function limpiarFiltros() {
-        checks.forEach(cb => cb.checked = false);
-        if (buscador) buscador.value = '';
-        applyFilters();
-    }
+        function limpiarFiltros() {
+            checks.forEach(cb => cb.checked = false);
+            if (buscador) buscador.value = '';
+            applyFilters();
+        }
 
-    checks.forEach(cb => cb.addEventListener('change', applyFilters));
-    if (buscador) buscador.addEventListener('input', applyFilters);
-    var btnL1 = document.getElementById('btn-limpiar');
-    var btnL2 = document.getElementById('btn-limpiar-2');
-    if (btnL1) btnL1.addEventListener('click', limpiarFiltros);
-    if (btnL2) btnL2.addEventListener('click', limpiarFiltros);
-    }); // fin DOMContentLoaded filtros
+        checks.forEach(cb => cb.addEventListener('change', applyFilters));
+        if (buscador) buscador.addEventListener('input', applyFilters);
+        var btnL1 = document.getElementById('btn-limpiar');
+        var btnL2 = document.getElementById('btn-limpiar-2');
+        if (btnL1) btnL1.addEventListener('click', limpiarFiltros);
+        if (btnL2) btnL2.addEventListener('click', limpiarFiltros);
+    });
 
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') cerrarAsesoria(); });
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { cerrarAsesoria(); cerrarFiltros(); } });
 
-    // --- Modal Asesoría Rápida ---
+    /* ── Modal Asesoría Rápida ──────────────────────────────── */
     var modalHistorial = [];
     var modalMensajes = [];
     var modalCargando = false;

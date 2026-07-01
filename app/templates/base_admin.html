@@ -72,10 +72,10 @@
     {% block extra_head %}{% endblock %}
 </head>
 
-<body class="font-body-md text-on-background flex h-screen overflow-hidden bg-background">
+<body class="font-body-md text-on-background flex md:h-screen md:overflow-hidden bg-background">
 
-    <!-- Sidebar de administración -->
-    <aside class="bg-tertiary h-screen w-64 fixed left-0 top-0 shadow-md flex flex-col py-gutter px-unit-md z-50">
+    <!-- Sidebar de administración (solo escritorio) -->
+    <aside class="hidden md:flex bg-tertiary h-screen w-64 fixed left-0 top-0 shadow-md flex-col py-gutter px-unit-md z-50">
         <div class="mb-unit-xl px-4">
             <h1 class="font-headline-md text-headline-md font-bold text-on-tertiary">SayerBarn Admin</h1>
             <p class="font-label-sm text-label-sm text-tertiary-fixed-dim mt-1">Expert Series</p>
@@ -123,30 +123,111 @@
         </div>
     </aside>
 
-    <!-- Área principal a la derecha del sidebar -->
-    <div class="flex-1 flex flex-col ml-64 min-h-screen overflow-y-auto">
-        <!-- Barra superior -->
-        <header class="bg-surface shadow-sm top-0 sticky z-40 border-b border-outline-variant flex justify-between items-center px-margin-desktop h-16">
-            <div class="font-headline-sm text-headline-sm font-bold text-primary">{% block page_title %}Admin Dashboard{% endblock %}</div>
-            <div class="flex items-center gap-6">
-                <div class="flex gap-4">
+    <!-- Backdrop del drawer móvil -->
+    <div id="admin-drawer-backdrop" onclick="cerrarAdminDrawer()"
+         class="md:hidden fixed inset-0 bg-black/50 z-[170] hidden"></div>
 
+    <!-- Drawer lateral deslizable: solo móvil -->
+    <aside id="admin-drawer"
+           class="md:hidden fixed left-0 top-0 h-screen w-72 max-w-[85vw] bg-tertiary shadow-xl z-[180] flex flex-col py-gutter px-unit-md -translate-x-full transition-transform duration-300 ease-out">
+        <div class="shrink-0">
+            <button type="button" onclick="cerrarAdminDrawer()" aria-label="Cerrar menú"
+                class="-ml-2 p-2 rounded-full text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container transition-colors">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="mb-unit-xl px-4">
+            <h1 class="font-headline-md text-headline-md font-bold text-on-tertiary">SayerBarn Admin</h1>
+            <p class="font-label-sm text-label-sm text-tertiary-fixed-dim mt-1">Expert Series</p>
+        </div>
+        <nav class="flex-1 flex flex-col gap-3 overflow-y-auto">
+            <!-- Los items activos se detectan con request.endpoint -->
+            <a href="{{ url_for('admin.dashboard') }}"
+               class="flex items-center gap-4 px-4 py-3 rounded-lg font-label-md text-label-md min-h-[44px] transition-colors
+                      {% if request.endpoint == 'admin.dashboard' %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                <span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' {% if request.endpoint == 'admin.dashboard' %}1{% else %}0{% endif %};">dashboard</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ url_for('admin.productos') }}"
+               class="flex items-center gap-4 px-4 py-3 rounded-lg font-label-md text-label-md min-h-[44px] transition-colors
+                      {% if request.endpoint in ['admin.productos', 'admin.editar_producto', 'admin.agregar_producto', 'admin.eliminar_producto', 'admin.toggle_producto'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                <span class="material-symbols-outlined text-[26px]">palette</span>
+                <span>Productos</span>
+            </a>
+            <a href="{{ url_for('admin.complementos') }}"
+               class="flex items-center gap-4 px-4 py-3 rounded-lg font-label-md text-label-md min-h-[44px] transition-colors
+                      {% if request.endpoint in ['admin.complementos', 'admin.agregar_complemento', 'admin.eliminar_complemento'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                <span class="material-symbols-outlined text-[26px]">format_paint</span>
+                <span>Complementos</span>
+            </a>
+            <a href="{{ url_for('admin.pedidos') }}"
+               class="flex items-center gap-4 px-4 py-3 rounded-lg font-label-md text-label-md min-h-[44px] transition-colors
+                      {% if request.endpoint in ['admin.pedidos', 'admin.cambiar_estado_pedido'] %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                <span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' {% if request.endpoint in ['admin.pedidos','admin.cambiar_estado_pedido'] %}1{% else %}0{% endif %};">receipt_long</span>
+                <span>Pedidos</span>
+            </a>
+            <a href="{{ url_for('admin.publicar') }}"
+               class="flex items-center gap-4 px-4 py-3 rounded-lg font-label-md text-label-md min-h-[44px] transition-colors
+                      {% if request.endpoint == 'admin.publicar' %}text-on-primary bg-primary-container font-bold{% else %}text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container{% endif %}">
+                <span class="material-symbols-outlined text-[26px]">storefront</span>
+                <span>Mercado Libre</span>
+            </a>
+        </nav>
+        <div class="shrink-0 mt-auto">
+            <form action="{{ url_for('auth.logout') }}" method="POST">
+                <button type="submit" class="w-full flex items-center gap-4 px-4 py-3 rounded-lg font-label-md text-label-md min-h-[44px] text-tertiary-fixed-dim hover:text-on-tertiary hover:bg-tertiary-container transition-colors">
+                    <span class="material-symbols-outlined text-[26px]">logout</span>
+                    <span>Cerrar sesión</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Área principal a la derecha del sidebar -->
+    <div class="flex-1 flex flex-col md:ml-64 min-h-screen md:overflow-y-auto">
+        <!-- Barra superior -->
+        <header class="bg-surface shadow-sm top-0 sticky z-40 border-b border-outline-variant">
+            <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
+                <div class="flex items-center gap-2 md:gap-0">
+                    <!-- Botón [≡]: solo móvil, abre el drawer lateral -->
+                    <button type="button" onclick="abrirAdminDrawer()" aria-label="Abrir menú"
+                        class="md:hidden -ml-2 p-2 rounded-lg text-primary hover:bg-surface-container-low transition-colors">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="font-headline-sm text-headline-sm font-bold text-primary">{% block page_title %}Admin Dashboard{% endblock %}</div>
                 </div>
-                <div class="w-8 h-8 rounded-full bg-primary-container border border-primary/20 flex items-center justify-center">
-                    <span class="material-symbols-outlined text-primary text-[18px]">admin_panel_settings</span>
+                <div class="flex items-center gap-6">
+                    <div class="flex gap-4">
+
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-primary-container border border-primary/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-[18px]">admin_panel_settings</span>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- Contenido de la página -->
-        <main class="flex-1 p-margin-desktop max-w-container-max mx-auto w-full">
+        <main class="flex-1 p-margin-mobile md:p-margin-desktop max-w-container-max mx-auto w-full">
             {% block content %}{% endblock %}
         </main>
     </div>
 
     {% block scripts %}{% endblock %}
     <script>
-
+        function abrirAdminDrawer() {
+            document.getElementById('admin-drawer').classList.remove('-translate-x-full');
+            document.getElementById('admin-drawer-backdrop').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarAdminDrawer() {
+            document.getElementById('admin-drawer').classList.add('-translate-x-full');
+            document.getElementById('admin-drawer-backdrop').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') cerrarAdminDrawer();
+        });
     </script>
 </body>
 </html>

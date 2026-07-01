@@ -18,7 +18,9 @@
             <span class="font-semibold">Stock bajo</span>
             <span class="ml-2 text-on-surface-variant font-normal">— {{ stock_bajo|length }} producto{{ 's' if stock_bajo|length != 1 }} requieren reposición</span>
         </p>
-        <div class="flex flex-wrap gap-2">
+
+        <!-- Escritorio: lista siempre expandida -->
+        <div class="hidden md:flex flex-wrap gap-2">
             {% for prod in stock_bajo %}
             <a href="{{ url_for('admin.editar_producto', id=prod.id) }}"
                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold border transition-colors hover:opacity-80
@@ -31,6 +33,27 @@
             </a>
             {% endfor %}
         </div>
+
+        <!-- Móvil: acordeón colapsable -->
+        <details class="md:hidden group">
+            <summary class="cursor-pointer select-none list-none flex items-center gap-1 font-label-sm text-label-sm text-primary py-1">
+                Ver lista completa
+                <span class="material-symbols-outlined text-[18px] transition-transform group-open:rotate-180">expand_more</span>
+            </summary>
+            <div class="flex flex-wrap gap-2 mt-2">
+                {% for prod in stock_bajo %}
+                <a href="{{ url_for('admin.editar_producto', id=prod.id) }}"
+                   class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-semibold border transition-colors hover:opacity-80
+                    {% if prod.stock == 0 %}bg-error-container text-on-error-container border-error/20
+                    {% elif prod.stock <= 2 %}bg-orange-100 text-orange-800 border-orange-200
+                    {% else %}bg-amber-100 text-amber-800 border-amber-200{% endif %}">
+                    {% if prod.stock == 0 %}<span class="material-symbols-outlined text-[13px]">block</span>
+                    {% else %}<span class="material-symbols-outlined text-[13px]">warning</span>{% endif %}
+                    {{ prod.nombre }} · {{ prod.stock }} ud.
+                </a>
+                {% endfor %}
+            </div>
+        </details>
     </div>
 </div>
 {% endif %}
@@ -40,13 +63,14 @@
         <p class="font-body-md text-body-md text-on-surface-variant mt-1">Administra el catálogo de barnices, pinturas y complementos.</p>
     </div>
     <a href="{{ url_for('admin.agregar_producto') }}"
-       class="bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity font-bold shadow-sm whitespace-nowrap">
+       class="w-full md:w-auto order-first md:order-none bg-primary-container text-on-primary font-label-md text-label-md px-6 py-3 rounded-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity font-bold shadow-sm whitespace-nowrap min-h-[44px]">
         <span class="material-symbols-outlined text-[20px]">add</span>
         Agregar producto
     </a>
 </div>
 
-<div class="bg-surface-container-lowest rounded-xl card-shadow border border-outline-variant/30 overflow-hidden relative">
+<!-- Escritorio: tabla -->
+<div class="hidden md:block bg-surface-container-lowest rounded-xl card-shadow border border-outline-variant/30 overflow-hidden relative">
     <div class="prism-stripe absolute top-0 left-0"></div>
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse">
@@ -137,29 +161,108 @@
             </tbody>
         </table>
     </div>
-    <!-- Paginación -->
-    <div class="bg-surface-bright border-t border-outline-variant px-6 py-4 flex items-center justify-between">
-        <span class="font-body-md text-sm text-on-surface-variant">
-            Mostrando {{ productos | length }} de {{ total }} productos
-        </span>
-        <div class="flex gap-2">
-            {% if pagina > 1 %}
-            <a href="{{ url_for('admin.productos', pagina=pagina-1) }}"
-               class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-primary hover:bg-primary-fixed transition-colors">
-                Anterior
-            </a>
-            {% else %}
-            <button class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-on-surface-variant opacity-50" disabled>Anterior</button>
-            {% endif %}
-            {% if pagina * por_pagina < total %}
-            <a href="{{ url_for('admin.productos', pagina=pagina+1) }}"
-               class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-primary hover:bg-primary-fixed transition-colors">
-                Siguiente
-            </a>
-            {% else %}
-            <button class="px-3 py-1 border border-outline-variant rounded bg-surface-container-lowest text-on-surface-variant opacity-50" disabled>Siguiente</button>
-            {% endif %}
+</div>
+
+<!-- Móvil: tarjetas -->
+<div class="md:hidden flex flex-col gap-4">
+    {% for prod in productos %}
+    <div class="bg-surface-container-lowest rounded-xl card-shadow border border-outline-variant/30 overflow-hidden relative">
+        <div class="prism-stripe absolute top-0 left-0"></div>
+        <div class="p-4 flex flex-col gap-4">
+            <div class="flex items-start gap-3">
+                <div class="w-14 h-14 rounded-lg bg-surface-variant border border-outline-variant/50 overflow-hidden flex items-center justify-center flex-shrink-0">
+                    {% if prod.imagen_url %}
+                    <img alt="{{ prod.nombre }}" class="w-full h-full object-contain" src="{{ prod.imagen_url }}" />
+                    {% else %}
+                    <span class="material-symbols-outlined text-outline text-[26px]">water_drop</span>
+                    {% endif %}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h3 class="font-label-md text-label-md text-on-surface font-semibold">{{ prod.nombre }}</h3>
+                    <p class="font-body-md text-[13px] text-on-surface-variant mt-0.5">{{ prod.clave }}</p>
+                    <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[12px] font-medium bg-[#E8EDF7] text-primary">
+                            {{ prod.categoria or '—' }}
+                        </span>
+                        <span class="font-body-md text-[13px] text-on-surface-variant">{{ prod.uso | capitalize if prod.uso else '—' }}</span>
+                    </div>
+                </div>
+                {% if prod.activo %}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-green-100 text-green-800 border border-green-200 flex-shrink-0">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-600"></span>
+                    Activo
+                </span>
+                {% else %}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[12px] font-medium bg-surface-variant text-on-surface-variant border border-outline-variant flex-shrink-0">
+                    <span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+                    Inactivo
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-2 border-t border-outline-variant/50 pt-3">
+                <label class="font-label-sm text-label-sm text-on-surface-variant">Stock</label>
+                <input type="number" min="0"
+                       value="{{ prod.stock or 0 }}"
+                       data-id="{{ prod.id }}"
+                       class="stock-input w-20 text-center border border-outline-variant rounded-lg px-2 py-2 font-body-md text-body-md text-on-surface bg-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" />
+                <span class="stock-ok-{{ prod.id }} text-green-600 material-symbols-outlined text-[18px] hidden" style="font-variation-settings:'FILL' 1;">check_circle</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <a href="{{ url_for('admin.editar_producto', id=prod.id) }}"
+                   class="flex flex-col items-center justify-center gap-1 py-2.5 rounded-lg border border-outline-variant text-on-surface-variant hover:text-primary hover:bg-primary-fixed transition-colors min-h-[44px]">
+                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                    <span class="font-label-sm text-label-sm">Editar</span>
+                </a>
+                <form method="POST" action="{{ url_for('admin.toggle_producto', id=prod.id) }}">
+                    <button type="submit"
+                        class="w-full h-full flex flex-col items-center justify-center gap-1 py-2.5 rounded-lg border border-outline-variant transition-colors min-h-[44px]
+                        {% if prod.activo %}text-on-surface-variant hover:text-amber-700 hover:bg-amber-50{% else %}text-green-700 hover:bg-green-50{% endif %}">
+                        <span class="material-symbols-outlined text-[20px]">{{ 'visibility_off' if prod.activo else 'visibility' }}</span>
+                        <span class="font-label-sm text-label-sm">{{ 'Ocultar' if prod.activo else 'Mostrar' }}</span>
+                    </button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.eliminar_producto', id=prod.id) }}"
+                      onsubmit="return confirm('¿Eliminar este producto? Si tiene pedidos asociados solo se desactivará para conservar el historial.')">
+                    <button type="submit"
+                        class="w-full h-full flex flex-col items-center justify-center gap-1 py-2.5 rounded-lg border border-outline-variant text-on-surface-variant hover:text-error hover:bg-error-container transition-colors min-h-[44px]">
+                        <span class="material-symbols-outlined text-[20px]">delete</span>
+                        <span class="font-label-sm text-label-sm">Borrar</span>
+                    </button>
+                </form>
+            </div>
         </div>
+    </div>
+    {% else %}
+    <div class="bg-surface-container-lowest rounded-xl border border-outline-variant/30 py-12 text-center font-body-md text-body-md text-on-surface-variant">
+        No hay productos registrados.
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Paginación -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl mt-unit-md px-4 md:px-6 py-4 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+    <span class="text-center md:text-left font-body-md text-sm text-on-surface-variant">
+        Mostrando {{ productos | length }} de {{ total }} productos
+    </span>
+    <div class="flex items-center justify-between md:justify-end gap-3">
+        {% if pagina > 1 %}
+        <a href="{{ url_for('admin.productos', pagina=pagina-1) }}"
+           class="px-5 py-3 md:px-4 md:py-2 border border-outline-variant rounded-lg bg-surface-container-lowest text-primary hover:bg-primary-fixed transition-colors font-label-md text-label-md min-h-[44px] flex items-center justify-center">
+            Anterior
+        </a>
+        {% else %}
+        <button class="px-5 py-3 md:px-4 md:py-2 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface-variant opacity-50 font-label-md text-label-md min-h-[44px]" disabled>Anterior</button>
+        {% endif %}
+        {% if pagina * por_pagina < total %}
+        <a href="{{ url_for('admin.productos', pagina=pagina+1) }}"
+           class="px-5 py-3 md:px-4 md:py-2 border border-outline-variant rounded-lg bg-surface-container-lowest text-primary hover:bg-primary-fixed transition-colors font-label-md text-label-md min-h-[44px] flex items-center justify-center">
+            Siguiente
+        </a>
+        {% else %}
+        <button class="px-5 py-3 md:px-4 md:py-2 border border-outline-variant rounded-lg bg-surface-container-lowest text-on-surface-variant opacity-50 font-label-md text-label-md min-h-[44px]" disabled>Siguiente</button>
+        {% endif %}
     </div>
 </div>
 

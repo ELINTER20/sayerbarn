@@ -4,28 +4,29 @@
 {% block content %}
 <!-- Hero -->
 <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl md:py-[80px]">
-    <div class="flex flex-row gap-unit-lg md:gap-gutter items-center">
-        <div class="space-y-unit-lg w-1/2">
+    <div class="flex flex-col md:flex-row gap-unit-lg md:gap-gutter items-center">
+        <div class="space-y-unit-lg w-full md:w-1/2">
             <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-primary">
                 Encuentra el barniz perfecto para tu proyecto
             </h1>
             <p class="font-body-lg text-body-lg text-on-surface-variant">Te guiamos paso a paso hasta el producto correcto.</p>
-            <div class="pt-unit-sm flex flex-wrap gap-unit-md">
+            <div class="pt-unit-sm flex flex-col sm:flex-row gap-unit-md">
                 <a href="{{ url_for('public.asesoria') }}"
-                   class="bg-primary-container text-on-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(0,31,107,0.15)] flex items-center space-x-2">
+                   class="bg-primary-container text-on-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:opacity-90 transition-opacity shadow-[0px_4px_20px_rgba(0,31,107,0.15)] flex items-center justify-center space-x-2 w-full sm:w-auto min-h-[44px]">
                     <span>Comenzar asesoría</span>
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
                 <a href="{{ url_for('public.catalogo') }}"
-                   class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200 flex items-center space-x-2">
+                   class="bg-surface-container-lowest text-primary border-2 border-primary px-unit-lg py-unit-md rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-all duration-200 flex items-center justify-center space-x-2 w-full sm:w-auto min-h-[44px]">
                     <span>Ver catálogo</span>
                     <span class="material-symbols-outlined text-[18px]">grid_view</span>
                 </a>
             </div>
         </div>
-        <div class="w-1/2 relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,31,107,0.05)] bg-surface-variant" style="height: 400px;">
+        <div class="w-full md:w-1/2 relative rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,31,107,0.05)] bg-surface-variant h-[240px] md:h-[400px]">
             <img alt="Proyecto de madera" class="absolute inset-0 w-full h-full object-cover"
                 src="{{ url_for('static', filename='img/icono.png') }}" />
+        </div>
     </div>
 </section>
 
@@ -38,28 +39,34 @@
         <h2 class="font-headline-lg text-headline-lg text-primary">¿Cómo funciona?</h2>
     </div>
     <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-        <div class="flex flex-col items-center text-center space-y-unit-md p-unit-lg">
-            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container mb-unit-sm">
+        <div class="flex md:flex-col items-start md:items-center gap-4 md:gap-0 p-unit-lg md:space-y-unit-md">
+            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container flex-shrink-0">
                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">quiz</span>
             </div>
-            <h3 class="font-headline-md text-headline-md text-primary">1. Responde preguntas</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">Cuéntanos sobre tu proyecto y superficie.</p>
+            <div class="md:text-center">
+                <h3 class="font-headline-md text-headline-md text-primary">1. Responde preguntas</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">Cuéntanos sobre tu proyecto y superficie.</p>
+            </div>
         </div>
-        <div class="flex flex-col items-center text-center space-y-unit-md p-unit-lg relative">
+        <div class="flex md:flex-col items-start md:items-center gap-4 md:gap-0 p-unit-lg md:space-y-unit-md relative">
             <div class="hidden md:block absolute top-1/4 left-0 w-full h-[1px] bg-outline-variant -z-10 translate-y-[-50%]"></div>
-            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container mb-unit-sm bg-surface-bright">
+            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container flex-shrink-0">
                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">recommend</span>
             </div>
-            <h3 class="font-headline-md text-headline-md text-primary">2. Recibe tu recomendación</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">Obtén la mejor opción de nuestro catálogo.</p>
+            <div class="md:text-center">
+                <h3 class="font-headline-md text-headline-md text-primary">2. Recibe tu recomendación</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">Obtén la mejor opción de nuestro catálogo.</p>
+            </div>
         </div>
-        <div class="flex flex-col items-center text-center space-y-unit-md p-unit-lg relative">
+        <div class="flex md:flex-col items-start md:items-center gap-4 md:gap-0 p-unit-lg md:space-y-unit-md relative">
             <div class="hidden md:block absolute top-1/4 left-0 w-1/2 h-[1px] bg-outline-variant -z-10 translate-y-[-50%]"></div>
-            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container mb-unit-sm bg-surface-bright">
+            <div class="w-16 h-16 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container flex-shrink-0">
                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">shopping_cart</span>
             </div>
-            <h3 class="font-headline-md text-headline-md text-primary">3. Compra en línea</h3>
-            <p class="font-body-md text-body-md text-on-surface-variant">Añade al carrito y recíbelo en casa.</p>
+            <div class="md:text-center">
+                <h3 class="font-headline-md text-headline-md text-primary">3. Compra en línea</h3>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-2">Añade al carrito y recíbelo en casa.</p>
+            </div>
         </div>
     </div>
 </section>

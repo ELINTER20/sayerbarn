@@ -4,65 +4,110 @@
 {% block content %}
 <div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-unit-xl">
 
+    <!-- 1. ENCABEZADO: ícono circular + "Hola, [Nombre]" -->
     <div class="flex items-center gap-3 mb-unit-xl">
-        <div class="bg-primary-fixed p-2 rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-[28px]">manage_accounts</span>
+        <div class="w-12 h-12 bg-primary-fixed rounded-full flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-primary text-[28px]"
+                  style="font-variation-settings:'FILL' 1;">account_circle</span>
         </div>
         <div>
-            <h1 class="font-headline-lg text-headline-lg text-primary">Mi Cuenta</h1>
-            <p class="font-body-md text-body-md text-on-surface-variant">Hola, {{ usuario.nombre }}</p>
+            <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Mi Cuenta</p>
+            <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary">
+                Hola, {{ usuario.nombre }}
+            </h1>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+    <!--
+        2. OPCIONES:
+        • Móvil  (<768px): lista vertical dentro de una tarjeta — ícono | título+subtítulo | chevron
+        • Desktop (≥768px): cuadrícula de tarjetas centradas (2 col en md, 4 col en lg)
 
+        Truco: el wrapper usa `flex flex-col` en móvil y `md:grid` en desktop.
+        `divide-y` añade separadores entre filas en móvil; `md:divide-y-0` los quita en desktop.
+    -->
+    <div class="bg-surface-container-lowest md:bg-transparent
+                rounded-xl md:rounded-none
+                border border-outline-variant md:border-0
+                overflow-hidden md:overflow-visible
+                flex flex-col divide-y divide-outline-variant
+                md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-gutter md:divide-y-0">
+
+        <!-- Mis pedidos -->
         <a href="{{ url_for('pedidos.mis_pedidos') }}"
-           class="bg-surface-container-lowest rounded-xl border border-outline-variant p-unit-lg shadow-sm hover:bg-surface-container-low hover:border-primary/30 transition-all group flex flex-col items-center text-center gap-3">
-            <div class="w-14 h-14 bg-primary-fixed rounded-full flex items-center justify-center group-hover:bg-primary-container transition-colors">
-                <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">receipt_long</span>
+           class="flex md:flex-col items-center md:items-center md:text-center gap-4 md:gap-3
+                  p-4 md:p-unit-lg min-h-[60px] md:min-h-0
+                  bg-transparent md:bg-surface-container-lowest
+                  md:rounded-xl md:border md:border-outline-variant md:shadow-sm
+                  hover:bg-surface-container-low md:hover:border-primary/30
+                  transition-all group">
+            <div class="w-11 h-11 md:w-14 md:h-14 bg-primary-fixed rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container transition-colors">
+                <span class="material-symbols-outlined text-primary text-[24px] md:text-[28px]"
+                      style="font-variation-settings:'FILL' 1;">receipt_long</span>
             </div>
-            <div>
+            <div class="flex-1 md:flex-none">
                 <h3 class="font-label-md text-label-md text-on-surface font-semibold">Mis pedidos</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-1 text-sm">Historial de compras</p>
+                <p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Historial de compras</p>
             </div>
-            <span class="material-symbols-outlined text-primary text-[20px] mt-auto">arrow_forward</span>
+            <span class="material-symbols-outlined text-primary text-[22px] ml-auto md:ml-0 md:mt-auto flex-shrink-0">chevron_right</span>
         </a>
 
+        <!-- Historial de asesorías -->
         <a href="{{ url_for('usuario.historial') }}"
-           class="bg-surface-container-lowest rounded-xl border border-outline-variant p-unit-lg shadow-sm hover:bg-surface-container-low hover:border-primary/30 transition-all group flex flex-col items-center text-center gap-3">
-            <div class="w-14 h-14 bg-primary-fixed rounded-full flex items-center justify-center group-hover:bg-primary-container transition-colors">
-                <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">history</span>
+           class="flex md:flex-col items-center md:items-center md:text-center gap-4 md:gap-3
+                  p-4 md:p-unit-lg min-h-[60px] md:min-h-0
+                  bg-transparent md:bg-surface-container-lowest
+                  md:rounded-xl md:border md:border-outline-variant md:shadow-sm
+                  hover:bg-surface-container-low md:hover:border-primary/30
+                  transition-all group">
+            <div class="w-11 h-11 md:w-14 md:h-14 bg-primary-fixed rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container transition-colors">
+                <span class="material-symbols-outlined text-primary text-[24px] md:text-[28px]"
+                      style="font-variation-settings:'FILL' 1;">history</span>
             </div>
-            <div>
+            <div class="flex-1 md:flex-none">
                 <h3 class="font-label-md text-label-md text-on-surface font-semibold">Historial de asesorías</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-1 text-sm">Consultas anteriores con IA</p>
+                <p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Consultas anteriores con IA</p>
             </div>
-            <span class="material-symbols-outlined text-primary text-[20px] mt-auto">arrow_forward</span>
+            <span class="material-symbols-outlined text-primary text-[22px] ml-auto md:ml-0 md:mt-auto flex-shrink-0">chevron_right</span>
         </a>
 
+        <!-- Favoritos -->
         <a href="{{ url_for('usuario.favoritos') }}"
-           class="bg-surface-container-lowest rounded-xl border border-outline-variant p-unit-lg shadow-sm hover:bg-surface-container-low hover:border-primary/30 transition-all group flex flex-col items-center text-center gap-3">
-            <div class="w-14 h-14 bg-primary-fixed rounded-full flex items-center justify-center group-hover:bg-primary-container transition-colors">
-                <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">favorite</span>
+           class="flex md:flex-col items-center md:items-center md:text-center gap-4 md:gap-3
+                  p-4 md:p-unit-lg min-h-[60px] md:min-h-0
+                  bg-transparent md:bg-surface-container-lowest
+                  md:rounded-xl md:border md:border-outline-variant md:shadow-sm
+                  hover:bg-surface-container-low md:hover:border-primary/30
+                  transition-all group">
+            <div class="w-11 h-11 md:w-14 md:h-14 bg-primary-fixed rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container transition-colors">
+                <span class="material-symbols-outlined text-primary text-[24px] md:text-[28px]"
+                      style="font-variation-settings:'FILL' 1;">favorite</span>
             </div>
-            <div>
+            <div class="flex-1 md:flex-none">
                 <h3 class="font-label-md text-label-md text-on-surface font-semibold">Favoritos</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-1 text-sm">Productos guardados</p>
+                <p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Productos guardados</p>
             </div>
-            <span class="material-symbols-outlined text-primary text-[20px] mt-auto">arrow_forward</span>
+            <span class="material-symbols-outlined text-primary text-[22px] ml-auto md:ml-0 md:mt-auto flex-shrink-0">chevron_right</span>
         </a>
 
+        <!-- Configuración -->
         <a href="{{ url_for('usuario.configuracion') }}"
-           class="bg-surface-container-lowest rounded-xl border border-outline-variant p-unit-lg shadow-sm hover:bg-surface-container-low hover:border-primary/30 transition-all group flex flex-col items-center text-center gap-3">
-            <div class="w-14 h-14 bg-primary-fixed rounded-full flex items-center justify-center group-hover:bg-primary-container transition-colors">
-                <span class="material-symbols-outlined text-primary text-[28px]">settings</span>
+           class="flex md:flex-col items-center md:items-center md:text-center gap-4 md:gap-3
+                  p-4 md:p-unit-lg min-h-[60px] md:min-h-0
+                  bg-transparent md:bg-surface-container-lowest
+                  md:rounded-xl md:border md:border-outline-variant md:shadow-sm
+                  hover:bg-surface-container-low md:hover:border-primary/30
+                  transition-all group">
+            <div class="w-11 h-11 md:w-14 md:h-14 bg-primary-fixed rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-primary-container transition-colors">
+                <span class="material-symbols-outlined text-primary text-[24px] md:text-[28px]">settings</span>
             </div>
-            <div>
+            <div class="flex-1 md:flex-none">
                 <h3 class="font-label-md text-label-md text-on-surface font-semibold">Configuración</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant mt-1 text-sm">Datos y contraseña</p>
+                <p class="font-body-md text-body-md text-on-surface-variant text-sm mt-0.5">Datos y contraseña</p>
             </div>
-            <span class="material-symbols-outlined text-primary text-[20px] mt-auto">arrow_forward</span>
+            <span class="material-symbols-outlined text-primary text-[22px] ml-auto md:ml-0 md:mt-auto flex-shrink-0">chevron_right</span>
         </a>
+
     </div>
 </div>
 {% endblock %}
