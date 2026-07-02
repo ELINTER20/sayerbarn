@@ -417,10 +417,10 @@
 
     {% include 'partials/chatbot.html' %}
 
-    <!-- Flecha flotante: indica que hay más contenido al bajar -->
-    <button id="scroll-hint-btn" type="button" onclick="bajarScrollPagina()" aria-label="Ver más contenido abajo"
+    <!-- Flecha flotante: baja mientras hay más contenido, sube al llegar al final -->
+    <button id="scroll-hint-btn" type="button" onclick="moverScrollPagina()" aria-label="Ver más contenido abajo"
         class="hidden fixed bottom-24 md:bottom-6 left-6 z-[45] w-11 h-11 md:w-12 md:h-12 bg-surface-container-lowest text-primary border border-outline-variant rounded-full shadow-lg flex items-center justify-center btn-lift animate-bounce">
-        <span class="material-symbols-outlined text-[22px] md:text-[24px]">keyboard_double_arrow_down</span>
+        <span id="scroll-hint-icon" class="material-symbols-outlined text-[22px] md:text-[24px]">keyboard_double_arrow_down</span>
     </button>
 
     <!-- Toast carrito -->
@@ -501,11 +501,13 @@
         window.addEventListener('DOMContentLoaded', actualizarContador);
         // ────────────────────────────────────────────────────
 
-        // ── Flecha flotante "hay más contenido abajo" ───────
+        // ── Flecha flotante "hay más contenido abajo / volver arriba" ───
         (function() {
             var flecha = document.getElementById('scroll-hint-btn');
-            if (!flecha) return;
+            var icono = document.getElementById('scroll-hint-icon');
+            if (!flecha || !icono) return;
             var MARGEN = 80;
+            var apuntandoAbajo = true;
 
             function actualizarFlecha() {
                 if (document.body.style.overflow === 'hidden') {
@@ -514,8 +516,15 @@
                 }
                 var doc = document.documentElement;
                 var haySobrante = doc.scrollHeight - window.innerHeight > MARGEN;
+                if (!haySobrante) {
+                    flecha.classList.add('hidden');
+                    return;
+                }
+                flecha.classList.remove('hidden');
                 var cercaDelFinal = window.innerHeight + window.scrollY >= doc.scrollHeight - MARGEN;
-                flecha.classList.toggle('hidden', !haySobrante || cercaDelFinal);
+                apuntandoAbajo = !cercaDelFinal;
+                icono.textContent = apuntandoAbajo ? 'keyboard_double_arrow_down' : 'keyboard_double_arrow_up';
+                flecha.setAttribute('aria-label', apuntandoAbajo ? 'Ver más contenido abajo' : 'Volver arriba');
             }
 
             window.addEventListener('scroll', actualizarFlecha, { passive: true });
@@ -530,12 +539,16 @@
             }
             new MutationObserver(actualizarFlecha).observe(document.body, { attributes: true, attributeFilter: ['style'] });
 
+            window.moverScrollPagina = function() {
+                if (apuntandoAbajo) {
+                    window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            };
+
             actualizarFlecha();
         })();
-
-        function bajarScrollPagina() {
-            window.scrollBy({ top: window.innerHeight * 0.8, behavior: 'smooth' });
-        }
         // ────────────────────────────────────────────────────
 
         function abrirContacto() {
