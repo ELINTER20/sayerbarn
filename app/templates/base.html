@@ -234,34 +234,34 @@
     </footer>
 
     <!-- Barra de navegación inferior — solo móvil -->
-    <nav class="fixed bottom-0 left-0 right-0 flex md:hidden bg-[#111110] z-40" style="height:60px;">
+    <nav class="fixed bottom-0 left-0 right-0 flex md:hidden bg-white shadow-[0px_-4px_10px_rgba(0,0,0,0.08)] z-40" style="height:60px;">
         <a href="{{ url_for('public.index') }}"
-           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.index' %}text-white{% else %}text-[#8a8a88]{% endif %}">
+           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.index' %}text-primary{% else %}text-outline{% endif %}">
             <span class="material-symbols-outlined text-[22px]"
                   style="font-variation-settings:'FILL' {% if request.endpoint == 'public.index' %}1{% else %}0{% endif %};">home</span>
             <span class="text-[10px] font-semibold leading-none">Inicio</span>
         </a>
         <a href="{{ url_for('public.asesoria') }}"
-           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.asesoria' %}text-white{% else %}text-[#8a8a88]{% endif %}">
+           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.asesoria' %}text-primary{% else %}text-outline{% endif %}">
             <span class="material-symbols-outlined text-[22px]"
                   style="font-variation-settings:'FILL' {% if request.endpoint == 'public.asesoria' %}1{% else %}0{% endif %};">chat</span>
             <span class="text-[10px] font-semibold leading-none">Asesoría</span>
         </a>
         <a href="{{ url_for('public.catalogo') }}"
-           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.catalogo' %}text-white{% else %}text-[#8a8a88]{% endif %}">
+           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'public.catalogo' %}text-primary{% else %}text-outline{% endif %}">
             <span class="material-symbols-outlined text-[22px]"
                   style="font-variation-settings:'FILL' {% if request.endpoint == 'public.catalogo' %}1{% else %}0{% endif %};">grid_view</span>
             <span class="text-[10px] font-semibold leading-none">Catálogo</span>
         </a>
         {% if usuario %}
         <a href="{{ url_for('usuario.mi_cuenta') }}"
-           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'usuario.mi_cuenta' %}text-white{% else %}text-[#8a8a88]{% endif %}">
+           class="flex-1 flex flex-col items-center justify-center gap-0.5 {% if request.endpoint == 'usuario.mi_cuenta' %}text-primary{% else %}text-outline{% endif %}">
             <span class="material-symbols-outlined text-[22px]"
                   style="font-variation-settings:'FILL' {% if request.endpoint == 'usuario.mi_cuenta' %}1{% else %}0{% endif %};">person</span>
             <span class="text-[10px] font-semibold leading-none">Cuenta</span>
         </a>
         {% else %}
-        <a href="{{ url_for('auth.login') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-[#8a8a88]">
+        <a href="{{ url_for('auth.login') }}" class="flex-1 flex flex-col items-center justify-center gap-0.5 text-outline">
             <span class="material-symbols-outlined text-[22px]">person</span>
             <span class="text-[10px] font-semibold leading-none">Cuenta</span>
         </a>
