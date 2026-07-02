@@ -71,6 +71,34 @@
     </div>
 </section>
 
+{% macro tarjeta_destacado(producto) %}
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
+    <div class="absolute top-0 left-0 w-full h-[4px] prism-stripe"></div>
+    <div class="aspect-square bg-surface-variant relative p-unit-lg flex items-center justify-center">
+        {% if producto.imagen_url %}
+        <img alt="{{ producto.nombre }}" class="max-w-full max-h-full object-contain drop-shadow-md" src="{{ producto.imagen_url }}" draggable="false" />
+        {% else %}
+        <span class="material-symbols-outlined text-[80px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+        {% endif %}
+    </div>
+    <div class="p-unit-lg flex flex-col flex-grow space-y-unit-md">
+        <div class="inline-flex bg-[#E8EDF7] text-primary px-2 py-1 rounded font-label-sm text-label-sm self-start">
+            {{ producto.uso | capitalize if producto.uso else 'Producto' }}
+        </div>
+        <h3 class="font-headline-md text-headline-md text-primary">{{ producto.nombre }}</h3>
+        <p class="font-body-md text-body-md text-on-surface-variant flex-grow">
+            {{ producto.descripcion_ia[:90] ~ '…' if producto.descripcion_ia and producto.descripcion_ia | length > 90 else producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
+        </p>
+        <div class="pt-unit-md border-t border-outline-variant/30">
+            <a href="{{ url_for('public.detalle_producto', producto_id=producto.id, from_page='inicio') }}"
+               class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift flex items-center justify-center space-x-2">
+                <span>Ver producto</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
 <!-- Productos destacados -->
 <section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl md:py-[80px]">
     <div class="flex justify-between items-end mb-unit-xl">
@@ -80,38 +108,145 @@
             <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
         </a>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+
+    {% if productos %}
+    <!-- Carrusel móvil: un producto a la vez, swipe + loop infinito -->
+    <div class="md:hidden">
+        <div id="destacados-carousel" class="overflow-hidden touch-pan-y">
+            <div id="destacados-track" class="flex">
+                {% for producto in productos %}
+                <div class="destacados-slide w-full flex-shrink-0">
+                    {{ tarjeta_destacado(producto) }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% if productos | length > 1 %}
+        <div id="destacados-dots" class="flex justify-center items-center gap-2 mt-4">
+            {% for producto in productos %}
+            <button type="button" class="destacados-dot h-2 w-2 rounded-full bg-outline-variant/60 transition-all duration-200"
+                data-index="{{ loop.index0 }}" aria-label="Ir al producto {{ loop.index }}"></button>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Grid escritorio/tablet: sin cambios -->
+    <div class="hidden md:grid md:grid-cols-3 gap-gutter">
         {% for producto in productos %}
-        <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
-            <div class="absolute top-0 left-0 w-full h-[4px] prism-stripe"></div>
-            <div class="aspect-square bg-surface-variant relative p-unit-lg flex items-center justify-center">
-                {% if producto.imagen_url %}
-                <img alt="{{ producto.nombre }}" class="max-w-full max-h-full object-contain drop-shadow-md" src="{{ producto.imagen_url }}" />
-                {% else %}
-                <span class="material-symbols-outlined text-[80px] text-outline-variant" style="font-variation-settings: 'FILL' 1;">water_drop</span>
-                {% endif %}
-            </div>
-            <div class="p-unit-lg flex flex-col flex-grow space-y-unit-md">
-                <div class="inline-flex bg-[#E8EDF7] text-primary px-2 py-1 rounded font-label-sm text-label-sm self-start">
-                    {{ producto.uso | capitalize if producto.uso else 'Producto' }}
-                </div>
-                <h3 class="font-headline-md text-headline-md text-primary">{{ producto.nombre }}</h3>
-                <p class="font-body-md text-body-md text-on-surface-variant flex-grow">
-                    {{ producto.descripcion_ia[:90] ~ '…' if producto.descripcion_ia and producto.descripcion_ia | length > 90 else producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
-                </p>
-                <div class="pt-unit-md border-t border-outline-variant/30">
-                    <a href="{{ url_for('public.detalle_producto', producto_id=producto.id, from_page='inicio') }}"
-                       class="w-full bg-surface-container-lowest text-primary border-2 border-primary px-unit-md py-unit-sm rounded font-label-md text-label-md hover:bg-surface-container-high/50 transition-colors btn-lift flex items-center justify-center space-x-2">
-                        <span>Ver producto</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <div class="col-span-3 text-center py-unit-xl text-on-surface-variant font-body-md text-body-md">
-            No hay productos disponibles en este momento.
-        </div>
+        {{ tarjeta_destacado(producto) }}
         {% endfor %}
     </div>
+    {% else %}
+    <div class="text-center py-unit-xl text-on-surface-variant font-body-md text-body-md">
+        No hay productos disponibles en este momento.
+    </div>
+    {% endif %}
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    /* ── Carrusel "Productos Destacados" (solo móvil) ────────
+       Loop infinito vía clones del primer/último slide, con
+       swipe táctil y dots clickeables. Transición vía transform. */
+    (function () {
+        var carrusel = document.getElementById('destacados-carousel');
+        var track = document.getElementById('destacados-track');
+        if (!carrusel || !track) return;
+
+        var dots = Array.prototype.slice.call(document.querySelectorAll('.destacados-dot'));
+        var slides = Array.prototype.slice.call(track.children);
+        var n = slides.length;
+        if (n <= 1) return;
+
+        // Clonar primero y último para el loop infinito
+        var clonPrimero = slides[0].cloneNode(true);
+        var clonUltimo = slides[n - 1].cloneNode(true);
+        clonPrimero.setAttribute('aria-hidden', 'true');
+        clonUltimo.setAttribute('aria-hidden', 'true');
+        track.appendChild(clonPrimero);
+        track.insertBefore(clonUltimo, track.firstChild);
+
+        var indice = 1; // 0 = clon del último, 1..n = slides reales, n+1 = clon del primero
+        var ancho = 0;
+        var arrastrando = false;
+        var startX = 0;
+        var deltaX = 0;
+
+        function medir() {
+            ancho = carrusel.getBoundingClientRect().width;
+        }
+
+        function irA(pos, animar) {
+            track.style.transition = animar ? 'transform 350ms ease' : 'none';
+            track.style.transform = 'translateX(' + (-pos * ancho) + 'px)';
+        }
+
+        function actualizarDots() {
+            if (!dots.length) return;
+            var real = (indice - 1 + n) % n;
+            dots.forEach(function (dot, i) {
+                var activo = i === real;
+                dot.classList.toggle('bg-primary', activo);
+                dot.classList.toggle('w-5', activo);
+                dot.classList.toggle('bg-outline-variant/60', !activo);
+            });
+        }
+
+        function siguiente() { indice++; irA(indice, true); }
+        function anterior() { indice--; irA(indice, true); }
+        function irAIndiceReal(real) { indice = real + 1; irA(indice, true); actualizarDots(); }
+
+        track.addEventListener('transitionend', function () {
+            if (indice === 0) {
+                indice = n;
+                irA(indice, false);
+            } else if (indice === n + 1) {
+                indice = 1;
+                irA(indice, false);
+            }
+            actualizarDots();
+        });
+
+        dots.forEach(function (dot, i) {
+            dot.addEventListener('click', function () { irAIndiceReal(i); });
+        });
+
+        track.addEventListener('touchstart', function (e) {
+            arrastrando = true;
+            startX = e.touches[0].clientX;
+            deltaX = 0;
+            track.style.transition = 'none';
+        }, { passive: true });
+
+        track.addEventListener('touchmove', function (e) {
+            if (!arrastrando) return;
+            deltaX = e.touches[0].clientX - startX;
+            track.style.transform = 'translateX(' + (-indice * ancho + deltaX) + 'px)';
+        }, { passive: true });
+
+        track.addEventListener('touchend', function () {
+            if (!arrastrando) return;
+            arrastrando = false;
+            var umbral = ancho * 0.15;
+            if (deltaX < -umbral) {
+                siguiente();
+            } else if (deltaX > umbral) {
+                anterior();
+            } else {
+                irA(indice, true);
+            }
+        });
+
+        window.addEventListener('resize', function () {
+            medir();
+            irA(indice, false);
+        });
+
+        medir();
+        irA(indice, false);
+        actualizarDots();
+    })();
+</script>
 {% endblock %}
