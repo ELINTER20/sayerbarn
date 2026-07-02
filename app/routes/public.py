@@ -25,6 +25,9 @@ public_bp = Blueprint('public', __name__)
 @public_bp.route('/')
 def index():
     """Página principal con los 3 primeros productos destacados."""
+    import json as _json
+    from app.tiendas import TIENDAS
+
     productos_destacados = []
     try:
         cur = mysql.connection.cursor()
@@ -36,7 +39,12 @@ def index():
         cur.close()
     except Exception:
         pass
-    return render_template('index.html', usuario=usuario_actual(), productos=productos_destacados)
+    return render_template(
+        'index.html',
+        usuario=usuario_actual(),
+        productos=productos_destacados,
+        tiendas_json=_json.dumps(TIENDAS, ensure_ascii=False),
+    )
 
 
 # ── Catálogo ──────────────────────────────────────────────────
@@ -247,12 +255,10 @@ def carrito():
 
 @public_bp.route('/contacto')
 def contacto():
-    """Página de contacto con datos de sucursales y buscador por CP."""
-    import json as _json
+    """Página de contacto con el listado de sucursales."""
     from app.tiendas import TIENDAS
     return render_template(
         'contacto.html',
         tiendas=TIENDAS,
-        tiendas_json=_json.dumps(TIENDAS, ensure_ascii=False),
         usuario=usuario_actual(),
     )

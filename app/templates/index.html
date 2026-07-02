@@ -143,9 +143,120 @@
     </div>
     {% endif %}
 </section>
+
+<!-- Encuentra tu sucursal por código postal -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pb-unit-xl md:pb-[80px]">
+    <div id="sucursales-cp" class="bg-surface-bright rounded-xl p-unit-lg md:p-unit-xl border border-outline-variant shadow-sm space-y-unit-lg scroll-mt-24">
+        <div class="text-center space-y-unit-sm">
+            <div class="flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">location_on</span>
+                <h2 class="font-headline-md md:font-headline-lg text-headline-md md:text-headline-lg text-primary">Encuentra tu sucursal más cercana</h2>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant">Ingresa tu código postal y te mostramos la sucursal más cercana a ti.</p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-unit-md max-w-md mx-auto">
+            <input id="inicio-cp-field" type="text" inputmode="numeric" maxlength="5"
+                placeholder="Código postal (5 dígitos)"
+                class="flex-1 border-2 border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors min-h-[44px]" />
+            <button type="button" onclick="inicioBuscarTienda()"
+                class="bg-primary-container text-on-primary px-unit-lg py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2 min-h-[44px]">
+                <span class="material-symbols-outlined text-[18px]">search</span>
+                Buscar
+            </button>
+        </div>
+
+        <div id="inicio-cp-resultado" class="hidden"></div>
+    </div>
+</section>
 {% endblock %}
 
 {% block scripts %}
+<script>
+    /* ── Buscador de sucursal por código postal (home) ───────── */
+    var TIENDAS_INICIO = {{ tiendas_json | safe }};
+
+    function _inicioTarjetaTienda(t) {
+        return '<div class="bg-surface-container-lowest rounded-xl p-unit-lg border-2 border-primary/30 shadow-sm space-y-unit-sm">' +
+            '<div class="flex items-center gap-2">' +
+                '<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:\'FILL\' 1;">store</span>' +
+                '<h3 class="font-headline-md text-headline-md text-on-surface">' + t.nombre + '</h3>' +
+            '</div>' +
+            '<div class="flex gap-2 items-start font-body-md text-body-md text-on-surface-variant">' +
+                '<span class="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0">location_on</span>' +
+                '<span>' + t.direccion + '</span>' +
+            '</div>' +
+            '<p class="font-label-sm text-label-sm text-outline">CP ' + t.cp + '</p>' +
+            '<div class="flex gap-2 items-center font-body-md text-body-md">' +
+                '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-primary">chat</span>' +
+                '<a href="tel:+52' + t.whatsapp.replace(/\s/g, '') + '" class="text-on-surface hover:text-primary transition-colors">WhatsApp: ' + t.whatsapp + '</a>' +
+            '</div>' +
+            '<div class="flex gap-2 items-center font-body-md text-body-md">' +
+                '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-on-surface-variant">call</span>' +
+                '<a href="tel:+52' + t.telefono.replace(/\s/g, '') + '" class="text-on-surface-variant hover:text-primary transition-colors">Fijo: ' + t.telefono + '</a>' +
+            '</div>' +
+            '<a href="' + t.maps_url + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">' +
+                '<span class="material-symbols-outlined text-[14px]">map</span>Ver en Google Maps' +
+            '</a>' +
+        '</div>';
+    }
+
+    function inicioBuscarTienda() {
+        var campo = document.getElementById('inicio-cp-field');
+        var resultado = document.getElementById('inicio-cp-resultado');
+        var cp = (campo.value || '').trim();
+
+        if (!/^\d{5}$/.test(cp)) {
+            campo.style.borderColor = '#ba1a1a';
+            campo.focus();
+            return;
+        }
+        campo.style.borderColor = '';
+
+        var cpNum = parseInt(cp, 10);
+        var pfx = cp.substring(0, 2);
+
+        var mismoEstado = TIENDAS_INICIO.filter(function (t) {
+            return t.cp.substring(0, 2) === pfx;
+        });
+
+        var lista, titulo;
+
+        if (mismoEstado.length === 0) {
+            lista = TIENDAS_INICIO;
+            titulo = 'No tenemos sucursal en ese estado. Aquí están todas nuestras sucursales:';
+        } else {
+            var minDist = Infinity;
+            mismoEstado.forEach(function (t) {
+                var d = Math.abs(parseInt(t.cp, 10) - cpNum);
+                if (d < minDist) minDist = d;
+            });
+            lista = mismoEstado.filter(function (t) {
+                return Math.abs(parseInt(t.cp, 10) - cpNum) === minDist;
+            });
+            titulo = lista.length === 1
+                ? 'Sucursal más cercana a tu código postal <strong>' + cp + '</strong>:'
+                : 'Sucursales más cercanas a tu código postal <strong>' + cp + '</strong>:';
+        }
+
+        var tarjetas = lista.map(_inicioTarjetaTienda).join('');
+
+        resultado.innerHTML =
+            '<p class="font-body-md text-body-md text-on-surface-variant mb-unit-md">' + titulo + '</p>' +
+            '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">' + tarjetas + '</div>';
+        resultado.classList.remove('hidden');
+        resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var campoCp = document.getElementById('inicio-cp-field');
+        if (campoCp) {
+            campoCp.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') inicioBuscarTienda();
+            });
+        }
+    });
+</script>
 <script>
     /* ── Carrusel "Productos Destacados" (solo móvil) ────────
        Loop infinito vía clones del primer/último slide, con

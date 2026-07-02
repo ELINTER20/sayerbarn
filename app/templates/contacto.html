@@ -34,33 +34,13 @@
     </div>
   </div>
 
-  <!-- Buscador por CP -->
-  <div id="sucursales" class="bg-surface-bright rounded-xl p-unit-xl border border-outline-variant shadow-sm space-y-unit-lg scroll-mt-24">
-    <div class="text-center space-y-unit-sm">
-      <div class="flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings:'FILL' 1;">location_on</span>
-        <h2 class="font-headline-md text-headline-md text-primary">Encuentra tu sucursal más cercana</h2>
-      </div>
-      <p class="font-body-md text-body-md text-on-surface-variant">Ingresa tu código postal y te mostramos la sucursal más cercana a ti.</p>
-    </div>
-
-    <div class="flex flex-col sm:flex-row gap-unit-md max-w-md mx-auto">
-      <input id="contacto-cp-field" type="text" inputmode="numeric" maxlength="5"
-        placeholder="Código postal (5 dígitos)"
-        class="flex-1 border-2 border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md bg-surface text-on-surface focus:outline-none focus:border-primary transition-colors">
-      <button onclick="contactoBuscarTienda()"
-        class="bg-primary-container text-on-primary px-unit-lg py-3 rounded-lg font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-        <span class="material-symbols-outlined text-[18px]">search</span>
-        Buscar
-      </button>
-    </div>
-
-    <div id="contacto-resultado" class="hidden"></div>
-  </div>
-
   <!-- Todas las sucursales -->
-  <div class="space-y-unit-lg">
+  <div id="sucursales" class="space-y-unit-lg scroll-mt-24">
     <h2 class="font-headline-md text-headline-md text-primary text-center">Nuestras sucursales</h2>
+    <p class="font-body-md text-body-md text-on-surface-variant text-center max-w-lg mx-auto -mt-unit-sm">
+      ¿Buscas la más cercana a ti? Ingresa tu código postal en la sección
+      "Encuentra tu sucursal" de la <a href="{{ url_for('public.index') }}#sucursales-cp" class="text-primary hover:underline">página de inicio</a>.
+    </p>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
       {% for tienda in tiendas %}
       <div class="bg-surface-container-lowest rounded-xl p-unit-lg border border-outline-variant shadow-sm space-y-unit-sm hover:shadow-md transition-shadow">
@@ -96,89 +76,4 @@
   </div>
 
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-  var TIENDAS_CONTACTO = {{ tiendas_json | safe }};
-
-  function _tarjetaTienda(t) {
-    return '<div class="bg-surface-container-lowest rounded-xl p-unit-lg border-2 border-primary/30 shadow-sm space-y-unit-sm">' +
-      '<div class="flex items-center gap-2">' +
-        '<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings:\'FILL\' 1;">store</span>' +
-        '<h3 class="font-headline-md text-headline-md text-on-surface">' + t.nombre + '</h3>' +
-      '</div>' +
-      '<div class="flex gap-2 items-start font-body-md text-body-md text-on-surface-variant">' +
-        '<span class="material-symbols-outlined text-[16px] mt-0.5 flex-shrink-0">location_on</span>' +
-        '<span>' + t.direccion + '</span>' +
-      '</div>' +
-      '<p class="font-label-sm text-label-sm text-outline">CP ' + t.cp + '</p>' +
-      '<div class="flex gap-2 items-center font-body-md text-body-md">' +
-        '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-primary">chat</span>' +
-        '<a href="tel:+52' + t.whatsapp.replace(/\s/g, '') + '" class="text-on-surface hover:text-primary transition-colors">WhatsApp: ' + t.whatsapp + '</a>' +
-      '</div>' +
-      '<div class="flex gap-2 items-center font-body-md text-body-md">' +
-        '<span class="material-symbols-outlined text-[16px] flex-shrink-0 text-on-surface-variant">call</span>' +
-        '<a href="tel:+52' + t.telefono.replace(/\s/g, '') + '" class="text-on-surface-variant hover:text-primary transition-colors">Fijo: ' + t.telefono + '</a>' +
-      '</div>' +
-      '<a href="' + t.maps_url + '" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-label-sm text-label-sm text-primary hover:underline">' +
-        '<span class="material-symbols-outlined text-[14px]">map</span>Ver en Google Maps' +
-      '</a>' +
-    '</div>';
-  }
-
-  function contactoBuscarTienda() {
-    var campo = document.getElementById('contacto-cp-field');
-    var resultado = document.getElementById('contacto-resultado');
-    var cp = (campo.value || '').trim();
-
-    if (!/^\d{5}$/.test(cp)) {
-      campo.style.borderColor = '#ba1a1a';
-      campo.focus();
-      return;
-    }
-    campo.style.borderColor = '';
-
-    var cpNum = parseInt(cp);
-    var pfx   = cp.substring(0, 2);
-
-    // Tiendas en el mismo estado (primeros 2 dígitos)
-    var mismoEstado = TIENDAS_CONTACTO.filter(function (t) {
-      return t.cp.substring(0, 2) === pfx;
-    });
-
-    var lista, titulo;
-
-    if (mismoEstado.length === 0) {
-      // Fuera del estado → mostrar todas
-      lista  = TIENDAS_CONTACTO;
-      titulo = 'No tenemos sucursal en ese estado. Aquí están todas nuestras sucursales:';
-    } else {
-      // Dentro del estado → encontrar la(s) numéricamente más cercana(s)
-      var minDist = Infinity;
-      mismoEstado.forEach(function (t) {
-        var d = Math.abs(parseInt(t.cp) - cpNum);
-        if (d < minDist) minDist = d;
-      });
-      lista = mismoEstado.filter(function (t) {
-        return Math.abs(parseInt(t.cp) - cpNum) === minDist;
-      });
-      titulo = lista.length === 1
-        ? 'Sucursal más cercana a tu código postal <strong>' + cp + '</strong>:'
-        : 'Sucursales más cercanas a tu código postal <strong>' + cp + '</strong>:';
-    }
-
-    var tarjetas = lista.map(_tarjetaTienda).join('');
-
-    resultado.innerHTML =
-      '<p class="font-body-md text-body-md text-on-surface-variant mb-unit-md">' + titulo + '</p>' +
-      '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">' + tarjetas + '</div>';
-    resultado.classList.remove('hidden');
-    resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  document.getElementById('contacto-cp-field').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') contactoBuscarTienda();
-  });
-</script>
 {% endblock %}
