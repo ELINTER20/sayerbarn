@@ -173,6 +173,8 @@
         var arrastrando = false;
         var startX = 0;
         var deltaX = 0;
+        var AUTOPLAY_MS = 4000;
+        var temporizadorAuto = null;
 
         function medir() {
             ancho = carrusel.getBoundingClientRect().width;
@@ -198,6 +200,15 @@
         function anterior() { indice--; irA(indice, true); }
         function irAIndiceReal(real) { indice = real + 1; irA(indice, true); actualizarDots(); }
 
+        function iniciarAutoplay() {
+            detenerAutoplay();
+            temporizadorAuto = setInterval(siguiente, AUTOPLAY_MS);
+        }
+        function detenerAutoplay() {
+            if (temporizadorAuto) { clearInterval(temporizadorAuto); temporizadorAuto = null; }
+        }
+        function reiniciarAutoplay() { iniciarAutoplay(); }
+
         track.addEventListener('transitionend', function () {
             if (indice === 0) {
                 indice = n;
@@ -210,7 +221,10 @@
         });
 
         dots.forEach(function (dot, i) {
-            dot.addEventListener('click', function () { irAIndiceReal(i); });
+            dot.addEventListener('click', function () {
+                irAIndiceReal(i);
+                reiniciarAutoplay();
+            });
         });
 
         track.addEventListener('touchstart', function (e) {
@@ -218,6 +232,7 @@
             startX = e.touches[0].clientX;
             deltaX = 0;
             track.style.transition = 'none';
+            detenerAutoplay();
         }, { passive: true });
 
         track.addEventListener('touchmove', function (e) {
@@ -237,6 +252,15 @@
             } else {
                 irA(indice, true);
             }
+            reiniciarAutoplay();
+        });
+
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                detenerAutoplay();
+            } else {
+                reiniciarAutoplay();
+            }
         });
 
         window.addEventListener('resize', function () {
@@ -247,6 +271,7 @@
         medir();
         irA(indice, false);
         actualizarDots();
+        iniciarAutoplay();
     })();
 </script>
 {% endblock %}
