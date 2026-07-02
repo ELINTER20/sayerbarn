@@ -154,7 +154,7 @@
             <!-- ③a GRID MÓVIL: 2 columnas estilo "vitrina" (Mercado Libre) -->
             <div id="grid-productos-mobile" class="grid md:hidden grid-cols-2 gap-[10px] pb-4">
                 {% for producto in productos %}
-                <div class="product-card bg-surface-container-lowest rounded-lg overflow-hidden border border-surface-container-highest relative flex flex-col"
+                <div class="product-card bg-surface-container-lowest rounded-lg overflow-hidden border border-surface-container-highest relative flex flex-col transition-all duration-150 active:shadow-md active:border-primary/40 active:-translate-y-0.5"
                     data-nombre="{{ producto.nombre | lower }}"
                     data-superficie="{% if producto.sup_madera %}madera {% endif %}{% if producto.sup_metal %}metal {% endif %}{% if producto.sup_concreto %}concreto {% endif %}{% if producto.sup_otro %}otro{% endif %}"
                     data-uso="{{ producto.uso | lower if producto.uso else '' }}"
@@ -204,6 +204,11 @@
                         {% if producto.rendimiento_min %}
                         <span class="font-label-sm text-[11px] text-on-surface-variant mt-0.5">Rinde {{ producto.rendimiento_min }}</span>
                         {% endif %}
+
+                        <span class="mt-auto pt-1.5 inline-flex items-center gap-0.5 font-label-sm text-[11px] text-primary font-bold">
+                            Ver detalles
+                            <span class="material-symbols-outlined text-[13px]">arrow_forward</span>
+                        </span>
                     </div>
 
                     <a href="{{ url_for('public.detalle_producto', producto_id=producto.id) }}"

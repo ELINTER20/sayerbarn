@@ -50,9 +50,6 @@
                         <span class="px-3 py-1 rounded-full bg-surface-container text-on-surface font-label-sm">Stock: {{ producto.stock }}</span>
                         {% endif %}
                     </div>
-                    <p class="font-body-md text-body-md text-on-surface-variant mb-unit-lg">
-                        {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
-                    </p>
                     <div class="space-y-4 mb-unit-lg">
                         {% if producto.rendimiento_min %}
                         <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
@@ -87,6 +84,9 @@
                         </div>
                         {% endif %}
                     </div>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-unit-lg">
+                        {{ producto.descripcion_ia or 'Producto de alta calidad Sayer Dabet.' }}
+                    </p>
                 </div>
                 <!-- Acciones -->
                <!-- Acciones -->
@@ -131,8 +131,8 @@
                     {% endif %}
                 </div>
             </div>
-            <!-- Columna derecha: Imagen -->
-            <div class="md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center min-h-[300px]">
+            <!-- Columna derecha (desktop) / primer bloque visible (móvil): Imagen -->
+            <div class="order-first md:order-none md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center min-h-[300px]">
                 <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
                     {% if producto.imagen_url %}
                     <img alt="{{ producto.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ producto.imagen_url }}" />
