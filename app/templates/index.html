@@ -74,7 +74,7 @@
 {% macro tarjeta_destacado(producto) %}
 <div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(0,31,107,0.05)] overflow-hidden border border-[#E8EDF7] flex flex-col h-full relative">
     <div class="absolute top-0 left-0 w-full h-[4px] prism-stripe"></div>
-    <div class="aspect-square bg-surface-variant relative p-unit-lg flex items-center justify-center">
+    <div class="h-[180px] md:h-auto md:aspect-square bg-surface-variant relative p-unit-md md:p-unit-lg flex items-center justify-center">
         {% if producto.imagen_url %}
         <img alt="{{ producto.nombre }}" class="max-w-full max-h-full object-contain drop-shadow-md" src="{{ producto.imagen_url }}" draggable="false" />
         {% else %}
