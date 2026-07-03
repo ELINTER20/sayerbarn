@@ -270,7 +270,7 @@
                     </label>
                     <div class="relative">
                         <select id="pub-producto" name="producto_id" required
-                                class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
+                                class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none bg-none cursor-pointer">
                             <option value="" disabled selected>Selecciona un producto...</option>
                             {% for prod in productos_activos %}
                             <option value="{{ prod.id }}">{{ prod.nombre }} ({{ prod.clave }})</option>
@@ -283,7 +283,7 @@
                     <label class="font-label-sm text-label-sm text-on-surface-variant" for="pub-canal">Canal</label>
                     <div class="relative">
                         <select id="pub-canal" name="canal"
-                                class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none cursor-pointer">
+                                class="w-full px-4 py-3 bg-surface border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none bg-none cursor-pointer">
                             <option value="mercadolibre">Mercado Libre</option>
                         </select>
                         <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
