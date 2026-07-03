@@ -43,8 +43,8 @@
             <div id="input-libre-area" class="hidden border-t border-surface-variant px-unit-lg pt-unit-md pb-unit-md">
                 <p class="font-label-sm text-label-sm text-outline mb-unit-xs">O escríbele algo más a la IA</p>
                 <div class="relative">
-                    <input id="input-libre" type="text" placeholder="Ej: es para una puerta de madera en el exterior..."
-                        class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 pr-12 focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none" />
+                    <input id="input-libre" type="text" placeholder="Ej: puerta de madera en exterior..."
+                        class="w-full bg-surface-bright border border-outline-variant text-on-surface font-body-md text-body-md rounded-lg px-4 py-2.5 pr-12 truncate focus:ring-2 focus:ring-primary focus:border-primary transition-all placeholder:text-outline focus:outline-none" />
                     <button onclick="enviarLibre()"
                         class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-primary text-on-primary rounded-md flex items-center justify-center hover:bg-primary-container transition-colors">
                         <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">send</span>
@@ -95,16 +95,16 @@
         const c = $('pasos-container');
         c.innerHTML = '';
         const h1 = document.createElement('h1');
-        h1.className = 'font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-xl';
+        h1.className = 'font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface mb-unit-lg md:mb-unit-xl';
         h1.textContent = texto;
         c.appendChild(h1);
         const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-unit-md mb-unit-md';
+        grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-unit-sm md:gap-unit-md mb-unit-md';
         c.appendChild(grid);
         opciones.forEach(function(op) {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 hover:border-primary hover:shadow-sm hover:bg-surface-container-low font-body-lg text-body-lg text-on-surface font-semibold cursor-pointer';
+            btn.className = 'bg-surface-container-lowest border-2 border-outline-variant rounded-lg p-unit-md md:p-unit-lg flex flex-col items-center justify-center gap-unit-sm text-center transition-all duration-200 hover:border-primary hover:shadow-sm hover:bg-surface-container-low font-body-md md:font-body-lg text-body-md md:text-body-lg text-on-surface font-semibold cursor-pointer';
             btn.textContent = op;
             btn.addEventListener('click', function() {
                 if (isLoading) return;
