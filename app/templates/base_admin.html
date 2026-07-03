@@ -188,19 +188,19 @@
         <!-- Barra superior -->
         <header class="bg-surface shadow-sm top-0 sticky z-40 border-b border-outline-variant">
             <div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16">
-                <div class="flex items-center gap-2 md:gap-0">
+                <div class="flex items-center gap-2 md:gap-0 min-w-0 flex-1">
                     <!-- Botón [≡]: solo móvil, abre el drawer lateral -->
                     <button type="button" onclick="abrirAdminDrawer()" aria-label="Abrir menú"
-                        class="md:hidden -ml-2 p-2 rounded-lg text-primary hover:bg-surface-container-low transition-colors">
+                        class="md:hidden -ml-2 p-2 rounded-lg text-primary hover:bg-surface-container-low transition-colors flex-shrink-0">
                         <span class="material-symbols-outlined">menu</span>
                     </button>
-                    <div class="font-headline-sm text-headline-sm font-bold text-primary">{% block page_title %}Admin Dashboard{% endblock %}</div>
+                    <div class="font-headline-sm text-headline-sm font-bold text-primary truncate">{% block page_title %}Admin Dashboard{% endblock %}</div>
                 </div>
-                <div class="flex items-center gap-6">
+                <div class="flex items-center gap-6 flex-shrink-0">
                     <div class="flex gap-4">
 
                     </div>
-                    <div class="w-8 h-8 rounded-full bg-primary-container border border-primary/20 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-full bg-primary-container border border-primary/20 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-outlined text-primary text-[18px]">admin_panel_settings</span>
                     </div>
                 </div>
