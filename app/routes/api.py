@@ -176,7 +176,7 @@ def chat():
 
         "Cuando tengas suficiente información para recomendar:\n"
         '{"tipo": "recomendacion", "producto": "nombre", "clave": "clave", '
-        '"litros": 2.5, "complemento": "nombre o null", '
+        '"litros": 2.5, "complemento": "nombre o null", "precio": 999.00, '
         '"mensaje": "por qué este producto en máximo 2 oraciones"}\n\n'
 
         "Cuando no hay producto disponible o la superficie no está en catálogo:\n"
