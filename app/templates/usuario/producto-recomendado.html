@@ -37,6 +37,15 @@
                         {{ resultado.nombre }}
                     </h1>
                     <div class="space-y-4 mb-unit-lg">
+                        {% if resultado.precio_referencia %}
+                        <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
+                            <span class="material-symbols-outlined text-primary mt-1">sell</span>
+                            <div>
+                                <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Precio de referencia</p>
+                                <p class="font-body-md text-body-md text-on-surface">${{ "%.2f"|format(resultado.precio_referencia) }} MXN</p>
+                            </div>
+                        </div>
+                        {% endif %}
                         {% if resultado.rendimiento_min %}
                         <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
                             <span class="material-symbols-outlined text-primary mt-1">format_paint</span>
