@@ -151,6 +151,8 @@ def chat():
         "- Pregunta SIEMPRE por el clima/ambiente, sin importar si el uso es interior o exterior. "
         "No la omitas ni la saltes para ir directo a área: en interiores también aplica "
         "(ej. humedad de baño, calor de cocina), aunque las opciones sean distintas a las de exterior.\n"
+        "- Si la superficie es madera, pregunta también por el tipo de acabado deseado "
+        "(mate, semi mate o brillante).\n"
         "- Si el cliente menciona una superficie que no está en el catálogo, responde con sin_resultado de inmediato.\n"
         "- Solo recomienda productos del catálogo. Si ninguno encaja, usa sin_resultado.\n\n"
 
