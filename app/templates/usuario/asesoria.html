@@ -72,6 +72,8 @@
     let historial = [];
     let pasoNum = 0;
     let isLoading = false;
+    let pasosStack = [];
+    let volviendoAtras = false;
     const $ = id => document.getElementById(id);
 
     function avanzarProgreso() {
@@ -91,6 +93,10 @@
     }
 
     function renderPregunta(texto, opciones) {
+        if (!volviendoAtras) {
+            pasosStack.push({ texto, opciones, historial: historial.slice(), pasoNum });
+        }
+        volviendoAtras = false;
         $('footer-actions').classList.add('hidden');
         const c = $('pasos-container');
         c.innerHTML = '';
@@ -245,12 +251,25 @@
         enviarRespuesta(texto);
     }
 
-    function pasoAnterior() { window.location.href = '/'; }
+    function pasoAnterior() {
+        if (isLoading) return;
+        if (pasosStack.length <= 1) {
+            window.location.href = '/';
+            return;
+        }
+        pasosStack.pop(); // descarta el paso actual que se está mostrando
+        const anterior = pasosStack[pasosStack.length - 1]; // el paso previo, se queda como tope
+        historial = anterior.historial.slice();
+        pasoNum = anterior.pasoNum;
+        volviendoAtras = true;
+        renderPregunta(anterior.texto, anterior.opciones);
+    }
     function pasoSiguiente() {}
 
     function reiniciar() {
         historial = [];
         pasoNum = 0;
+        pasosStack = [];
         $('progress-bar').style.width = '0%';
         $('paso-label').textContent = '';
         $('footer-actions').classList.add('hidden');
