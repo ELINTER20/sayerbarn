@@ -262,3 +262,22 @@ def contacto():
         tiendas=TIENDAS,
         usuario=usuario_actual(),
     )
+
+
+# ── Términos y Condiciones ─────────────────────────────────────
+@public_bp.route('/terminos-y-condiciones')
+def terminos():
+    """Página de Términos y Condiciones."""
+    return render_template('terminos.html', usuario=usuario_actual())
+
+
+@public_bp.route('/aviso-de-privacidad')
+def privacidad():
+    """Página de Aviso de Privacidad."""
+    return render_template('privacidad.html', usuario=usuario_actual())
+
+
+@public_bp.route('/privacidad')
+def privacidad_alias():
+    """Alias de la página de Aviso de Privacidad."""
+    return redirect(url_for('public.privacidad'))

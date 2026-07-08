@@ -157,9 +157,10 @@ def chat():
         "- Las opciones deben cubrir los casos reales más comunes del catálogo.\n"
         "- Para área siempre usa: ['Menos de 5 m²', '5 a 15 m²', '15 a 30 m²', 'Más de 30 m²']\n"
         "- Para uso siempre usa: ['Interior', 'Exterior', 'Ambos']\n"
-        "- Para clima siempre usa: ['Alta humedad', 'Exposición al sol', 'Exposición a lluvia', 'Exposición al ambiente marino']\n"
+        "- Para clima siempre usa: ['Alta humedad', 'Alta temperatura', 'Exposición a lluvia', 'Clima templado']\n"
         "- Para acabado usa: ['Brillante', 'Semi mate', 'Mate', 'Sin preferencia']\n"
         "- Para superficie usa: ['Madera', 'Metal', 'Concreto', 'Otro']\n"
+        "- Para superficie usa: ['Madera', 'Metal', 'Concreto', 'Otro']\n"       
         "- Para preguntas de sí/no usa siempre: ['Sí', 'No', 'No estoy seguro']\n\n"
 
         "CÁLCULO DE LITROS:\n"

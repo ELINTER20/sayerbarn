@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Aviso de Privacidad - SayerBarn{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+    <div class="mb-6">
+        <a href="{{ url_for('auth.registro') }}" onclick="window.history.back(); return false;" class="inline-flex items-center gap-2 text-primary hover:text-primary-container font-medium">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Regresar
+        </a>
+    </div>
+    <h1 class="font-headline-md text-headline-md text-on-surface font-bold mb-4">Aviso de Privacidad Interno – Sayer Barn</h1>
+    <p class="mb-2 text-on-surface-variant">Última actualización: Julio de 2026</p>
+    <p class="mb-4">En Sayer Barn, nos tomamos muy en serio la confianza que deposita en nosotros al compartir sus datos personales. El presente Aviso de Privacidad tiene como objetivo informarle de manera transparente, objetiva y clara sobre el tratamiento, uso y salvaguarda de la información que recopilamos a través de nuestra plataforma web para la compra de barnices y recubrimientos bajo la modalidad de recolección en tienda.</p>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">1. Responsable del Tratamiento de sus Datos</h2>
+    <p class="mb-4">La empresa Pinturas Sayer Dabet es la entidad responsable de recabar sus datos personales, del uso que se le dé a los mismos y de su debida protección, garantizando el estricto cumplimiento de la legislación vigente en materia de protección de datos personales.</p>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">2. Finalidad del Tratamiento de Datos</h2>
+    <p class="mb-2">Los datos personales que recopilamos se utilizarán estrictamente para las siguientes finalidades necesarias para el servicio:</p>
+    <ul class="list-disc pl-5 mb-4">
+        <li>Validar y procesar sus órdenes de compra en línea.</li>
+        <li>Notificarle el estatus de su pedido ("Confirmación de Orden" y "Listo para Entrega").</li>
+        <li>Coordinar de manera precisa la recogida de su mercancía en la sucursal de su elección.</li>
+        <li>Verificar su identidad en ventanilla para evitar suplantaciones de identidad o fraudes.</li>
+    </ul>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">3. Seguridad de los Datos Bancarios (Procesamiento por Mercado Pago)</h2>
+    <p class="mb-4">Para garantizar la máxima seguridad en sus transacciones financieras, Sayer Barn NO almacena, procesa, ni tiene acceso a los números de sus tarjetas de crédito, débito o cuentas bancarias. Toda la información financiera ingresada por el usuario es procesada y resguardada directamente por Mercado Pago, una plataforma líder que cuenta con los más altos estándares internacionales de seguridad cibernética (incluyendo certificación PCI-DSS y sistemas avanzados de encriptación de datos). Mercado Pago es la entidad responsable de salvaguardar su información bancaria bajo sus propios protocolos de seguridad.</p>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">4. Geolocalización y Seguridad Integral del Cliente</h2>
+    <p class="mb-4">Nuestro sistema de comercio electrónico requiere el acceso a la geolocalización del usuario únicamente para determinar de forma eficiente cuál es la sucursal o tienda más cercana para la recogida de sus barnices. La Empresa asume un compromiso absoluto con la seguridad física y cibernética del cliente respecto a estos datos:</p>
+    <ul class="list-disc pl-5 mb-4">
+        <li><strong>Seguridad Cibernética:</strong> Los datos de ubicación viajan de forma encriptada y son utilizados de manera automatizada por el sistema solo durante la sesión de compra.</li>
+        <li><strong>Seguridad Física:</strong> La información de su ubicación geográfica jamás será compartida, vendida ni transferida a terceros ajenos a la operación del sitio, garantizando que su entorno físico y sus traslados permanezcan completamente privados.</li>
+    </ul>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">5. Garantía de Uso Debido y Confidencialidad</h2>
+    <p class="mb-4">Sayer Barn de Sayer Dabet se compromete formalmente a que jamás se hará un uso indebido, comercial no autorizado o ilícito de los datos ingresados por los usuarios. Toda la información personal compartida se encuentra protegida por medidas de seguridad administrativas, técnicas y físicas, diseñadas para evitar pérdidas, alteraciones, destrucción o el acceso no autorizado.</p>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">6. Derechos ARCO (Acceso, Rectificación, Cancelación y Oposición)</h2>
+    <p class="mb-4">Usted tiene derecho en todo momento a conocer qué datos personales tenemos de usted, para qué los utilizamos y las condiciones del uso que les damos (Acceso). Asimismo, es su derecho solicitar la corrección de su información personal en caso de que esté desactualizada, sea inexacta o incompleta (Rectificación); que la eliminemos de nuestros registros o bases de datos cuando considere que la misma no está siendo utilizada conforme a los principios, deberes y obligaciones previstas en la normativa (Cancelación); así como oponerse al uso de sus datos personales para fines específicos (Oposición).</p>
+    <p class="mb-4">Para el ejercicio de cualquiera de los derechos ARCO, o para revocar su consentimiento al tratamiento de sus datos, puede ponerse en contacto con nuestro Departamento de Datos Personales a través del correo electrónico oficial provisto en nuestra plataforma web.</p>
+</div>
+{% endblock %}
