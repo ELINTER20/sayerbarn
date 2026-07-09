@@ -204,6 +204,11 @@
             });
             const resultado = await res.json();
             if (res.ok && resultado.asesoria_id) {
+                try {
+                    sessionStorage.setItem('asesoria_state', JSON.stringify({ pasosStack: pasosStack, historial: historial, pasoNum: pasoNum }));
+                } catch (e) {
+                    console.warn('No se pudo guardar el estado de asesoria en sessionStorage', e);
+                }
                 window.location.href = '/asesoria/resultado/' + resultado.asesoria_id;
             } else {
                 mostrarRecomendacionInline(data);
@@ -284,14 +289,38 @@
 
     window.addEventListener('DOMContentLoaded', function() {
         $('input-libre').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); enviarLibre(); } });
-        const params = new URLSearchParams(window.location.search);
-        const productoNombre = params.get('producto_nombre');
-        if (productoNombre) {
-            $('producto-context-nombre').textContent = productoNombre;
-            $('producto-context-banner').classList.remove('hidden');
-            enviarRespuesta('Quiero información sobre este producto: ' + productoNombre);
+        const saved = sessionStorage.getItem('asesoria_state');
+        if (saved) {
+            try {
+                const s = JSON.parse(saved);
+                pasosStack = s.pasosStack || [];
+                historial = s.historial || [];
+                pasoNum = s.pasoNum || 0;
+                sessionStorage.removeItem('asesoria_state');
+                if (pasosStack.length) {
+                    const ultimo = pasosStack[pasosStack.length - 1];
+                    volviendoAtras = true;
+                    historial = ultimo.historial ? ultimo.historial.slice() : historial;
+                    pasoNum = ultimo.pasoNum || pasoNum;
+                    renderPregunta(ultimo.texto, ultimo.opciones);
+                } else {
+                    arrancar();
+                }
+            } catch (e) {
+                console.error('Failed to restore asesoria state', e);
+                sessionStorage.removeItem('asesoria_state');
+                arrancar();
+            }
         } else {
-            arrancar();
+            const params = new URLSearchParams(window.location.search);
+            const productoNombre = params.get('producto_nombre');
+            if (productoNombre) {
+                $('producto-context-nombre').textContent = productoNombre;
+                $('producto-context-banner').classList.remove('hidden');
+                enviarRespuesta('Quiero información sobre este producto: ' + productoNombre);
+            } else {
+                arrancar();
+            }
         }
     });
 </script>
