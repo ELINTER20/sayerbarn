@@ -84,21 +84,43 @@ def productos():
     pagina = request.args.get('pagina', 1, type=int)
     por_pagina = 20
     offset = (pagina - 1) * por_pagina  # Calcula desde qué registro empezar
+    termino_busqueda = request.args.get('q', '').strip()
 
     cur = mysql.connection.cursor()
-    cur.execute(
-        "SELECT p.id, p.clave, p.nombre, p.imagen_url, p.uso, p.acabado, p.activo, "
-        "COALESCE(p.stock, 0) AS stock, "
-        "c.nombre as categoria "
-        "FROM productos p "
-        "LEFT JOIN categorias c ON p.categoria_id = c.id "
-        "ORDER BY p.created_at DESC LIMIT %s OFFSET %s",
-        (por_pagina, offset)
-    )
+
+    filtros = []
+    params = []
+    if termino_busqueda:
+        termino_like = f"%{termino_busqueda}%"
+        filtros.append("""
+            (
+                LOWER(p.nombre) LIKE LOWER(%s)
+                OR LOWER(p.clave) LIKE LOWER(%s)
+                OR LOWER(c.nombre) LIKE LOWER(%s)
+                OR LOWER(COALESCE(p.uso, '')) LIKE LOWER(%s)
+            )
+        """)
+        params.extend([termino_like, termino_like, termino_like, termino_like])
+
+    query = """
+        SELECT p.id, p.clave, p.nombre, p.imagen_url, p.uso, p.acabado, p.activo,
+        COALESCE(p.stock, 0) AS stock,
+        c.nombre as categoria
+        FROM productos p
+        LEFT JOIN categorias c ON p.categoria_id = c.id
+    """
+    if filtros:
+        query += " WHERE " + " AND ".join(filtros)
+    query += " ORDER BY p.created_at DESC LIMIT %s OFFSET %s"
+    query_params = params + [por_pagina, offset]
+    cur.execute(query, tuple(query_params))
     productos_lista = cur.fetchall()
 
     # Cuenta el total para calcular cuántas páginas hay
-    cur.execute("SELECT COUNT(*) as total FROM productos")
+    count_query = "SELECT COUNT(*) as total FROM productos p LEFT JOIN categorias c ON p.categoria_id = c.id"
+    if filtros:
+        count_query += " WHERE " + " AND ".join(filtros)
+    cur.execute(count_query, tuple(params))
     total = cur.fetchone()['total']
 
     # Stock bajo para alerta
@@ -117,7 +139,8 @@ def productos():
         pagina=pagina,
         stock_bajo=stock_bajo,
         total=total,
-        por_pagina=por_pagina
+        por_pagina=por_pagina,
+        q=termino_busqueda
     )
 
 
