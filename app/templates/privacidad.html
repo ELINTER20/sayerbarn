@@ -4,9 +4,10 @@
 {% block content %}
 <div class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
     <div class="mb-6">
-        <a href="{{ url_for('auth.registro') }}" onclick="window.history.back(); return false;" class="inline-flex items-center gap-2 text-primary hover:text-primary-container font-medium">
-            <span class="material-symbols-outlined">arrow_back</span>
-            Regresar
+          <a href="{{ url_for('auth.registro') }}" onclick="window.history.back(); return false;" aria-label="Regresar" title="Regresar"
+              class="group inline-flex items-center gap-2 px-3 py-2 rounded-md bg-surface-container-lowest border border-outline text-primary hover:bg-surface-container hover:shadow-sm transition">
+                <span class="material-symbols-outlined text-[20px] transition-transform duration-150 group-hover:translate-y-1 group-hover:text-primary-container text-primary">arrow_downward</span>
+            <span class="font-medium">Regresar</span>
         </a>
     </div>
     <h1 class="font-headline-md text-headline-md text-on-surface font-bold mb-4">Aviso de Privacidad Interno – Sayer Barn</h1>

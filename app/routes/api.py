@@ -70,9 +70,11 @@ def chat():
             LEFT JOIN complementos co ON co.producto_id = p.id
             LEFT JOIN productos c2   ON c2.id = co.complemento_id
             WHERE p.activo = 1
-              AND p.categoria_id != (
-                  SELECT id FROM categorias WHERE nombre = 'Diluyentes y complementos' LIMIT 1
-              )
+              AND (p.categoria_id IS NULL OR p.categoria_id NOT IN (
+                  SELECT id FROM categorias WHERE nombre IN (
+                      'Diluyentes', 'Complementos', 'Diluyentes y complementos', 'Catalizadores'
+                  )
+              ))
             GROUP BY p.id
             ORDER BY p.id
         """)
