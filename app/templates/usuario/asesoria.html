@@ -236,7 +236,10 @@
                     complementoHTML +
                     (data.precio ? '<span class="bg-primary/10 text-primary font-label-md text-label-md px-4 py-2 rounded-full">💲 $' + parseFloat(data.precio).toFixed(2) + ' MXN</span>' : '') +
                 '</div>' +
-                '<button onclick="reiniciar()" class="mt-unit-md font-label-md text-label-md text-primary border border-primary/30 px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors w-fit">Nueva consulta</button>' +
+                '<div class="flex gap-3 mt-unit-md">' +
+                    '<button onclick="pasoAnterior()" class="font-label-md text-label-md text-outline border border-outline-variant px-5 py-3 rounded-lg hover:bg-surface-container-low transition-colors">Volver a la última opción</button>' +
+                    '<button onclick="reiniciar()" class="font-label-md text-label-md text-primary border border-primary/30 px-5 py-3 rounded-lg hover:bg-primary/10 transition-colors w-fit">Nueva consulta</button>' +
+                '</div>' +
             '</div>';
     }
 
