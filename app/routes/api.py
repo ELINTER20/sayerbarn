@@ -177,6 +177,7 @@ def chat():
         "si el uso es exterior: ['Sol', 'Salinidad húmeda']\n"
         "- Para acabado usa: ['Brillante', 'Semi mate', 'Mate', 'Sin preferencia']\n"
         "- Para superficie usa: ['Madera', 'Metal', 'Concreto', 'Otro']\n"
+        "- Para superficie usa: ['Madera', 'Metal', 'Concreto', 'Otro']\n"       
         "- Para preguntas de sí/no usa siempre: ['Sí', 'No', 'No estoy seguro']\n\n"
 
         "CÁLCULO DE LITROS:\n"

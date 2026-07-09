@@ -74,11 +74,19 @@ def registro():
         email            = request.form.get('email', '').strip()
         password         = request.form.get('password', '')
         confirm_password = request.form.get('confirmPassword', '')
+        accept_terms = request.form.get('acceptTerms')
 
         if not nombre or not email or not password or not confirm_password:
             return render_template(
                 'auth/registro.html',
                 error='Todos los campos son requeridos.',
+                nombre=nombre, email=email, usuario=usuario_actual()
+            )
+
+        if not accept_terms:
+            return render_template(
+                'auth/registro.html',
+                error='Debes aceptar los Términos y Condiciones y la Política de privacidad para continuar.',
                 nombre=nombre, email=email, usuario=usuario_actual()
             )
 

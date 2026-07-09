@@ -24,6 +24,17 @@
     }
     #filtros-panel.mobile-open { display: flex; }
 }
+
+@media (min-width: 768px) {
+    #filtros-panel {
+        max-height: calc(100vh - 6rem);
+        overflow: hidden;
+    }
+    #filtros-panel .flex-1 {
+        max-height: calc(100vh - 14rem);
+        overflow-y: auto;
+    }
+}
 </style>
 {% endblock %}
 

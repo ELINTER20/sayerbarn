@@ -220,14 +220,17 @@
                 <div class="font-headline-sm text-[20px] leading-[28px] font-bold text-on-primary">SayerBarn</div>
                 <p class="font-body-md text-body-md text-primary-fixed-dim/80">El Mejor Barniz</p>
                 <p class="font-body-md text-body-md text-on-primary opacity-80">Sayer Dabet © 2026</p>
-                <a href="{{ url_for('public.contacto') }}" class="md:hidden inline-block font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
+                <div class="md:hidden flex flex-col items-center space-y-2">
+                    <a href="{{ url_for('public.contacto') }}" class="inline-block font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
+                    <a href="/aviso-de-privacidad" class="inline-block font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Aviso de Privacidad</a>
+                </div>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
                 <a href="{{ url_for('public.contacto') }}" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Contacto</a>
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Aviso de Privacidad</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="/aviso-de-privacidad">Aviso de Privacidad</a>
             </div>
             <div class="hidden md:flex col-span-1 flex-col items-start space-y-unit-sm">
-                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="#">Términos y Condiciones</a>
+                <a class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline" href="{{ url_for('public.terminos') }}">Términos y Condiciones</a>
                 <a href="{{ url_for('public.contacto') }}#sucursales" class="font-body-md text-body-md text-primary-fixed-dim/80 hover:text-primary-fixed transition-colors hover:underline">Sucursales</a>
             </div>
         </div>

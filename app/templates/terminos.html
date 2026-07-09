@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Términos y Condiciones - SayerBarn{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-unit-xl">
+    <div class="mb-6">
+        <a href="{{ url_for('auth.registro') }}" onclick="window.history.back(); return false;" class="inline-flex items-center gap-2 text-primary hover:text-primary-container font-medium">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Regresar
+        </a>
+    </div>
+    <h1 class="font-headline-md text-headline-md text-on-surface font-bold mb-4">Términos y Condiciones</h1>
+
+    <p class="mb-4">Bienvenido al sitio web de “Sayer Barn”. Al realizar una compra en nuestra plataforma, usted acepta de manera expresa los presentes Términos y Condiciones. Le recomendamos leerlos detenidamente antes de finalizar su pedido.</p>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">1. Modalidad Exclusiva de Entrega: &quot;Pick-Up&quot; (Tu pedido te espera en tienda)</h2>
+    <ul class="list-disc pl-5 mb-4">
+        <li>Sayer Barn opera exclusivamente bajo la modalidad de compra en línea y recolección en Tienda (Pick-Up).</li>
+        <li>No realizamos envíos a domicilio.</li>
+        <li>Al momento de procesar su compra, el usuario deberá seleccionar la sucursal de Sayer Barn más cercana o de su preferencia para pasar a recoger sus productos (barnices, tintas, complementos, etc.).</li>
+    </ul>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">2. Proceso de Validación de Pedido</h2>
+    <p class="mb-2">Toda compra realizada en nuestro sitio web está sujeta a un proceso de validación y seguridad. La recepción del correo automático de "Confirmación de Orden" no garantiza que el pedido esté listo para entrega.</p>
+    <p class="mb-2">El proceso de validación consta de los siguientes pasos:</p>
+    <ol class="list-decimal pl-5 mb-4">
+        <li><strong>Verificación de Pago:</strong> Validamos con la institución financiera que el pago haya sido autorizado y no se detecten alertas de fraude.</li>
+        <li><strong>Confirmación de Inventario:</strong> Verificamos que la sucursal seleccionada cuente con la existencia física de los barnices y productos solicitados.</li>
+        <li><strong>Notificación de Listo para Recoger:</strong> Una vez aprobado el pedido, el cliente recibirá un segundo correo electrónico y/o SMS con la confirmación de "Pedido Listo para Entrega".</li>
+    </ol>
+    <p class="mb-4"><strong>Importante:</strong> Por favor, no acuda a la sucursal hasta haber recibido la notificación de "Pedido Listo para Entrega", ya que el personal de tienda no podrá entregar mercancía que no haya completado el proceso de validación.</p>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">4. Requisitos para la Recolección del Pedido</h2>
+    <p class="mb-2">Para salvaguardar la seguridad de su compra y evitar suplantaciones de identidad, al momento de recoger el pedido en la tienda seleccionada, se deberá presentar obligatoriamente:</p>
+    <ul class="list-disc pl-5 mb-4">
+        <li>El número de pedido o el correo de "Pedido Listo para Entrega" (digital o impreso).</li>
+        <li>Identificación oficial vigente con fotografía (INE, Pasaporte) del titular de la cuenta o de la persona autorizada en el carrito de compra.</li>
+        <li>La tarjeta física con la que se realizó el pago (en caso de que el sistema de validación lo solicite por seguridad).</li>
+    </ul>
+
+    <h2 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">5. Plazos de Recolección y Cancelaciones</h2>
+    <p class="mb-4">Una vez que reciba la notificación de "Pedido Listo", usted contará con un plazo máximo de 10 días naturales para recoger sus barnices en la sucursal elegida. Transcurrido este plazo sin que el pedido sea reclamado, Sayer Barn procederá a la cancelación de la orden y se realizará el reembolso del dinero bajo el método original de pago, restando un 10% por concepto de gastos operativos y almacenamiento.</p>
+
+</div>
+{% endblock %}
