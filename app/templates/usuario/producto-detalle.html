@@ -140,7 +140,8 @@
             <div class="order-first md:order-none md:col-span-5 bg-surface-container p-unit-lg flex items-center justify-center min-h-[300px]">
                 <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
                     {% if producto.imagen_url %}
-                    <img alt="{{ producto.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ producto.imagen_url }}" />
+                    {% set imagen_src = producto.imagen_url if producto.imagen_url.startswith('/') or producto.imagen_url.startswith('http') else '/static/images/productos/' ~ producto.imagen_url %}
+                    <img alt="{{ producto.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ imagen_src }}" />
                     {% else %}
                     <div class="w-full h-full flex items-center justify-center bg-surface-container rounded-lg">
                         <span class="material-symbols-outlined text-[80px] text-outline" style="font-variation-settings: 'FILL' 1;">water_drop</span>
@@ -159,7 +160,8 @@
                 <div class="bg-surface-container-lowest p-unit-md rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] flex flex-col sm:flex-row items-center gap-unit-md">
                     <div class="w-20 h-20 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center">
                         {% if comp.imagen_url %}
-                        <img src="{{ comp.imagen_url }}" alt="{{ comp.nombre }}" class="w-full h-full object-contain" />
+                        {% set comp_imagen_src = comp.imagen_url if comp.imagen_url.startswith('/') or comp.imagen_url.startswith('http') else '/static/images/productos/' ~ comp.imagen_url %}
+                        <img src="{{ comp_imagen_src }}" alt="{{ comp.nombre }}" class="w-full h-full object-contain" />
                         {% else %}
                         <span class="material-symbols-outlined text-outline text-[40px]">science</span>
                         {% endif %}
