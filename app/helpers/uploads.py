@@ -4,6 +4,7 @@
 import os
 import uuid
 from flask import current_app
+from PIL import Image, ImageOps
 from werkzeug.utils import secure_filename
 
 # Extensiones de imagen aceptadas
