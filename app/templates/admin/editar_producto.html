@@ -149,9 +149,9 @@
 
                         <!-- Preview -->
                         <div id="dropzone-preview"
-                             class="relative h-56 w-full overflow-hidden rounded-lg bg-surface-container-low {% if not producto.imagen_url %}hidden{% endif %}">
+                             class="relative h-40 flex items-center justify-center bg-surface-container-low {% if not producto.imagen_url %}hidden{% endif %}">
                             <img id="img-tag" src="{{ producto.imagen_url or '' }}" alt="{{ producto.nombre }}"
-                                 class="w-full h-full object-cover p-2" />
+                                 class="max-h-full max-w-full object-contain p-2" />
                             <button type="button" id="btn-quitar-imagen"
                                     class="absolute top-2 right-2 bg-surface rounded-full w-8 h-8 flex items-center justify-center shadow hover:bg-error-container transition-colors">
                                 <span class="material-symbols-outlined text-[18px] text-error">close</span>
