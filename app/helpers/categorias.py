@@ -7,12 +7,12 @@ DEFAULT_CATEGORIAS = [
     'Catalizadores',
     'Selladores',
     'Fondos',
-    'Separado',
     'Tinta al aceite',
     'Tinta al alcohol',
 ]
 
-COMBINED_CATEGORY_NAMES = {
+EXCLUDED_CATEGORY_NAMES = {
+    'separado',
     'diluyentes y complementos',
     'fondos y selladores',
 }
@@ -55,7 +55,7 @@ def normalize_categories(connection):
 
     for cat in categorias:
         nombre = (cat.get('nombre') or '').strip()
-        if not nombre or nombre in DEFAULT_CATEGORIAS or nombre.lower() in COMBINED_CATEGORY_NAMES:
+        if not nombre or nombre.lower() in EXCLUDED_CATEGORY_NAMES or nombre in DEFAULT_CATEGORIAS:
             continue
         normalizadas.append(cat)
 
