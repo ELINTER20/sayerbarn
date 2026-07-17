@@ -2,7 +2,7 @@ from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, abort
 from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 from app import mysql
-from app.helpers.categorias import visible_categories
+from app.helpers.categorias import normalize_categories
 from app.helpers.uploads import guardar_imagen_producto
 
 # Blueprint de administración: todas sus rutas empiezan con /admin
@@ -152,8 +152,8 @@ def agregar_producto():
     GET:  muestra el formulario vacío con la lista de categorías.
     POST: valida los campos obligatorios e inserta el producto en la BD."""
 
-    # Cargar categorías visibles para el selector del formulario
-    categorias = visible_categories(mysql.connection)
+    # Cargar categorías para el selector del formulario
+    categorias = normalize_categories(mysql.connection)
 
     if request.method == 'POST':
         # Recoger todos los campos del formulario
@@ -248,9 +248,9 @@ def agregar_producto():
 def editar_producto(id):
     cur = mysql.connection.cursor()
 
-    # Categorías visibles para el selector (se necesitan en GET y también si hay que
+    # Categorías para el selector (se necesitan en GET y también si hay que
     # volver a mostrar el formulario por un error de validación)
-    categorias = visible_categories(mysql.connection)
+    categorias = normalize_categories(mysql.connection)
 
     # Producto actual: da la clave (fija) y sirve de fallback si algo no se envía
     cur.execute("SELECT * FROM productos WHERE id = %s", (id,))

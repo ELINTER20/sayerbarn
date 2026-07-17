@@ -12,6 +12,11 @@ DEFAULT_CATEGORIAS = [
     'Tinta al alcohol',
 ]
 
+COMBINED_CATEGORY_NAMES = {
+    'diluyentes y complementos',
+    'fondos y selladores',
+}
+
 
 def ensure_default_categories(connection):
     """Asegura que las categorías base existan en la base de datos y las devuelve."""
@@ -34,17 +39,39 @@ def ensure_default_categories(connection):
     return categorias
 
 
+def normalize_categories(connection):
+    """Devuelve las categorías normalizadas, evitando nombres combinados antiguos."""
+    categorias = ensure_default_categories(connection)
+    categorias_por_nombre = {
+        (cat.get('nombre') or '').strip(): cat
+        for cat in categorias
+    }
+
+    normalizadas = []
+    for nombre in DEFAULT_CATEGORIAS:
+        cat = categorias_por_nombre.get(nombre)
+        if cat:
+            normalizadas.append(cat)
+
+    for cat in categorias:
+        nombre = (cat.get('nombre') or '').strip()
+        if not nombre or nombre in DEFAULT_CATEGORIAS or nombre.lower() in COMBINED_CATEGORY_NAMES:
+            continue
+        normalizadas.append(cat)
+
+    return normalizadas
+
+
 def visible_categories(connection, exclude_keywords=None):
     """Devuelve la lista de categorías visibles para la UI, excluyendo
     aquellas cuyo nombre contiene cualquiera de los `exclude_keywords`.
 
-    Por defecto excluye: diluy, complement, fondo, sellador, separado.
+    Por defecto excluye: separado.
     """
     if exclude_keywords is None:
-        # Por defecto solo ocultamos 'separado'; mostrar diluyentes, complementos, fondos, selladores
         exclude_keywords = ['separado']
 
-    categorias = ensure_default_categories(connection)
+    categorias = normalize_categories(connection)
     visible = []
     for cat in categorias:
         nombre = (cat.get('nombre') or '').lower()
