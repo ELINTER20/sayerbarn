@@ -41,7 +41,8 @@ def visible_categories(connection, exclude_keywords=None):
     Por defecto excluye: diluy, complement, fondo, sellador, separado.
     """
     if exclude_keywords is None:
-        exclude_keywords = ['diluy', 'complement', 'fondo', 'sellador', 'separado']
+        # Por defecto solo ocultamos 'separado'; mostrar diluyentes, complementos, fondos, selladores
+        exclude_keywords = ['separado']
 
     categorias = ensure_default_categories(connection)
     visible = []
