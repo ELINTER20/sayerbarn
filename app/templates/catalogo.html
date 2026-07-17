@@ -176,8 +176,7 @@
                     <!-- Imagen -->
                     <div class="relative w-full aspect-square bg-surface-container-low/30 overflow-hidden p-2">
                         {% if producto.imagen_url %}
-                        {% set imagen_src = producto.imagen_url if producto.imagen_url.startswith('/') or producto.imagen_url.startswith('http') else '/static/images/productos/' ~ producto.imagen_url %}
-                        <img alt="{{ producto.nombre }}" src="{{ imagen_src }}"
+                        <img alt="{{ producto.nombre }}" src="{{ producto.imagen_url }}"
                              class="w-full h-full object-contain"
                              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
                         <div class="hidden w-full h-full items-center justify-center">
@@ -269,8 +268,7 @@
                     <!-- Imagen -->
                     <div class="p-3 flex justify-center items-center bg-surface-container-low/30 h-48 overflow-hidden">
                         {% if producto.imagen_url %}
-                        {% set imagen_src = producto.imagen_url if producto.imagen_url.startswith('/') or producto.imagen_url.startswith('http') else '/static/images/productos/' ~ producto.imagen_url %}
-                        <img alt="{{ producto.nombre }}" class="w-full h-full object-contain" src="{{ imagen_src }}"
+                        <img alt="{{ producto.nombre }}" class="w-full h-full object-contain" src="{{ producto.imagen_url }}"
                              onerror="this.style.display='none';this.nextElementSibling.style.display='inline-block'" />
                         <span class="material-symbols-outlined text-[64px] text-outline-variant" style="font-variation-settings: 'FILL' 1; display:none;">water_drop</span>
                         {% else %}
