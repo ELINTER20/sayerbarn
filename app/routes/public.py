@@ -62,8 +62,6 @@ def catalogo():
 
     try:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT id, nombre FROM categorias ORDER BY nombre")
-        categorias = cur.fetchall()
 
         # Acabados y usos únicos que realmente existen en BD
         cur.execute("SELECT DISTINCT acabado FROM productos WHERE activo=1 AND acabado IS NOT NULL AND acabado != '' ORDER BY acabado")
@@ -92,6 +90,11 @@ def catalogo():
             + orden
         )
         productos = cur.fetchall()
+
+        # Obtener categorías visibles para la UI (oculta diluyentes, complementos, fondos, selladores, separado)
+        from app.helpers.categorias import visible_categories
+        categorias = visible_categories(mysql.connection)
+
         cur.close()
     except Exception:
         error = 'El catálogo todavía no está disponible. Intenta de nuevo más tarde.'

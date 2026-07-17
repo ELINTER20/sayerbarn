@@ -32,3 +32,22 @@ def ensure_default_categories(connection):
         cursor.close()
 
     return categorias
+
+
+def visible_categories(connection, exclude_keywords=None):
+    """Devuelve la lista de categorías visibles para la UI, excluyendo
+    aquellas cuyo nombre contiene cualquiera de los `exclude_keywords`.
+
+    Por defecto excluye: diluy, complement, fondo, sellador, separado.
+    """
+    if exclude_keywords is None:
+        exclude_keywords = ['diluy', 'complement', 'fondo', 'sellador', 'separado']
+
+    categorias = ensure_default_categories(connection)
+    visible = []
+    for cat in categorias:
+        nombre = (cat.get('nombre') or '').lower()
+        if any(k in nombre for k in exclude_keywords):
+            continue
+        visible.append(cat)
+    return visible
