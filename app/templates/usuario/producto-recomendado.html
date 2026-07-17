@@ -129,8 +129,7 @@
                 {% endif %}
                 <div class="w-full h-full max-w-[280px] max-h-[280px] relative">
                     {% if resultado.imagen_url %}
-                    {% set imagen_src = resultado.imagen_url if resultado.imagen_url.startswith('/') or resultado.imagen_url.startswith('http') else '/static/images/productos/' ~ resultado.imagen_url %}
-                    <img alt="{{ resultado.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ imagen_src }}" />
+                    <img alt="{{ resultado.nombre }}" class="w-full h-full object-contain drop-shadow-xl" src="{{ resultado.imagen_url }}" />
                     {% else %}
                     <div class="w-full h-full flex items-center justify-center bg-surface-container rounded-lg">
                         <span class="material-symbols-outlined text-[80px] text-outline">format_paint</span>
@@ -147,8 +146,7 @@
             <div class="bg-surface-container-lowest p-unit-md rounded-xl shadow-[0_4px_20px_rgba(0,31,107,0.05)] border border-[#E8EDF7] flex flex-col sm:flex-row items-center gap-unit-md">
                 <div class="w-24 h-24 shrink-0 bg-surface-container rounded-lg p-2 flex items-center justify-center">
                     {% if complemento.imagen_url %}
-                    {% set comp_imagen_src = complemento.imagen_url if complemento.imagen_url.startswith('/') or complemento.imagen_url.startswith('http') else '/static/images/productos/' ~ complemento.imagen_url %}
-                    <img src="{{ comp_imagen_src }}" alt="{{ complemento.nombre }}" class="w-full h-full object-contain" />
+                    <img src="{{ complemento.imagen_url }}" alt="{{ complemento.nombre }}" class="w-full h-full object-contain" />
                     {% else %}
                     <span class="material-symbols-outlined text-outline text-[40px]">science</span>
                     {% endif %}
