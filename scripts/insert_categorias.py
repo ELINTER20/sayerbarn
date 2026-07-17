@@ -12,6 +12,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from app.config import Config
+from app.helpers.categorias import DEFAULT_CATEGORIAS
 try:
     import MySQLdb
 except ImportError:
@@ -25,10 +26,7 @@ def insert_categories():
     port = Config.MYSQL_PORT
     db_name = Config.MYSQL_DB
 
-    cats = [
-        'Barnices para madera', 'Diluyentes', 'Complementos', 'Catalizadores',
-        'Selladores', 'Fondos', 'Tinta al aceite', 'Tinta al alcohol'
-    ]
+    cats = DEFAULT_CATEGORIAS
 
     print(f'Connecting to MySQL host={host} port={port} user={user} db={db_name}')
     conn = MySQLdb.connect(host=host, user=user, passwd=password, port=port, db=db_name)

@@ -51,16 +51,21 @@
                         {% endif %}
                     </div>
                     <div class="space-y-4 mb-unit-lg">
-                        {% if producto.rendimiento_min %}
                         <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
                             <span class="material-symbols-outlined text-primary mt-1">format_paint</span>
                             <div>
                                 <p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rendimiento</p>
-                                <p class="font-body-md text-body-md text-on-surface">{{ producto.rendimiento_min }} m² por litro (aprox.)</p>
+                                <p class="font-body-md text-body-md text-on-surface">
+                                    {% set rendimiento = producto.rendimiento_min|default('') %}
+                                    {% if rendimiento|string|trim != '' %}
+                                        {{ rendimiento }} m² por litro (aprox.)
+                                    {% else %}
+                                        No aplica
+                                    {% endif %}
+                                </p>
                                 <p class="text-xs text-outline mt-1">Todo producto de madera tiene un rendimiento teórico aproximado. Este dependerá del tipo de madera.</p>
                             </div>
                         </div>
-                        {% endif %}
                         {% if producto.precio_referencia %}
                         <div class="flex items-start gap-3 pb-3 border-b border-surface-variant">
                             <span class="material-symbols-outlined text-primary mt-1">sell</span>

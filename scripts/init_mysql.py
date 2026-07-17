@@ -60,10 +60,9 @@ def create_database_and_tables():
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ''')
     # Insert default categories if they don't exist yet
-    default_cats = [
-        'Barnices para madera', 'Diluyentes', 'Complementos', 'Catalizadores',
-        'Selladores', 'Fondos', 'Tinta al aceite', 'Tinta al alcohol'
-    ]
+    from app.helpers.categorias import DEFAULT_CATEGORIAS
+
+    default_cats = DEFAULT_CATEGORIAS
     for cat in default_cats:
         try:
             cur.execute("INSERT IGNORE INTO categorias (nombre) VALUES (%s)", (cat,))

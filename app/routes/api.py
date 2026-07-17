@@ -72,7 +72,7 @@ def chat():
             WHERE p.activo = 1
               AND (p.categoria_id IS NULL OR p.categoria_id NOT IN (
                   SELECT id FROM categorias WHERE nombre IN (
-                      'Diluyentes', 'Complementos', 'Diluyentes y complementos', 'Catalizadores'
+                      'Diluyentes', 'Complementos', 'Catalizadores', 'Selladores', 'Fondos', 'Separado', 'Tinta al aceite', 'Tinta al alcohol'
                   )
               ))
             GROUP BY p.id
