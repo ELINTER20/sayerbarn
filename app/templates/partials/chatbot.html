@@ -73,6 +73,7 @@
       mensaje: '¡Hola! Soy el asistente de navegación de SayerBarn 👋 ¿En qué te ayudo?',
       opciones: [
         { texto: '¿Necesitas ayuda para navegar la página?', ir: 'navegar' },
+          { texto: '¿Necesitas enviar tu factura?', ir: 'enviar_factura' },
         { texto: '¿Quieres encontrar la tienda más cercana?', ir: 'cp' },
         { texto: '¿Necesitas hacer una devolución?', ir: 'devolucion' },
       ]
@@ -175,6 +176,7 @@
       boton.className = 'text-left text-sm px-3 py-2 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-full leading-snug';
       boton.textContent = opcion.texto;
       boton.addEventListener('click', function () {
+        console.log('navbot: click', opcion.texto, {ir: opcion.ir, url: opcion.url});
         grupo.querySelectorAll('button').forEach(function (b) {
           b.disabled = true;
           b.classList.add('opacity-40', 'cursor-default');
@@ -184,6 +186,11 @@
           return;
         }
         burbujaUsuario(opcion.texto);
+        // Si la opción es enviar factura, lanzar secuencia de pasos
+        if (opcion.ir === 'enviar_factura') {
+          setTimeout(function () { enviarFacturaSequence(); }, 300);
+          return;
+        }
         setTimeout(function () { irAPaso(opcion.ir); }, 300);
       });
       grupo.appendChild(boton);
@@ -259,8 +266,37 @@
     burbujaBot(html);
 
     var botonVolver = document.getElementById('navbot-volver-cp');
-    if (botonVolver) botonVolver.addEventListener('click', function () { irAPaso('menu'); });
+    if (botonVolver) botonVolver.addEventListener('click', function () { console.log('navbot: click volver CP'); irAPaso('menu'); });
     bajarScroll();
+  }
+
+  /* ── Secuencia para enviar pasos sobre enviar factura ───── */
+  function enviarFacturaSequence() {
+    // Paso 1: pedir foto de la factura/ticket
+    console.log('navbot: iniciar enviarFacturaSequence');
+    burbujaBot('<div class="bg-surface-container rounded-lg px-3 py-2 text-base text-on-surface">Por favor, sube o toma una foto de la factura/ticket de compra.</div>');
+    // Paso 2
+    setTimeout(function () {
+      console.log('navbot: enviarFacturaSequence paso 2');
+      burbujaBot('<div class="bg-surface-container rounded-lg px-3 py-2 text-base text-on-surface">¿En qué sucursal realizaste la compra? Indica el nombre o el código postal.</div>');
+    }, 700);
+    // Paso 3: indicar contacto y seguimiento
+    setTimeout(function () {
+      burbujaBot('<div class="bg-surface-container rounded-lg px-3 py-2 text-base text-on-surface">' +
+        'Contacta a la sucursal para dar seguimiento. Puedes usar el WhatsApp de la sucursal que aparece en su tarjeta o contactar a nuestra central:<br>📞 800 123 4567<br>✉ contacto@sayerdabet.com' +
+        '</div>');
+      console.log('navbot: enviarFacturaSequence paso 3');
+      // Añadir botón de volver al menú
+      var grupo = document.createElement('div');
+      grupo.className = 'flex flex-col gap-1 mt-1';
+      var boton = document.createElement('button');
+      boton.className = 'text-left text-sm px-3 py-2 rounded-lg border border-primary/40 text-primary hover:bg-primary/10 transition-colors w-full leading-snug';
+      boton.textContent = '← Regresar al menú';
+      boton.addEventListener('click', function () { console.log('navbot: click volver desde enviarFactura'); irAPaso('menu'); });
+      grupo.appendChild(boton);
+      contenedorMsgs().appendChild(grupo);
+      bajarScroll();
+    }, 1400);
   }
 
   /* ── Abrir / cerrar ───────────────────────────────────── */
